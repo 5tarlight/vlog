@@ -11,8 +11,7 @@
   font-family: "Noto Sans KR", sans-serif;
 }
 
-body {
-  padding: 0 1rem;
+main {
   width: 100vw;
   min-height: 100vh;
 }

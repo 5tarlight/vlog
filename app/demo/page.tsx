@@ -6,7 +6,7 @@ export default function Preview() {
   return (
     <div className="w-full flex justify-center">
       <div className="max-w-[1024px] w-full">
-        <h1>Style Demo</h1>
+        <h1 className="text-center">Style Demo</h1>
 
         <Gap h={4} />
 
