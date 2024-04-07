@@ -51,7 +51,7 @@ export default function Preview() {
             <a href="https://google.com">외부 링크 External Link</a>
           </div>
           <div>
-            <Link href="/preview">내부 링크 Internal Link</Link>
+            <Link href="/demo">내부 링크 Internal Link</Link>
           </div>
 
           <Gap h={1} />
@@ -65,19 +65,41 @@ export default function Preview() {
         <Gap h={2} />
 
         <GroupBox>
+          <div>글 사이에</div>
           <ol>
             <li>List 1</li>
             <li>List 2</li>
-            <li>List 3</li>
+            <li>
+              긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴
+              문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴
+              문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴
+              문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴
+              문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴
+              문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴
+              문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴
+              문장
+            </li>
           </ol>
+          <div>리스트</div>
 
           <Gap h={1} />
 
+          <div>글 사이에</div>
           <ul>
             <li>List 1</li>
             <li>List 2</li>
-            <li>List 3</li>
+            <li>
+              긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴
+              문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴
+              문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴
+              문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴
+              문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴
+              문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴
+              문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴 문장 긴
+              문장
+            </li>
           </ul>
+          <div>리스트</div>
         </GroupBox>
       </div>
     </div>
