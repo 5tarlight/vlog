@@ -2,14 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap");
+
 * {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+  font-family: "Noto Sans KR", sans-serif;
 }
 
 body {
   padding: 0 1rem;
+  width: 100vw;
+  min-height: 100vh;
 }
 
 a {
@@ -45,4 +50,14 @@ h5 {
 
 h6 {
   font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2.7rem;
+  }
+
+  h2 {
+    font-size: 2.2rem;
+  }
 }
