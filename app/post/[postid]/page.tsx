@@ -1,12 +1,13 @@
-import { folders, posts } from "@/api/posts";
+import { getPost } from "@/api/posts";
 
 export default function Post({ params }: { params: { postid: string } }) {
+  const post = getPost(params.postid);
+
   return (
     <div className="w-full flex justify-center">
       <div className="max-w-[1024px] w-full">
         <h1 className="text-center">Post {params.postid}</h1>
-        <div>Folders : {folders.join(", ")}</div>
-        <div>Posts : {posts.join(", ")}</div>
+        <div>{JSON.stringify(post)}</div>
       </div>
     </div>
   );
