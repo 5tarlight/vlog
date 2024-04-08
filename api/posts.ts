@@ -15,10 +15,12 @@ export interface Post {
 
 export const getPost = (identifier: string) => {
   const meta = postMetas.find((it) => it.identifier === identifier);
+
   if (!meta) return null;
-  const seriresMeta = meta.series
-    ? series.find((s) => s.id === meta.series) || null
-    : null;
+  const seriresMeta =
+    meta.series != undefined
+      ? series.find((s) => s.id === meta.series) || null
+      : null;
   const content = fs.readFileSync(`${path}/${meta.path}`, "utf-8");
 
   return {
