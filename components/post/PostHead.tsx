@@ -15,7 +15,7 @@ const PostHead = ({
   return (
     <div className="flex justify-start min-h-48 mb-16 items-center flex-col w-full border-b-2 border-b-gray-300">
       {series && (
-        <div className="font-bold mb-[-1rem]">
+        <div className="font-bold mb-[-0.5rem]">
           <Link href={"/"}>{series.name}</Link>
         </div>
       )}

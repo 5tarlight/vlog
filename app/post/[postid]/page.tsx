@@ -4,6 +4,7 @@ import PostHead from "@/components/post/PostHead";
 export default function Post({ params }: { params: { postid: string } }) {
   const post = getPost(params.postid);
 
+  // TODO : pretty 404 page
   if (!post) return <div>Not Found</div>;
 
   return (
