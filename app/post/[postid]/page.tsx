@@ -13,6 +13,7 @@ export default function Post({ params }: { params: { postid: string } }) {
           title={post.meta.title}
           date={post.meta.date}
           series={post.meta.series || undefined}
+          description={post.meta.description}
         />
         <div>
           {post.content.split("\n").map((it, i) => (
