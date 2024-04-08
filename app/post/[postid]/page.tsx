@@ -5,7 +5,7 @@ export default function Post({ params }: { params: { postid: string } }) {
   const post = getPost(params.postid);
 
   // TODO : pretty 404 page
-  if (!post) return <div>Not Found</div>;
+  if (!post) return <div className="text-center">Not Found</div>;
 
   return (
     <div className="w-full flex justify-center">
