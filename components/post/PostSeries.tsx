@@ -25,7 +25,7 @@ const PostSeries = ({
 
   return (
     // TODO : Adjust color
-    <div className="bg-[#cfffd7] w-full p-8 rounded-xl mb-16">
+    <div className="bg-[#a5f2ff] w-full p-8 rounded-xl mb-16">
       <div className="mb-8">
         {/* TODO : Link to series page */}
         <h3 className="font-bold">{series.name}</h3>
@@ -68,15 +68,33 @@ const PostSeries = ({
           </div>
         )}
         {/* TODO : Goto next or previous post */}
-        <div className="flex gap-4">
+        <div className="flex gap-4 select-none">
           <div>
-            <VscTriangleLeft className="mt-[0.15rem] cursor-pointer" />
+            {currentIdx !== 0 ? (
+              <Link
+                href={`/post/${posts[currentIdx - 1].identifier}`}
+                className="text-black"
+              >
+                <VscTriangleLeft className="mt-[0.15rem] cursor-pointer" />
+              </Link>
+            ) : (
+              <VscTriangleLeft className="mt-[0.15rem] text-gray-400" />
+            )}
           </div>
           <div>
             {currentIdx + 1} / {posts.length}
           </div>
           <div>
-            <VscTriangleRight className="mt-[0.15rem] cursor-pointer" />
+            {currentIdx !== posts.length - 1 ? (
+              <Link
+                href={`/post/${posts[currentIdx + 1].identifier}`}
+                className="text-black"
+              >
+                <VscTriangleRight className="mt-[0.15rem] cursor-pointer" />
+              </Link>
+            ) : (
+              <VscTriangleRight className="mt-[0.15rem] text-gray-400" />
+            )}
           </div>
         </div>
       </div>
