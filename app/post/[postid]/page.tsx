@@ -18,7 +18,11 @@ export default function Post({ params }: { params: { postid: string } }) {
           description={post.meta.description}
         />
         <div>
-          <PostBody content={post.content} series={post.meta.series?.id} />
+          <PostBody
+            content={post.content}
+            series={post.meta.series?.id}
+            postid={post.meta.id}
+          />
         </div>
       </div>
     </div>

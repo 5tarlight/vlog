@@ -6,9 +6,10 @@ import PostTableOfContent from "./PostTableOfContent";
 interface Props {
   content: string;
   series?: number;
+  postid: number;
 }
 
-const PostBody = ({ content, series }: Props) => {
+const PostBody = ({ content, series, postid }: Props) => {
   return (
     <div className="w-full flex justify-center">
       <div className="w-full flex justify-center gap-16">
@@ -18,6 +19,7 @@ const PostBody = ({ content, series }: Props) => {
             <PostSeries
               series={getSeries(series)!!}
               posts={getPostsInSeries(series)}
+              postid={postid}
             />
           )}
           <PostContent content={content} />
