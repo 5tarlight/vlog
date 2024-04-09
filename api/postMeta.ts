@@ -18,4 +18,13 @@ export const postMetas: PostMeta[] = [
     path: "demo/hello.md",
     series: 0,
   },
+  {
+    id: 1,
+    title: "Bye World",
+    identifier: "bye",
+    description: "시리즈 테스트를 위한 글",
+    date: "2024. 04. 09",
+    path: "demo/bye.md",
+    series: 0,
+  },
 ];
