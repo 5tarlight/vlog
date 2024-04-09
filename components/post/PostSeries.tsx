@@ -1,17 +1,27 @@
-import { getPostsInSeries, getSeries } from "@/api/series";
+"use client";
+
+import { PostMeta } from "@/api/postMeta";
+import { Series } from "@/api/series";
 import Link from "next/link";
+import { useState } from "react";
 
-const PostSeries = ({ series }: { series?: number }) => {
-  if (series === undefined) return null;
-
-  const seriesMeta = getSeries(series)!!;
+const PostSeries = ({
+  series,
+  posts,
+}: {
+  series: Series;
+  posts: PostMeta[];
+}) => {
+  const [dropdown, setDropdown] = useState(false);
 
   return (
-    <div className="w-[calc((100% - 700px) / 2]">
+    // TODO : Adjust color
+    <div className="bg-[#cfffd7] w-full p-8 rounded-2xl mb-16 border-4 border-green-600">
       <h4>
-        <b>{seriesMeta.name}</b>
+        {/* TODO : Link to series page */}
+        <b>{series.name}</b>
       </h4>
-      {getPostsInSeries(series).map((post) => (
+      {posts.map((post) => (
         <div key={post.identifier}>
           <Link href={`/post/${post.identifier}`}>{post.title}</Link>
         </div>
