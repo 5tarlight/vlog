@@ -9,14 +9,14 @@ interface Props {
 const PostBody = ({ content, series }: Props) => {
   return (
     <div className="w-full flex justify-center">
-      <div className="w-full flex justify-between">
-        <div className="hidden md:block">
+      <div className="w-full flex justify-center gap-16">
+        <div className="hidden lg:block">
           <PostSeries series={series} />
         </div>
-        <div className="max-w-[800px] w-full">
+        <div className="max-w-[700px] w-full">
           <PostContent content={content} />
         </div>
-        <div className="hidden md:block">Index</div>
+        <div className="hidden lg:block">Index</div>
       </div>
     </div>
   );

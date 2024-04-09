@@ -7,9 +7,9 @@ const PostSeries = ({ series }: { series?: number }) => {
   const seriesMeta = getSeries(series)!!;
 
   return (
-    <div>
+    <div className="w-[calc((100% - 700px) / 2]">
       <h4>
-        <strong>{seriesMeta.name}</strong>
+        <b>{seriesMeta.name}</b>
       </h4>
       {getPostsInSeries(series).map((post) => (
         <div key={post.identifier}>

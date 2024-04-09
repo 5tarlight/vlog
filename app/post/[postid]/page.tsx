@@ -10,7 +10,7 @@ export default function Post({ params }: { params: { postid: string } }) {
 
   return (
     <div className="w-full flex justify-center">
-      <div className="md:w-[1300px] w-[700px]">
+      <div className="lg:w-[1300px] w-[700px]">
         <PostHead
           title={post.meta.title}
           date={post.meta.date}
