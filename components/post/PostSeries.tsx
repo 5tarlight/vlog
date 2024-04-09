@@ -25,7 +25,7 @@ const PostSeries = ({
 
   return (
     // TODO : Adjust color
-    <div className="bg-[#a5f2ff] w-full p-8 rounded-xl mb-16">
+    <div className="bg-[#d3f8ff] w-full p-8 rounded-xl mb-16">
       <div className="mb-8">
         {/* TODO : Link to series page */}
         <h3 className="font-bold">{series.name}</h3>
