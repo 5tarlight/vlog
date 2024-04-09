@@ -1,4 +1,5 @@
 import { getPost } from "@/api/posts";
+import PostBody from "@/components/post/PostBody";
 import PostHead from "@/components/post/PostHead";
 
 export default function Post({ params }: { params: { postid: string } }) {
@@ -9,7 +10,7 @@ export default function Post({ params }: { params: { postid: string } }) {
 
   return (
     <div className="w-full flex justify-center">
-      <div className="max-w-[1024px] w-full">
+      <div className="md:w-[1300px] w-[700px]">
         <PostHead
           title={post.meta.title}
           date={post.meta.date}
@@ -17,9 +18,7 @@ export default function Post({ params }: { params: { postid: string } }) {
           description={post.meta.description}
         />
         <div>
-          {post.content.split("\n").map((it, i) => (
-            <div key={i}>{it}</div>
-          ))}
+          <PostBody content={post.content} series={post.meta.series?.id} />
         </div>
       </div>
     </div>

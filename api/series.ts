@@ -1,3 +1,5 @@
+import { postMetas } from "./postMeta";
+
 export interface Series {
   id: number;
   name: string;
@@ -19,3 +21,11 @@ export const series: Series[] = [
     path: "blog",
   },
 ];
+
+export const getPostsInSeries = (seriesId: number) => {
+  return postMetas.filter((post) => post.series === seriesId);
+};
+
+export const getSeries = (seriesId: number) => {
+  return series.find((s) => s.id === seriesId);
+};
