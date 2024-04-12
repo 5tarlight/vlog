@@ -8,7 +8,10 @@ import Footer from "@/components/footer/Footer";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "YEAHx4",
+  title: {
+    template: "%s | YEAHx4",
+    default: "YEAHx4",
+  },
   description: "YEAHx4 개발 블로그",
 };
 

@@ -1,8 +1,25 @@
 import { getPost } from "@/api/posts";
 import PostBody from "@/components/post/PostBody";
 import PostHead from "@/components/post/PostHead";
+import { Metadata, ResolvingMetadata } from "next";
 
-export default function Post({ params }: { params: { postid: string } }) {
+interface Props {
+  params: { postid: string };
+}
+
+export async function generateMetadata(
+  { params: { postid } }: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  return {
+    title: getPost(postid)?.meta.title || "Not Found",
+    description: getPost(postid)?.meta.description,
+    applicationName: "YEAHx4 BLOG",
+    category: "blog",
+  };
+}
+
+export default function Post({ params }: Props) {
   const post = getPost(params.postid);
 
   // TODO : pretty 404 page
