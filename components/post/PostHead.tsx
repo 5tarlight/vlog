@@ -7,11 +7,15 @@ const PostHead = ({
   description,
   date,
   series,
+  tags,
+  timeToRead,
 }: {
   title: string;
   description: string;
   date: string;
   series?: Series;
+  tags: string[];
+  timeToRead: string;
 }) => {
   return (
     <div className="flex justify-start min-h-48 mb-16 items-center flex-col w-full border-b-2 border-b-gray-300">
@@ -29,8 +33,24 @@ const PostHead = ({
         </div>
         <div className="ml-8 flex">
           <FaRegClock className="mt-[0.2rem]" />
-          <div className="ml-2">1m</div>
+          <div className="ml-2">{timeToRead}</div>
         </div>
+      </div>
+      <div className="flex mt-2 mb-4">
+        {tags.map((tag, i) => (
+          <Link
+            href={"/tag/" + tag}
+            key={i}
+            className="text-black hover:no-underline"
+          >
+            <span
+              key={tag}
+              className="text-xs bg-gray-200 px-2 py-1 m-1 rounded hover:bg-gray-300 cursor-pointer"
+            >
+              {tag}
+            </span>
+          </Link>
+        ))}
       </div>
     </div>
   );

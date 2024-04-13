@@ -48,6 +48,8 @@ export default function Post({ params }: Props) {
           date={post.meta.date}
           series={post.meta.series || undefined}
           description={post.meta.description}
+          tags={post.meta.tags}
+          timeToRead="1 min"
         />
         <div>
           <PostBody

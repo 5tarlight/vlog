@@ -21,7 +21,7 @@ export const postMetas: PostMeta[] = [
     date: "2024. 04. 08",
     path: "demo/hello.md",
     series: 0,
-    tags: ["hello world"],
+    tags: ["hello world", "blog", "test"],
     cover: "thumbnail/hello_cover.png",
   },
   {
