@@ -1,3 +1,4 @@
+import { getImage } from "@/api/imageCdn";
 import { getPost } from "@/api/posts";
 import PostBody from "@/components/post/PostBody";
 import PostHead from "@/components/post/PostHead";
@@ -11,11 +12,22 @@ export async function generateMetadata(
   { params: { postid } }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
+  const post = getPost(postid);
+
   return {
-    title: getPost(postid)?.meta.title || "Not Found",
-    description: getPost(postid)?.meta.description,
+    title: post?.meta.title || "Not Found",
+    description: post?.meta.description,
     applicationName: "YEAHx4 BLOG",
     category: "blog",
+    openGraph: {
+      title: post?.meta.title,
+      images: {
+        url: getImage("thumbnail/yeahx4bg.png"),
+        alt: "YEAHx4",
+      },
+      type: "article",
+      authors: ["YEAHx4"],
+    },
   };
 }
 
