@@ -18,6 +18,8 @@ export const metadata: Metadata = {
     images: {
       url: getImage("thumbnail/yeahx4bg.png"),
       alt: "YEAHx4",
+      width: 1280,
+      height: 720,
     },
   },
   robots: {
@@ -28,7 +30,7 @@ export const metadata: Metadata = {
   twitter: {
     creator: "@yeahx44",
   },
-  category: "technology"
+  category: "technology",
 };
 
 export default function RootLayout({
