@@ -67,7 +67,6 @@ const PostSeries = ({
             <div>시리즈 보기</div>
           </div>
         )}
-        {/* TODO : Goto next or previous post */}
         <div className="flex gap-4 select-none">
           <div>
             {currentIdx !== 0 ? (

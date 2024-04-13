@@ -6,6 +6,10 @@ export interface PostMeta {
   date: string;
   path: string;
   series?: number;
+  tags: string[];
+  cover?: string;
+  coverWidth?: number;
+  coverHeight?: number;
 }
 
 export const postMetas: PostMeta[] = [
@@ -17,6 +21,8 @@ export const postMetas: PostMeta[] = [
     date: "2024. 04. 08",
     path: "demo/hello.md",
     series: 0,
+    tags: ["hello world", "blog", "test"],
+    cover: "thumbnail/hello_cover.png",
   },
   {
     id: 2,
@@ -26,6 +32,7 @@ export const postMetas: PostMeta[] = [
     date: "2024. 04. 09",
     path: "demo/mid.md",
     series: 0,
+    tags: ["hello world"],
   },
   {
     id: 1,
@@ -35,5 +42,6 @@ export const postMetas: PostMeta[] = [
     date: "2024. 04. 09",
     path: "demo/bye.md",
     series: 0,
+    tags: ["hello world"],
   },
 ];
