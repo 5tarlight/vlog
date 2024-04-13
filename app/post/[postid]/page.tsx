@@ -19,6 +19,7 @@ export async function generateMetadata(
     description: post?.meta.description,
     applicationName: "YEAHx4 BLOG",
     category: "blog",
+    keywords: post?.meta.tags,
     openGraph: {
       title: post?.meta.title,
       images: {
