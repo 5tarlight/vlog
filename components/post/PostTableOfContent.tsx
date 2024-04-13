@@ -6,7 +6,7 @@ const PostTableOfContent = ({
   tableOfContent: string[];
 }) => {
   return (
-    <div className="border-l-[1px] border-gray-300 pl-4 sticky">
+    <div className="border-l-[1px] border-gray-300 pl-4 sticky top-16">
       <div className="text-lg font-semibold mb-2">Table of Content</div>
       <ul>
         {tableOfContent.map((content, index) => (

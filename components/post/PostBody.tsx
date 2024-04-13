@@ -27,7 +27,7 @@ const PostBody = ({ content, series, postid }: Props) => {
           {/* <PostContent content={content} /> */}
           <div className="w-full">{graph}</div>
         </div>
-        <div className="hidden lg:block w-[16rem] ">
+        <div className="hidden lg:block w-[16rem]">
           <PostTableOfContent tableOfContent={tableOfContent} />
         </div>
       </div>
