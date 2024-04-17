@@ -11,9 +11,9 @@
 
 ```java
 pubilc class Hello {
-  public static void main(String[] args) {
-    System.out.println("Hello World");
-  }
+    public static void main(String[] args) {
+        System.out.println("Hello World");
+    }
 }
 ```
 
@@ -21,7 +21,7 @@ pubilc class Hello {
 #include <iostream>
 
 int main() {
-  std::cout << "Hello World" << std::endl;
+    std::cout << "Hello World" << std::endl;
 }
 ```
 

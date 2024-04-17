@@ -1,3 +1,4 @@
+import Code from "@/components/post/Code";
 import { ReactNode } from "react";
 
 const renderLine = (line: string) => {
@@ -22,7 +23,11 @@ const renderLine = (line: string) => {
       let j = i + 1;
       while (line[j] !== "`") j++;
 
-      result.push(<code key={i}>{line.substring(i + 1, j)}</code>);
+      result.push(
+        <code className="code" key={i}>
+          {line.substring(i + 1, j)}
+        </code>
+      );
 
       i = j;
     } else {
@@ -107,9 +112,11 @@ export const renderContent = (content: string) => {
 
       // TODO : language highlight
       graph.push(
-        <pre key={i}>
-          <code>{lines.slice(i + 1, j).join("\n")}</code>
-        </pre>
+        <Code
+          language={language}
+          text={lines.slice(i + 1, j).join("\n")}
+          key={i}
+        />
       );
 
       i = j;
