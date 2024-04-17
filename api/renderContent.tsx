@@ -1,7 +1,36 @@
 import { ReactNode } from "react";
 
 const renderLine = (line: string) => {
-  return <div>{line}</div>;
+  const result: ReactNode[] = [];
+
+  for (let i = 0; i < line.length; i++) {
+    if (line[i] === "*" && line[i + 1] === "*") {
+      let j = i + 2;
+      while (line[j] !== "*" || line[j + 1] !== "*") j++;
+
+      result.push(<b key={i}>{line.substring(i + 2, j)}</b>);
+
+      i = j + 1;
+    } else if (line[i] === "_") {
+      let j = i + 1;
+      while (line[j] !== "_") j++;
+
+      result.push(<i key={i}>{line.substring(i + 1, j)}</i>);
+
+      i = j;
+    } else if (line[i] === "`") {
+      let j = i + 1;
+      while (line[j] !== "`") j++;
+
+      result.push(<code key={i}>{line.substring(i + 1, j)}</code>);
+
+      i = j;
+    } else {
+      result.push(line[i]);
+    }
+  }
+
+  return <div>{result}</div>;
 };
 
 export const renderContent = (content: string) => {
@@ -71,6 +100,19 @@ export const renderContent = (content: string) => {
       }
       graph.push(<ol key={i}>{list}</ol>);
       i = j - 1;
+    } else if (lines[i].startsWith("```")) {
+      const language = lines[i].substring(3);
+      let j = i + 1;
+      while (!lines[j].startsWith("```")) j++;
+
+      // TODO : language highlight
+      graph.push(
+        <pre key={i}>
+          <code>{lines.slice(i + 1, j).join("\n")}</code>
+        </pre>
+      );
+
+      i = j;
     } else {
       graph.push(<div key={i}>{renderLine(lines[i])}</div>);
     }
