@@ -1,5 +1,6 @@
 import Code from "@/components/post/Code";
 import { ReactNode } from "react";
+import { getImage } from "./imageCdn";
 
 const renderLine = (line: string) => {
   const result: ReactNode[] = [];
@@ -30,6 +31,26 @@ const renderLine = (line: string) => {
       );
 
       i = j;
+    } else if (line[i] === "!" && i < line.length - 1 && line[i + 1] === "[") {
+      let j = i + 2;
+      while (line[j] !== "]") j++;
+      const alt = line.substring(i + 2, j);
+
+      j += 2;
+      let k = j;
+      while (line[k] !== ")") k++;
+      const src = line.substring(j, k);
+
+      result.push(
+        <img
+          style={{ margin: "1rem 0" }}
+          key={i}
+          src={getImage(src)}
+          alt={alt}
+        />
+      );
+
+      i = k;
     } else {
       result.push(line[i]);
     }
