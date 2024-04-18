@@ -112,11 +112,9 @@ export const renderContent = (content: string) => {
 
       // TODO : language highlight
       graph.push(
-        <Code
-          language={language}
-          text={lines.slice(i + 1, j).join("\n")}
-          key={i}
-        />
+        <div style={{ margin: "2rem 0" }} key={i}>
+          <Code language={language} text={lines.slice(i + 1, j).join("\n")} />
+        </div>
       );
 
       i = j;
