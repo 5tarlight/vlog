@@ -51,6 +51,34 @@ const renderLine = (line: string) => {
       );
 
       i = k;
+    } else if (line[i] === "[") {
+      // First, check if it is a link
+      let isLink = true;
+
+      let j = i + 1;
+      while (j < line.length && line[j] !== "]") j++;
+
+      if (j === line.length || line[j + 1] !== "(") isLink = false;
+
+      if (!isLink) {
+        result.push(line[i]);
+        continue;
+      }
+
+      const text = line.substring(i + 1, j);
+
+      j += 2;
+      let k = j;
+      while (line[k] !== ")") k++;
+      const href = line.substring(j, k);
+
+      result.push(
+        <a key={i} href={href} className="text-blue-500">
+          {text}
+        </a>
+      );
+
+      i = k;
     } else {
       result.push(line[i]);
     }
