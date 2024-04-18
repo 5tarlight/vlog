@@ -93,3 +93,10 @@ ul li::marker {
 li {
   display: list-item;
 }
+
+.code {
+  background-color: rgb(255, 241, 224);
+  padding: 2px 4px;
+  border-radius: 4px;
+  color: rgb(255, 113, 113);
+}

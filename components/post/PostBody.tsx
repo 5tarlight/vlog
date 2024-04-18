@@ -1,7 +1,7 @@
 import { getPostsInSeries, getSeries } from "@/api/series";
-import PostContent from "./PostContent";
 import PostSeries from "./PostSeries";
 import PostTableOfContent from "./PostTableOfContent";
+import { renderContent } from "@/api/renderContent";
 
 interface Props {
   content: string;
@@ -10,6 +10,8 @@ interface Props {
 }
 
 const PostBody = ({ content, series, postid }: Props) => {
+  const { graph, tableOfContent } = renderContent(content);
+
   return (
     <div className="w-full flex justify-center">
       <div className="w-full flex justify-center gap-16">
@@ -22,10 +24,11 @@ const PostBody = ({ content, series, postid }: Props) => {
               postid={postid}
             />
           )}
-          <PostContent content={content} />
+          {/* <PostContent content={content} /> */}
+          <div className="w-full">{graph}</div>
         </div>
-        <div className="hidden lg:block w-[16rem] ">
-          <PostTableOfContent />
+        <div className="hidden lg:block w-[16rem]">
+          <PostTableOfContent tableOfContent={tableOfContent} />
         </div>
       </div>
     </div>
