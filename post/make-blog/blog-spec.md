@@ -11,7 +11,7 @@
 
 - Next.js 14 : 블로그에서 중요한 SSR과 SEO를 챙기기 위해 사용했다. 또, server component가 도입된 Next.js에서는 별다른 백엔드 없이 로컬에 저장된 마크다운 파일을 직접 읽어올 수 있기 때문에 유리하다.
 - Tailwind CSS
-- JSDeliver : 이미지를 불러오기 위해 사용했다.
+- JSDelivr : 이미지를 불러오기 위해 사용했다.
 
 ## 배포
 
