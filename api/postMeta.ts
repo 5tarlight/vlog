@@ -54,4 +54,14 @@ export const postMetas: PostMeta[] = [
     series: 1,
     tags: ["next.js", "blog", "tailwind css"],
   },
+  {
+    id: 4,
+    title: "레이아웃과 스타일링 (w. Tailwind CSS)",
+    identifier: "blog-layout-and-styling",
+    description: "블로그 레이아웃과 스타일링을 해보자",
+    date: "2024. 04. 19",
+    path: "make-blog/layout-style.md",
+    series: 1,
+    tags: ["next.js", "css", "tailwind css"],
+  },
 ];
