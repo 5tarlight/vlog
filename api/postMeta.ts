@@ -44,4 +44,14 @@ export const postMetas: PostMeta[] = [
     series: 0,
     tags: ["hello world"],
   },
+  {
+    id: 3,
+    title: "Next.js로 블로그 만들기",
+    identifier: "make-blog-with-nextjs",
+    description: "Next.js로 블로그를 만들어보자",
+    date: "2024. 04. 19",
+    path: "make-blog/blog-spec.md",
+    series: 1,
+    tags: ["next.js", "blog", "tailwind css"],
+  },
 ];
