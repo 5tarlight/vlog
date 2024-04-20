@@ -56,9 +56,9 @@ export const postMetas: PostMeta[] = [
   },
   {
     id: 4,
-    title: "레이아웃과 스타일링 (w. Tailwind CSS)",
-    identifier: "blog-layout-and-styling",
-    description: "블로그 레이아웃과 스타일링을 해보자",
+    title: "핵심 기능 구현",
+    identifier: "blog-fundamental-feature",
+    description: "핵심 기능을 구현해보자",
     date: "2024. 04. 19",
     path: "make-blog/layout-style.md",
     series: 1,

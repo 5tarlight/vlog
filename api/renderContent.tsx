@@ -87,10 +87,12 @@ const renderLine = (line: string) => {
   return <div>{result}</div>;
 };
 
+export type TableOfContent = { text: string; level: number };
+
 export const renderContent = (content: string) => {
   const lines = content.split("\n");
   const graph: ReactNode[] = [];
-  const tableOfContent = [];
+  const tableOfContent: TableOfContent[] = [];
   const margin = (level: number) => ({ marginTop: `${level}rem` });
 
   for (let i = 0; i < lines.length; i++) {
@@ -100,42 +102,42 @@ export const renderContent = (content: string) => {
           {renderLine(lines[i].substring(2))}
         </h1>
       );
-      tableOfContent.push(lines[i].substring(2));
+      tableOfContent.push({ text: lines[i].substring(2), level: 1 });
     } else if (lines[i].startsWith("## ")) {
       graph.push(
         <h2 style={margin(2)} key={i} id={lines[i].substring(3)}>
           {renderLine(lines[i].substring(3))}
         </h2>
       );
-      tableOfContent.push(lines[i].substring(3));
+      tableOfContent.push({ text: lines[i].substring(3), level: 2 });
     } else if (lines[i].startsWith("### ")) {
       graph.push(
         <h3 style={margin(1.75)} key={i} id={lines[i].substring(4)}>
           {renderLine(lines[i].substring(4))}
         </h3>
       );
-      tableOfContent.push(lines[i].substring(4));
+      tableOfContent.push({ text: lines[i].substring(4), level: 3 });
     } else if (lines[i].startsWith("#### ")) {
       graph.push(
         <h4 style={margin(1.5)} key={i} id={lines[i].substring(5)}>
           {renderLine(lines[i].substring(5))}
         </h4>
       );
-      tableOfContent.push(lines[i].substring(5));
+      tableOfContent.push({ text: lines[i].substring(5), level: 4 });
     } else if (lines[i].startsWith("##### ")) {
       graph.push(
         <h5 style={margin(1.25)} key={i} id={lines[i].substring(6)}>
           {renderLine(lines[i].substring(6))}
         </h5>
       );
-      tableOfContent.push(lines[i].substring(6));
+      tableOfContent.push({ text: lines[i].substring(6), level: 5 });
     } else if (lines[i].startsWith("###### ")) {
       graph.push(
         <h6 style={margin(1)} key={i} id={lines[i].substring(7)}>
           {renderLine(lines[i].substring(7))}
         </h6>
       );
-      tableOfContent.push(lines[i].substring(7));
+      tableOfContent.push({ text: lines[i].substring(7), level: 6 });
     } else if (lines[i].startsWith("- ")) {
       const list = [];
       let j = i;
