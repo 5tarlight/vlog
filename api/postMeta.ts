@@ -56,7 +56,7 @@ export const postMetas: PostMeta[] = [
   },
   {
     id: 4,
-    title: "핵심 기능 구현",
+    title: "블로그 핵심 기능 구현",
     identifier: "blog-fundamental-feature",
     description: "핵심 기능을 구현해보자",
     date: "2024. 04. 19",
