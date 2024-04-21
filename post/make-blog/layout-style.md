@@ -94,3 +94,7 @@ https://cdn.jsdelivr.net/gh/5tarlight/vlog-image@main/${path}
 ```
 
 이것을 사용해서 본문에 삽입될 이미지 말고도 thumbnail이나 미리보기 등 다른 이미지 시스템에도 그대로 활용할 수 있다.
+
+### 코드블록
+
+기술 블로그라면 코드블록이 없어서는 안된다. 마크다운 파싱을 통해 코드블록의 내용과 언어는 구할 수 있지만 직접 구현하기에는 부담이 된다. 그래서 [react-code-blocks](https://www.npmjs.com/package/react-code-blocks)를 사용해서 간단하게 구현할 수 있다. 다만, 코드를 볼때 필요한 monospace 폰트가 정상적으로 적용되지 않는 문제가 있다. global 스타일과 Tailwind CSS의 Preflight와 충돌이 발생하는 것 같다. 나중에 수정해 보겠다.

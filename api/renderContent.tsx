@@ -42,12 +42,19 @@ const renderLine = (line: string) => {
       const src = line.substring(j, k);
 
       result.push(
-        <img
-          style={{ margin: "1rem 0" }}
+        <div
           key={i}
-          src={getImage(src)}
-          alt={alt}
-        />
+          style={{
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <img
+            style={{ margin: "1rem 0", height: "300px" }}
+            src={getImage(src)}
+            alt={alt}
+          />
+        </div>
       );
 
       i = k;

@@ -23,7 +23,7 @@ export async function generateMetadata(
     openGraph: {
       title: post?.meta.title,
       images: {
-        url: getImage(post?.meta.cover || "thumbnail/yeahx4bg.png"),
+        url: getImage(post?.meta.cover || "thumbnail/yeahx4.png"),
         alt: "YEAHx4",
         width: post?.meta.coverWidth || 1280,
         height: post?.meta.coverHeight || 720,

@@ -64,4 +64,14 @@ export const postMetas: PostMeta[] = [
     series: 1,
     tags: ["next.js", "css", "tailwind css"],
   },
+  {
+    id: 5,
+    title: "블로그에 Open Graph 추가하기",
+    identifier: "add-open-graph-to-blog",
+    description: "블로그에 Open Graph를 추가해보자",
+    date: "2024. 04. 21",
+    path: "make-blog/open-graph.md",
+    series: 1,
+    tags: ["next.js", "open graph", "meta tag", "seo"],
+  },
 ];
