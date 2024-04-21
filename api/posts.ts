@@ -3,10 +3,10 @@ import { PostMeta, postMetas } from "./postMeta";
 import { series } from "./series";
 
 export const path = "./post";
-export const folders = fs.readdirSync(path);
-export const posts = folders
-  .map((f) => fs.readdirSync(`${path}/${f}`, "utf-8"))
-  .filter((it) => it.length > 0);
+// export const folders = fs.readdirSync(path);
+// export const posts = folders
+//   .map((f) => fs.readdirSync(`${path}/${f}`, "utf-8"))
+//   .filter((it) => it.length > 0);
 
 export interface Post {
   meta: PostMeta;
@@ -17,7 +17,7 @@ export const getPost = (identifier: string) => {
   const meta = postMetas.find((it) => it.identifier === identifier);
 
   if (!meta) return null;
-  const seriresMeta =
+  const seriesMeta =
     meta.series != undefined
       ? series.find((s) => s.id === meta.series) || null
       : null;
@@ -26,7 +26,7 @@ export const getPost = (identifier: string) => {
   return {
     meta: {
       ...meta,
-      series: seriresMeta,
+      series: seriesMeta,
     },
     content,
   };
