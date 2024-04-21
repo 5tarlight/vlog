@@ -84,3 +84,13 @@ export const getPost = (identifier: string) => {
 2. bold, 이탤릭 등 작은 요소를 렌더링한다.
 
 구현한 코드는 약간 긴 관계로 [여기](https://github.com/5tarlight/vlog/blob/0b30218b8f01220e85f763fd2bbb8e2910cb4398/api/renderContent.tsx)에서 볼 수 있다.
+
+### 이미지
+
+Next.js에서 public 폴더에 이미지를 넣으면 외부에 공개할 수 있다. 이를 이용해서 이미지를 넣어도 되지만, Open-graph 등에 사용되는 이미지 URL이 절대 경로일 필요가 있어 외부 CDN을 이용하기로 했다. 이미지 하나를 위해 추가적인 서버를 관리하기엔 부담이 되니 다른 Github 레포를 하나 만들어 JSDelivr를 통해 이미지를 호스팅 하는 방식을 선택했다. 5tarlight라는 이름의 계정의 vlog-image 레포지토리에 이미지를 저장한다. 그러면 아래와 같이 불러올 수 있다.
+
+```http
+https://cdn.jsdelivr.net/gh/5tarlight/vlog-image@main/${path}
+```
+
+이것을 사용해서 본문에 삽입될 이미지 말고도 thumbnail이나 미리보기 등 다른 이미지 시스템에도 그대로 활용할 수 있다.
