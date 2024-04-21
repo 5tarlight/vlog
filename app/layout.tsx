@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   description: "YEAHx4 개발 블로그",
   openGraph: {
     images: {
-      url: getImage("thumbnail/yeahx4bg.png"),
+      url: getImage("thumbnail/yeahx4.png"),
       alt: "YEAHx4",
       width: 1280,
       height: 720,
