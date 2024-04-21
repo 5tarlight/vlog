@@ -100,3 +100,11 @@ li {
   border-radius: 4px;
   color: rgb(255, 113, 113);
 }
+
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  font-feature-settings: normal;
+  font-variation-settings: normal;
+  font-size: 1em;
+}

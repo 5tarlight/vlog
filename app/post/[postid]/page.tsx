@@ -49,7 +49,7 @@ export default function Post({ params }: Props) {
           series={post.meta.series || undefined}
           description={post.meta.description}
           tags={post.meta.tags}
-          timeToRead="1 min"
+          timeToRead={Math.round(post.content.split(" ").length / 100) + " min"}
         />
         <div>
           <PostBody
