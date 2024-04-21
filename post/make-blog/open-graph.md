@@ -94,7 +94,7 @@ export const metadata: Metadata = {
 간략하게 보면
 
 - title.template : 하위 페이지에서 title을 새롭게 지정한 경우 %s 자리에 들어가게 된다. 지정하지 않았다면 default값으로 지정된다.
-- descriptoin : 기본 설명이다. 하위 페이지에서 새롭게 지정한 경우 덮여쓰인다.
+- description : 기본 설명이다. 하위 페이지에서 새롭게 지정한 경우 덮여쓰인다.
 - openGraph : OG 설정을 해준다.
 - robots : 크롤러들의 설정이다.
 
