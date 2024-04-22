@@ -17,9 +17,9 @@ export default function PostBlock({
         <div
           className="w-full h-[80%] rounded-t-md"
           style={{
-            backgroundImage: `url(${
-              cover || getImage("thumbnail/yeahx4.png")
-            })`,
+            backgroundImage: `url(${getImage(
+              cover || "thumbnail/yeahx4.png"
+            )})`,
             backgroundSize: "cover",
           }}
         ></div>
