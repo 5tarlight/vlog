@@ -14,6 +14,9 @@ export const metadata: Metadata = {
     default: "YEAHx4",
   },
   description: "YEAHx4 개발 블로그",
+  icons: {
+    icon: "/yeahx4_cat.png",
+  },
   openGraph: {
     images: {
       url: getImage("thumbnail/yeahx4.png"),
@@ -40,6 +43,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
+      <head>
+        <link rel="icon" href={"/yeahx4_cat.png"} />
+      </head>
       <body className={inter.className}>
         <Header />
         <main className="px-4">{children}</main>
