@@ -1,5 +1,6 @@
 import Link from "next/link";
 import LightBulb from "./LightBulb";
+import HeaderSearch from "./HeaderSearch";
 
 const Header = () => {
   return (
@@ -10,7 +11,9 @@ const Header = () => {
             YEAHx4
           </Link>
         </h1>
-        {/* <div>2</div> */}
+        <div className="md:block hidden">
+          <HeaderSearch />
+        </div>
         <div>
           <LightBulb />
         </div>
