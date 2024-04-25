@@ -5,6 +5,7 @@ import React, { ReactNode } from "react";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
 import { getImage } from "@/api/imageCdn";
+import { Analytics } from "@vercel/analytics/react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -48,6 +49,7 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <Header />
+        <Analytics />
         <main className="px-4">{children}</main>
         <Footer />
       </body>
