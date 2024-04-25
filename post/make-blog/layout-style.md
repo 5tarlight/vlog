@@ -98,3 +98,13 @@ https://cdn.jsdelivr.net/gh/5tarlight/vlog-image@main/${path}
 ### 코드블록
 
 기술 블로그라면 코드블록이 없어서는 안된다. 마크다운 파싱을 통해 코드블록의 내용과 언어는 구할 수 있지만 직접 구현하기에는 부담이 된다. 그래서 [react-code-blocks](https://www.npmjs.com/package/react-code-blocks)를 사용해서 간단하게 구현할 수 있다. 다만, 코드를 볼때 필요한 monospace 폰트가 정상적으로 적용되지 않는 문제가 있다. global 스타일과 Tailwind CSS의 Preflight와 충돌이 발생하는 것 같다. 나중에 수정해 보겠다.
+
+## 댓글 시스템
+
+직접 댓글을 구현하려면 회원 시스템, DB등 다른 작업이 많이 필요하다. 대안을 찾다 어떤 똑똑한 사람이 만든 Github의 Discussion기능을 댓글처럼 쓸 수 있는 라이브러리를 발견했다. [utterances](https://github.com/utterance/utterances) 라는 라이브러리도 있고 utterances에서 영감을 받아 나온 [giscus](https://github.com/giscus/giscus)도 있다. 이 블로그의 경우 Next.js로 작성되어 React용 component가 필요하고 giscus가 더 나은 접근성 등을 가지고 있어 giscus를 사용하기로 결정했다. giscus를 사용하기 위해서 Github repo가 아래 조건을 만족해야 한다.
+
+- 공개 레포일 것
+- Discussion이 활성화 되어 있을 것 ([활성화 시키는 방법](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/enabling-or-disabling-github-discussions-for-a-repository))
+- [giscus 앱](https://github.com/apps/giscus)이 해당 레포에 설치되어 있을 것
+
+모두 설정했으면 giscus를 사용할 준비가 완료됐다. [giscus 사이트](https://giscus.app/ko)에서 `username/repo`를 입력하면 바로 사용할 수 있는 코드가 나온다. 이 블로그의 경우 React용 컴포넌트가 필요하기에 [giscus-component](https://github.com/giscus/giscus-component)를 추가로 활용했다. 실제 기능은 이 글 밑에서 직접 체험할 수 있다.
