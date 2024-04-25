@@ -2,8 +2,9 @@
 
 import SearchResult from "@/components/search/SearchResult";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
-export default function Search() {
+function SearchSuspend() {
   const query = useSearchParams();
   const search = query.get("q");
 
@@ -14,5 +15,13 @@ export default function Search() {
         <SearchResult search={search || ""} />
       </div>
     </div>
+  );
+}
+
+export default function Search() {
+  return (
+    <Suspense>
+      <SearchSuspend />
+    </Suspense>
   );
 }
