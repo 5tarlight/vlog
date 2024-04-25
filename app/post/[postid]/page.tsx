@@ -1,5 +1,6 @@
 import { getImage } from "@/api/imageCdn";
 import { getPost } from "@/api/posts";
+import Comment from "@/components/comment/Comment";
 import PostBody from "@/components/post/PostBody";
 import PostHead from "@/components/post/PostHead";
 import { Metadata, ResolvingMetadata } from "next";
@@ -58,6 +59,8 @@ export default function Post({ params }: Props) {
             postid={post.meta.id}
           />
         </div>
+        <div className="h-16" />
+        <Comment />
       </div>
     </div>
   );
