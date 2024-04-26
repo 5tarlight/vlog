@@ -1,2 +1,2 @@
 npm run build
-cp -r ./post ./.next/post_md
+cp -r ./post /vercel/output/.next/post_md
