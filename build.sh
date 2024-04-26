@@ -5,8 +5,9 @@ echo "Current directory"
 pwd
 echo "List files in .next"
 ls -la ./.next
-echo "List files in .vercel"
-ls -la ./.vercel
 
 echo "Copying post markdown files to build output"
-cp -r ./post /vercel/output/.next/post_md
+cp -r ./post .next/post_md
+
+echo "List files in .next after copy"
+ls -la ./.next
