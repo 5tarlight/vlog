@@ -14,6 +14,10 @@ export interface Post {
 }
 
 export const getPost = (identifier: string) => {
+  console.log("Current dir : ", __dirname, __filename);
+  console.log("root dir : ", process.cwd());
+  console.log("files in root : ", fs.readdirSync(process.cwd()));
+
   const meta = postMetas.find((it) => it.identifier === identifier);
 
   if (!meta) return null;
