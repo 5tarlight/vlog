@@ -2,7 +2,8 @@ import * as fs from "fs";
 import { PostMeta, postMetas } from "./postMeta";
 import { series } from "./series";
 
-export const path = "./post";
+export const path =
+  process.env.NODE_ENV == "production" ? "./.next/post_md" : "./post";
 // export const folders = fs.readdirSync(path);
 // export const posts = folders
 //   .map((f) => fs.readdirSync(`${path}/${f}`, "utf-8"))
@@ -17,6 +18,7 @@ export const getPost = (identifier: string) => {
   console.log("Current dir : ", __dirname, __filename);
   console.log("root dir : ", process.cwd());
   console.log("files in root : ", fs.readdirSync(process.cwd()));
+  console.log("files in post : ", path, fs.readdirSync(path));
 
   const meta = postMetas.find((it) => it.identifier === identifier);
 
