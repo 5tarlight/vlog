@@ -4,7 +4,7 @@ import { series } from "./series";
 
 export const path =
   process.env.NODE_ENV == "production"
-    ? process.cwd() + "/.next/post_md"
+    ? process.cwd() + "/public/post_md"
     : "./post";
 // export const folders = fs.readdirSync(path);
 // export const posts = folders
