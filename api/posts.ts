@@ -3,9 +3,7 @@ import { PostMeta, postMetas } from "./postMeta";
 import { series } from "./series";
 
 export const path =
-  process.env.NODE_ENV == "production"
-    ? process.cwd() + "/public/post_md"
-    : "./post";
+  process.env.NODE_ENV == "production" ? process.cwd() + "/post_md" : "./post";
 // export const folders = fs.readdirSync(path);
 // export const posts = folders
 //   .map((f) => fs.readdirSync(`${path}/${f}`, "utf-8"))
