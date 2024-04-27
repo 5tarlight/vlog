@@ -3,14 +3,15 @@ npm run build
 
 echo "Current directory"
 pwd
-echo "List files in .next"
-ls -la ./.next
 
 echo "Copying post markdown files to build output"
 cp -r ./post ./public/post_md
 
-echo "List files in .next after copy"
-ls -la ./.next
+echo "Files in ./"
+ls -la
+
+echo "Files in ./public"
+ls -la ./public
 
 echo "Content of ./.vercel/project.json"
 cat ./.vercel/project.json
