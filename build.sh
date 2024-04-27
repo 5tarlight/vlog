@@ -11,3 +11,6 @@ cp -r ./post .next/post_md
 
 echo "List files in .next after copy"
 ls -la ./.next
+
+echo "Content of ./.vercel/project.json"
+cat ./.vercel/project.json
