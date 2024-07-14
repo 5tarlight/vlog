@@ -1,0 +1,3 @@
+.prose a {
+  @apply transition-all;
+}
