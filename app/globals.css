@@ -2,7 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url("./prose.css");
+@import url("./styles/prism.css");
+@import url("./styles/prose.css");
 
 * {
   margin: 0;
