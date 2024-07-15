@@ -9,6 +9,7 @@ import remarkMath from "remark-math";
 // import remarkParse from "remark-parse";
 // import remarkRehype from "remark-rehype";
 import remarkToc from "remark-toc";
+// import rehypePrettyCode from "rehype-pretty-code";
 
 export const serializeMdx = async (src: string) => {
   return serialize(src, {
@@ -25,6 +26,7 @@ export const serializeMdx = async (src: string) => {
         rehypeKatex,
         // rehypeStringify,
         rehypePrism,
+        // rehypePrettyCode,
         rehypeAutolinkHeadings,
       ],
       format: "mdx",

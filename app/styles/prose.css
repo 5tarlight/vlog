@@ -1,0 +1,29 @@
+.prose h1 {
+  margin-top: 2rem;
+}
+
+.prose h2 {
+  margin-top: 1.5rem;
+}
+
+.prose h3 {
+  margin-top: 1.25rem;
+}
+
+.prose h4 {
+  margin-top: 1rem;
+}
+
+.prose h5 {
+  margin-top: 0.75rem;
+}
+
+.prose h6 {
+  margin-top: 0.5rem;
+}
+
+.prose .container {
+  max-width: 768px;
+  width: 100%;
+  word-break: break-all;
+}
