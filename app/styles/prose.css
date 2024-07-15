@@ -27,3 +27,7 @@
   width: 100%;
   word-break: break-all;
 }
+
+.prose hr {
+  margin: 4rem 0;
+}
