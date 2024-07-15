@@ -14,16 +14,16 @@ export const serializeMdx = async (src: string) => {
   return serialize(src, {
     mdxOptions: {
       remarkPlugins: [
-        // remarkParse,
-        // remarkMath,
+        remarkParse,
+        remarkMath,
         // remarkRehype,
         remarkGfm,
         remarkBreaks,
         remarkToc,
       ],
       rehypePlugins: [
-        // rehypeKatex,
-        // rehypeStringify,
+        rehypeKatex,
+        rehypeStringify,
         rehypePrism,
         rehypeAutolinkHeadings,
       ],
