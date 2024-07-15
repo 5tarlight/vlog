@@ -1,12 +1,40 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
 
 @import url("./styles/prism.css");
 @import url("./styles/prose.css");
+@import url("./styles/math.css");
+@import url("./styles/tailwind.css");
+@import url("./styles/post.css");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  /* font-family: "Noto Sans KR", Roboto, sans-serif; */
+}
+
+div,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+a,
+ul,
+ol,
+li,
+blockquote,
+img {
+  font-family: "Noto Sans KR", Roboto, sans-serif;
+}
+
+a {
+  color: rgb(79, 79, 212);
+  text-decoration: none;
 }
