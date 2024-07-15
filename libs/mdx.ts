@@ -1,26 +1,31 @@
-export const serializeMdx = async (src: string) => {
-  const { serialize } = await import("next-mdx-remote/serialize");
-  const { default: remarkGfm } = await import("remark-gfm");
-  const { default: rehypePrism } = await import("rehype-prism-plus");
-  const { default: rehypeAutolinkHeadings } = await import(
-    "rehype-autolink-headings"
-  );
-  const { default: rehypeKatex } = await import("rehype-katex");
-  const { default: remarkBreaks } = await import("remark-breaks");
-  const { default: remarkMath } = await import("remark-math");
+import { serialize } from "next-mdx-remote/serialize";
+import remarkGfm from "remark-gfm";
+import rehypePrism from "rehype-prism-plus";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypeKatex from "rehype-katex";
+import remarkBreaks from "remark-breaks";
+import remarkMath from "remark-math";
+import rehypeStringify from "rehype-stringify";
+import remarkParse from "remark-parse";
+import remarkRehype from "remark-rehype";
+import remarkToc from "remark-toc";
 
+export const serializeMdx = async (src: string) => {
   return serialize(src, {
     mdxOptions: {
-      remarkPlugins: [remarkGfm, remarkBreaks /*remarkMath*/],
+      remarkPlugins: [
+        // remarkParse,
+        // remarkMath,
+        // remarkRehype,
+        remarkGfm,
+        remarkBreaks,
+        remarkToc,
+      ],
       rehypePlugins: [
+        // rehypeKatex,
+        // rehypeStringify,
         rehypePrism,
         rehypeAutolinkHeadings,
-        rehypeKatex,
-        // {
-        //   properties: {
-        //     className: ["anchor"],
-        //   },
-        // },
       ],
       format: "mdx",
     },
