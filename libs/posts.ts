@@ -22,6 +22,7 @@ export type PostMatter = {
   description: string;
   tags: string[];
   draft?: boolean;
+  series?: string;
   date: string;
 };
 

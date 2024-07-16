@@ -1,0 +1,12 @@
+.katex-html {
+  display: none;
+}
+
+.katex-mathml {
+  font-size: 1.25rem;
+}
+
+.katex-display {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}

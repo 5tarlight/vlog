@@ -1,12 +1,105 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
 
 @import url("./styles/prism.css");
 @import url("./styles/prose.css");
+@import url("./styles/math.css");
+@import url("./styles/tailwind.css");
+@import url("./styles/post.css");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  /* font-family: "Noto Sans KR", Roboto, sans-serif; */
+}
+
+div,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+a,
+ul,
+ol,
+li,
+blockquote,
+img {
+  font-family: "Noto Sans KR", Roboto, sans-serif;
+}
+
+a {
+  color: rgb(79, 79, 212);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+body {
+  width: 100vw;
+  overflow-x: hidden;
+}
+
+main {
+  min-height: 100vh;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: rgb(79, 79, 212);
+  color: white;
+  margin-bottom: 2rem;
+}
+
+header .header-logo {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+  user-select: none;
+}
+
+footer {
+  margin-top: 8rem;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+  padding: 0 2rem;
+}
+
+footer .footer-container {
+  max-width: 768px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 2rem 0;
+  border-top: 1px solid rgb(79, 79, 212);
+  align-content: center;
+  align-items: center;
+}
+
+footer a {
+  color: black;
+  font-size: 2rem;
+}
+
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 7px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
 }

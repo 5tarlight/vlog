@@ -30,5 +30,7 @@ const config: Config = {
     plugins: [require("@tailwindcss/typography")],
   },
   plugins: [require("@tailwindcss/typography")],
+  loader: "css-loader",
+  options: { modules: true, importLoaders: 1, sourceMap: true },
 };
 export default config;
