@@ -10,6 +10,7 @@ import remarkMath from "remark-math";
 // import remarkRehype from "remark-rehype";
 import remarkToc from "remark-toc";
 // import rehypePrettyCode from "rehype-pretty-code";
+import rehypeMathjax from "rehype-mathjax";
 
 export const serializeMdx = async (src: string) => {
   return serialize(src, {
@@ -23,7 +24,8 @@ export const serializeMdx = async (src: string) => {
         remarkToc,
       ],
       rehypePlugins: [
-        rehypeKatex,
+        // rehypeKatex,
+        rehypeMathjax,
         // rehypeStringify,
         rehypePrism,
         // rehypePrettyCode,

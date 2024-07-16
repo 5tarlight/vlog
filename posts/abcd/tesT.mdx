@@ -102,3 +102,65 @@ public class Test {
     }
 }
 ```
+
+```cs
+namespace Test {
+    class Program {
+        static void Main(string[] args) {
+            Console.WriteLine("Hello, World!");
+        }
+    }
+}
+```
+
+```cpp
+#include <iostream>
+
+int main() {
+    std::cout << "Hello, World!" << std::endl;
+    return 0;
+}
+```
+
+---
+
+오일러 피 함수는 다음과 같이 정의된다.
+
+```math
+\phi (n) = \phi (p_1^{r_1}) \cdot \phi (p_2^{r_2}) \cdots \phi (p_k^{r_k})
+```
+
+```math
+= n \prod_{i=1}\left ( 1 - \frac{1}{p_i} \right )
+```
+
+그린 정리는 다음과 같이 정의된다.
+
+```math
+\oint_C Ldx + Mdy = \iint_D \left ( \frac{\partial M}{\partial x} - \frac{\partial L}{\partial y} \right )dxdy
+```
+
+<br />
+```math
+\overbrace{a+b+c}^{\text{note}}
+```
+
+<br />
+표준화(standardization)는 데이터의 평균을 $0$, 표준편차를 $1$로 만드는 과정이다.
+어떤 데이터 $X$에 대해,
+<br />
+
+```math
+X' = \frac{X - \mu}{\sigma}
+```
+
+<br />로 정의되는 $X'$를 표준화된 데이터라고 한다.
+
+<br />
+```math
+f(x) = \int_{-\infty}^{\infty} \hat{f}(\xi)e^{2 \pi i \xi x} d \xi
+```
+
+<br />
+플로이드 워셜 알고리즘의 시간복잡도는 $O(V^3)$이고, 다익스트라 알고리즘의 시간복잡도는
+$O(E \log V)$이다.

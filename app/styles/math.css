@@ -3,5 +3,10 @@
 }
 
 .katex-mathml {
-  margin: 0.5rem auto;
+  font-size: 1.25rem;
+}
+
+.katex-display {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }

@@ -39,6 +39,11 @@ a {
   text-decoration: none;
 }
 
+body {
+  width: 100vw;
+  overflow-x: hidden;
+}
+
 main {
   min-height: 100vh;
 }
