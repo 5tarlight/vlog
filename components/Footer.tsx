@@ -4,7 +4,7 @@ export default function Footer() {
   return (
     <footer>
       <div className="footer-container">
-        <a href="https://github.com/5tarlight">
+        <a href="https://github.com/5tarlight/vlog">
           <FaGithub />
         </a>
         <div>&copy; {new Date().getFullYear()} YEAHx4</div>
