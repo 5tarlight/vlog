@@ -38,3 +38,48 @@ a {
   color: rgb(79, 79, 212);
   text-decoration: none;
 }
+
+main {
+  min-height: 100vh;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: rgb(79, 79, 212);
+  color: white;
+  margin-bottom: 2rem;
+}
+
+header .header-logo {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+  user-select: none;
+}
+
+footer {
+  margin-top: 8rem;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+  padding: 0 2rem;
+}
+
+footer .footer-container {
+  max-width: 768px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 2rem 0;
+  border-top: 1px solid rgb(79, 79, 212);
+  align-content: center;
+  align-items: center;
+}
+
+footer a {
+  color: black;
+  font-size: 2rem;
+}
