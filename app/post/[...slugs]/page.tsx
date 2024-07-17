@@ -36,7 +36,7 @@ export default async function Post({
         )}
         <div className="flex">
           <div className="post-date">
-            <CiCalendar /> <span>{post.date}</span>
+            <CiCalendar /> <span>{post.date.split(" ")[0]}</span>
           </div>
           <div className="time-to-read">
             <CiClock2 /> <span>{post.readingMinutes}분</span>
