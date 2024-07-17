@@ -3,12 +3,18 @@
 import { Post } from "@/libs/posts";
 import { useSearchParams } from "next/navigation";
 import PostPreview from "./PostPreview";
+import { useState } from "react";
+import { FaSearch } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
 export default function SearchResult({ posts }: { posts: Post[] }) {
   const searchParam = useSearchParams();
   const query = (searchParam.get("q") || "").toLowerCase();
+  const [inputContent, setInput] = useState(query);
 
   const count = (original: string, query: string) => {
+    if (query.length === 0) return 0;
+
     let count = 0;
     let index = original.indexOf(query);
     while (index !== -1) {
@@ -40,8 +46,29 @@ export default function SearchResult({ posts }: { posts: Post[] }) {
     )
     .slice(0, 5);
 
+  const router = useRouter();
+  const handleSearch = () => {
+    router.push(`/search?q=${inputContent}`);
+  };
+
   return (
     <>
+      <div className="search-container">
+        <input
+          className="search-input"
+          placeholder="찾고 싶은 내용을 입력해보세요."
+          value={inputContent}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSearch();
+            }
+          }}
+        />
+        <button className="search-button" onClick={handleSearch}>
+          <FaSearch />
+        </button>
+      </div>
       <h1 className="title-recent-post">검색 결과 : {query}</h1>
       <div>
         {result.map((p, i) => (
