@@ -48,7 +48,7 @@ export const parsePost = (path: string): Post | undefined => {
         .map((it) => it.split(", ").map((it) => it.trim()))
         .flat()
         .filter((tag) => tag),
-      date: dayjs(grayMatter.date).format("YYYY-MM-DD"),
+      date: dayjs(grayMatter.date).format("YYYY-MM-DD HH:mm:ss"),
       content,
       slug: path
         .slice(POST_PATH.length + 1)

@@ -33,7 +33,7 @@ export default function PostPreview({ post }: { post: Post }) {
         <h2 className="post-preview-title">{post.title}</h2>
         <div className="flex post-preview-detail">
           <div className="post-date">
-            <CiCalendar /> <span>{post.date}</span>
+            <CiCalendar /> <span>{post.date.split(" ")[0]}</span>
           </div>
           <div className="time-to-read">
             <CiClock2 /> <span>{post.readingMinutes}분</span>
