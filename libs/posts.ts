@@ -23,6 +23,7 @@ export type PostMatter = {
   tags: string[];
   draft?: boolean;
   series?: string;
+  seriesIndex?: number;
   date: string;
 };
 
@@ -43,7 +44,10 @@ export const parsePost = (path: string): Post | undefined => {
 
     return {
       ...grayMatter,
-      tags: grayMatter.tags.filter((tag) => tag),
+      tags: grayMatter.tags
+        .map((it) => it.split(", ").map((it) => it.trim()))
+        .flat()
+        .filter((tag) => tag),
       date: dayjs(grayMatter.date).format("YYYY-MM-DD"),
       content,
       slug: path
@@ -56,4 +60,10 @@ export const parsePost = (path: string): Post | undefined => {
   } catch (error) {
     console.error(error);
   }
+};
+
+export const getRecentPosts = (count: number) => {
+  return getAllPosts()
+    .sort((a, b) => dayjs(b.date).unix() - dayjs(a.date).unix())
+    .slice(0, count);
 };

@@ -30,8 +30,6 @@
   max-width: 768px;
   width: 100%;
   word-break: break-all;
-  padding: 1rem;
-  overflow-x: hidden;
 }
 
 .prose hr {
