@@ -8,8 +8,8 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | YEAHx4",
-    default: "YEAHx4",
+    template: "%s | YEAHx4 블로그",
+    default: "YEAHx4 블로그",
   },
   description: "YEAHx4 개발 블로그",
   openGraph: {}, // img here

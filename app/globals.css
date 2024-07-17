@@ -180,3 +180,12 @@ footer a {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.search-icon {
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.search-icon svg {
+  color: white;
+}
