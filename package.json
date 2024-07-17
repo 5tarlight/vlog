@@ -10,6 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@giscus/react": "^3.0.0",
     "@tailwindcss/typography": "^0.5.13",
     "dayjs": "^1.11.11",
     "glob": "^11.0.0",

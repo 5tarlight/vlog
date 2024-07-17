@@ -30,8 +30,6 @@
   max-width: 768px;
   width: 100%;
   word-break: break-all;
-  padding: 1rem;
-  overflow-x: hidden;
 }
 
 .prose hr {
@@ -82,4 +80,10 @@
   padding: 1rem;
   background-color: rgb(210, 210, 247);
   border-left: 5px solid rgb(142, 142, 211);
+}
+
+.prose code:not(.code-highlight) {
+  background-color: rgb(240, 240, 248);
+  padding: 0.25rem;
+  border-radius: 0.25rem;
 }

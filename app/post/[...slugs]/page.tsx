@@ -4,6 +4,8 @@ import { serializeMdx } from "@/libs/mdx";
 import { getAllPosts } from "@/libs/posts";
 import { notFound } from "next/navigation";
 import { CiCalendar, CiClock2 } from "react-icons/ci";
+import Giscus from "@giscus/react";
+import Comment from "@/components/Comment";
 
 export default async function Post({
   params,
@@ -43,6 +45,8 @@ export default async function Post({
       <div>
         <PostContent mdx={mdx} />
       </div>
+
+      <Comment />
     </Content>
   );
 }
