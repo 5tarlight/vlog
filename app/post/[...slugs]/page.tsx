@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { CiCalendar, CiClock2 } from "react-icons/ci";
 import Giscus from "@giscus/react";
 import Comment from "@/components/Comment";
+import Tag from "@/components/Tag";
 
 export default async function Post({
   params,
@@ -41,6 +42,7 @@ export default async function Post({
             <CiClock2 /> <span>{post.readingMinutes}분</span>
           </div>
         </div>
+        <Tag>{post.tags}</Tag>
       </div>
       <div>
         <PostContent mdx={mdx} />
