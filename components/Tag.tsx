@@ -1,24 +1,12 @@
-"use client";
-
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function Tag({ children }: { children: string[] }) {
-  const router = useRouter();
-
   return (
     <div className="flex tag-container">
       {children.map((tag, i) => (
-        <div
-          className="post-tag"
-          key={i}
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            router.push(`/tag/${tag}`);
-          }}
-        >
-          {tag}
-        </div>
+        <Link href={`/tag/${tag}`} key={i}>
+          <div className="post-tag">{tag}</div>
+        </Link>
       ))}
     </div>
   );

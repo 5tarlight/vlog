@@ -229,3 +229,12 @@ footer a {
 .search-button:hover {
   opacity: 0.8;
 }
+
+.a-none {
+  text-decoration: none;
+  color: inherit;
+}
+
+.a-none:hover {
+  text-decoration: none;
+}
