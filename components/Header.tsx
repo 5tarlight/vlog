@@ -1,11 +1,12 @@
+import Link from "next/link";
 import { FaSearch } from "react-icons/fa";
 
 export default function Header() {
   return (
     <header>
-      <a href="/" className="header-logo">
+      <Link href="/" className="header-logo">
         YEAHx4 Blog
-      </a>
+      </Link>
       <div className="search-icon">
         <a href="/search">
           <FaSearch />
