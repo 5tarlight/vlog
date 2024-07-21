@@ -49,7 +49,7 @@ export default async function Post({
   if (!post) {
     notFound();
   }
-  const mdx = serializeMdx(post.content);
+  // const mdx = serializeMdx(post.content);
 
   return (
     <Content>
@@ -71,7 +71,7 @@ export default async function Post({
         <Tag>{post.tags}</Tag>
       </div>
       <div>
-        <PostContent mdx={mdx} />
+        <PostContent mdx={post.content} />
       </div>
       <Comment />
     </Content>

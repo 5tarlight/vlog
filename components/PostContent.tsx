@@ -1,16 +1,14 @@
 "use client";
 
+import { serializeMdx } from "@/libs/mdx";
 import { MDXRemote, MDXRemoteSerializeResult } from "next-mdx-remote";
 import { useEffect, useState } from "react";
 
-export default function PostContent({
-  mdx,
-}: {
-  mdx: Promise<MDXRemoteSerializeResult>;
-}) {
+export default function PostContent({ mdx }: { mdx: string }) {
   const [content, setContent] = useState<MDXRemoteSerializeResult>();
   useEffect(() => {
-    mdx.then((data) => setContent(data));
+    serializeMdx(mdx).then((data) => setContent(data));
+    // mdx.then((data) => setContent(data));
   }, []);
 
   return (
