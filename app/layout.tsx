@@ -13,7 +13,16 @@ export const metadata: Metadata = {
     default: "YEAHx4 블로그",
   },
   description: "YEAHx4 개발 블로그",
-  openGraph: {}, // img here
+  openGraph: {
+    url: "https://blog.yeahx4.me",
+    siteName: "YEAHx4 블로그",
+    images: {
+      url: "https://cdn.jsdelivr.net/gh/5tarlight/vlog-image@main/thumbnail/yeahx4bg.png",
+      alt: "YEAHx4",
+      width: 1280,
+      height: 720,
+    },
+  },
   robots: {
     nocache: true,
     follow: true,
@@ -21,6 +30,12 @@ export const metadata: Metadata = {
   },
   twitter: {
     creator: "@yeahx44",
+    images: {
+      url: "https://cdn.jsdelivr.net/gh/5tarlight/vlog-image@main/thumbnail/yeahx4bg.png",
+      alt: "YEAHx4",
+      width: 1280,
+      height: 720,
+    },
   },
   category: "technology",
 };
