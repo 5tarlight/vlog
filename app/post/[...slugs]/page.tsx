@@ -46,9 +46,11 @@ export default async function Post({
   const post = posts.find(
     (post) => post.slug.toLowerCase() === slugs.join("/").toLowerCase()
   );
+
   if (!post) {
     notFound();
   }
+
   // const mdx = serializeMdx(post.content);
 
   return (
