@@ -12,6 +12,7 @@
   "dependencies": {
     "@giscus/react": "^3.0.0",
     "@tailwindcss/typography": "^0.5.13",
+    "@vercel/speed-insights": "^1.0.12",
     "dayjs": "^1.11.11",
     "glob": "^11.0.0",
     "gray-matter": "^4.0.3",
