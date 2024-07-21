@@ -8,13 +8,21 @@ import readingTime from "reading-time";
 export const POST_BASE_PATH = "/posts";
 export const POST_PATH = path.join(process.cwd(), POST_BASE_PATH);
 
+let posts: Post[] | null = null;
+
 export const getAllPosts = () => {
+  if (posts) {
+    return posts;
+  }
+
   const path = sync(`${POST_PATH}/**/*.mdx`);
-  return path.reduce<Post[]>((acc, postPath) => {
+  posts = path.reduce<Post[]>((acc, postPath) => {
     const post = parsePost(postPath);
     if (!post) return acc;
     return [...acc, post];
   }, []);
+
+  return posts;
 };
 
 export type PostMatter = {
