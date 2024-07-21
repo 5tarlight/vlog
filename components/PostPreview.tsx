@@ -1,3 +1,4 @@
+"use client";
 import { Post } from "@/libs/posts";
 import { CiCalendar, CiClock2 } from "react-icons/ci";
 import Tag from "./Tag";
@@ -5,7 +6,11 @@ import Link from "next/link";
 
 export default function PostPreview({ post }: { post: Post }) {
   return (
-    <Link href={`/post/${post.slug}`} className="a-none">
+    <Link
+      href={`/post/${post.slug}`}
+      className="a-none"
+      onClick={(e) => console.log("click")}
+    >
       <div className="post-preview">
         <div className="post-preview-header">
           {post.series && (
