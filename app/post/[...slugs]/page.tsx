@@ -42,26 +42,16 @@ export default async function Post({
   params: { slugs: string[] };
 }) {
   const { slugs } = params;
-  console.log(`Start rendering post: ${slugs.join("/")}`);
-  let t1 = performance.now();
   const posts = getAllPosts();
-  let t2 = performance.now();
-  console.log(`Loading posts took ${t2 - t1} ms`);
-  t1 = t2;
   const post = posts.find(
     (post) => post.slug.toLowerCase() === slugs.join("/").toLowerCase()
   );
-  t2 = performance.now();
-  console.log(`Finding post took ${t2 - t1} ms`);
 
   if (!post) {
     notFound();
   }
 
-  t1 = t2;
-  const mdx = await serializeMdx(post.content);
-  t2 = performance.now();
-  console.log(`Serializing MDX took ${t2 - t1} ms`);
+  const mdx = serializeMdx(post.content);
 
   return (
     <Content>
