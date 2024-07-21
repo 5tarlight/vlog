@@ -61,9 +61,13 @@ header {
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  background-color: rgb(79, 79, 212);
+  background-color: rgb(79, 79, 212, 0.9);
   color: white;
   margin-bottom: 2rem;
+  position: sticky;
+  top: 0;
+  backdrop-filter: blur(5px);
+  z-index: 1000;
 }
 
 header .header-logo {
