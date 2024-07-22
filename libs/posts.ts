@@ -75,3 +75,15 @@ export const getRecentPosts = (count: number) => {
     .sort((a, b) => dayjs(b.date).unix() - dayjs(a.date).unix())
     .slice(0, count);
 };
+
+export const getPrevPost = (series: string, index: number) => {
+  return getAllPosts().find(
+    (post) => post.series === series && post.seriesIndex === index - 1
+  );
+};
+
+export const getNextPost = (series: string, index: number) => {
+  return getAllPosts().find(
+    (post) => post.series === series && post.seriesIndex === index + 1
+  );
+};

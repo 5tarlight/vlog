@@ -1,11 +1,12 @@
 import Content from "@/components/Content";
 import PostContent from "@/components/PostContent";
 import { serializeMdx } from "@/libs/mdx";
-import { getAllPosts } from "@/libs/posts";
+import { getAllPosts, getNextPost, getPrevPost } from "@/libs/posts";
 import { notFound } from "next/navigation";
 import { CiCalendar, CiClock2 } from "react-icons/ci";
 import Comment from "@/components/Comment";
 import Tag from "@/components/Tag";
+import PrevNextPost from "@/components/PrevNextPost";
 
 export async function generateMetadata({
   params: { slugs },
@@ -75,6 +76,12 @@ export default async function Post({
       <div>
         <PostContent mdx={post.content} />
       </div>
+      {post.series && (
+        <PrevNextPost
+          prev={getPrevPost(post.series, post.seriesIndex!!)}
+          next={getNextPost(post.series, post.seriesIndex!!)}
+        />
+      )}
       <Comment />
     </Content>
   );

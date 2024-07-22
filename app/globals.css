@@ -242,3 +242,70 @@ footer a {
 .a-none:hover {
   text-decoration: none;
 }
+
+.prev-next-post-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4rem;
+  gap: 1rem;
+  padding: 0 2rem;
+}
+
+.prev-next-preview {
+  width: 50%;
+}
+
+@media (max-width: 768px) {
+  .prev-next-post-container {
+    flex-direction: column;
+  }
+
+  .prev-next-preview {
+    width: 100%;
+  }
+}
+
+.next-preview {
+  text-align: left;
+}
+
+.prev-preview {
+  text-align: right;
+}
+
+.contentful-preview {
+  -webkit-box-shadow: 3px 3px 10px -2px #bcbccb;
+  -moz-box-shadow: 3px 3px 10px -2px #bcbccb;
+  box-shadow: 3px 3px 10px -2px #bcbccb;
+  border: 1px solid #bcbccb;
+  padding: 1rem 2rem;
+  transition: box-shadow 0.3s;
+  cursor: pointer;
+}
+
+.contentful-preview:hover {
+  box-shadow: 3px 3px 10px 1px #bcbccb;
+}
+
+.pnp-header {
+  color: rgb(135, 135, 135);
+  margin-bottom: 1rem;
+}
+
+.pnp-title {
+  font-size: 1.2rem;
+  margin-bottom: 0.3rem;
+}
+
+.pnp-header {
+  justify-content: space-between;
+}
+
+.next-preview .pnp-header {
+  display: flex;
+}
+
+.prev-preview .pnp-header {
+  display: flex;
+  flex-direction: row-reverse;
+}
