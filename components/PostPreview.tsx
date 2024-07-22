@@ -19,7 +19,12 @@ export default function PostPreview({ post }: { post: Post }) {
     >
       <div className="post-preview-header">
         {post.series && (
-          <Link href={`/series/${post.series}`}>{post.series}</Link>
+          <Link
+            onClick={(e) => e.stopPropagation()}
+            href={`/series/${post.series}`}
+          >
+            {post.series}
+          </Link>
         )}
         <h2 className="post-preview-title">{post.title}</h2>
         <div className="flex post-preview-detail">

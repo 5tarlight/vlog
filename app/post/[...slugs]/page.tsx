@@ -21,7 +21,6 @@ export async function generateMetadata({
     title: post?.title || "Not Found",
     description: post?.description,
     applicationName: "YEAHx4 BLOG",
-    category: "blog",
     keywords: post?.tags,
     openGraph: {
       title: post?.title,

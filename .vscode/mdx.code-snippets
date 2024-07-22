@@ -1,6 +1,6 @@
 {
   "Post Matter": {
-    "prefix": ["matter", "---"],
+    "prefix": ["matter"],
     "description": "Output a file header with the file name and date",
     "body": [
       "---",

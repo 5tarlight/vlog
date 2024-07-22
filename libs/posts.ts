@@ -10,8 +10,10 @@ export const POST_PATH = path.join(process.cwd(), POST_BASE_PATH);
 
 let posts: Post[] | null = null;
 
+export const isDev = process.env.NODE_ENV === "development";
+
 export const getAllPosts = () => {
-  if (posts) {
+  if (posts && !isDev) {
     return posts;
   }
 
