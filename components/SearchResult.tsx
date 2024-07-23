@@ -32,10 +32,11 @@ export default function SearchResult({ posts }: { posts: Post[] }) {
       0
     );
     const content = count(p.content.toLowerCase(), query);
+    const series = count(p.series?.toLowerCase() || "", query);
 
     return {
       index: i,
-      score: title * 3 + description * 2 + tags + content * 2,
+      score: title * 3 + description * 2 + tags + content * 2 + series * 2,
     };
   });
 
