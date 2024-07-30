@@ -8,7 +8,8 @@
 code[class*="language-"],
 pre[class*="language-"] {
   color: var(--prism-foreground);
-  font-family: Consolas, Monaco, "Andale Mono", monospace;
+  font-family: Consolas, "Jetbrains Mono", "D2Coding", Monaco, "Andale Mono",
+    monospace;
   direction: ltr;
   text-align: left;
   white-space: pre;
