@@ -12,6 +12,9 @@ export const metadata: Metadata = {
     template: "%s | YEAHx4 블로그",
     default: "YEAHx4 블로그",
   },
+  icons: {
+    icon: "/favicon.ico",
+  },
   description: "YEAHx4 개발 블로그",
   openGraph: {
     url: "https://blog.yeahx4.me",
@@ -47,6 +50,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
+      <head>
+        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+      </head>
       <body className={inter.className}>
         <SpeedInsights />
         <Header />
