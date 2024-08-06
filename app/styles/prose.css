@@ -32,6 +32,11 @@
 
 .prose mjx-container {
   overflow-x: auto;
+  max-width: 100% !important;
+}
+
+.prose mjx-container > svg {
+  overflow-x: hidden !important;
 }
 
 .prose .container {

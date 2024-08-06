@@ -1,0 +1,191 @@
+---
+title: "배열, vector 및 입출력 팁"
+description: "PS의 기본 배열과 벡터에 대해 알아봅니다."
+icon: ""
+image: ""
+tags:
+  - ps, vector, array, fastio
+draft: false
+date: 2024-08-06 15:31:20
+series: 알고리즘 가이드
+seriesIndex: 2
+---
+
+PS에서 배열은 필수적인 존재입니다. 대부분의 문제가 길이가 $n$인 배열을 입력으로 줍니다.
+이 글에서는 C++과 Python에서 배열을 통해 입력받고, 순회하는 방법을 알아봅니다.
+
+# 배열 입력
+
+아래같은 입력이 있다고 해 봅시다.
+
+#### 입력
+
+첫 번째 줄에 정수 $n$이 주어진다. 다음 줄에 $n$개의 정수 $a_i$가 공백으로 구분되어 주어진다.
+
+#### 조건
+
+- $1 \leq n \leq 100,000$
+- $-1,000,000 \leq a_i \leq 1,000,000$
+- $1 \leq i \leq n$
+
+#### 예시 입력
+
+```text
+5
+1 2 3 4 5
+```
+
+<br />이 입력에서 길이가 $n$인 배열을 입력받는 것이 목표입니다.
+<br />
+Python의 경우 `map`을 통해 줄 단위 입력을 편하게 처리할 수 있습니다.
+
+```python
+n = int(input())
+a = list(map(int, input().split()))
+```
+
+대신 이렇게 공백으로 구분된 것이 아니라 줄 단위로 주어지는 입력은 반복을 통해 처리해야 합니다.
+
+```python
+n = int(input())
+a = []
+
+for _ in range(n):
+  a.append(int(input()))
+```
+
+<br />
+C++은 띄어쓰기로 구분되던 개행으로 구분되던 상관없이 `cin`을 통해 입력받으면 됩니다.
+
+```cpp
+#include <iostream>
+
+using namespace std;
+
+int main() {
+  int n;
+  cin >> n;
+  int a[n];
+  for (int i = 0; i < n; i++)
+    cin >> a[i];
+}
+```
+
+입력이 많은 문제는 fastio를 적용해야 입력에 걸리는 시간을 줄일 수 있습니다.
+fastio에 대해선 [이전 글](/post/ps-guide/1.basics)을 참고해 주세요.
+
+# 배열 초기화
+
+종종 1차원이나 2차원 배열 전체를 어떤 값으로 초기화해야 할 때가 있습니다. 그렇다고 매번 반복문 돌리기는 번거롭고
+좀 더 편하고 효율적인 방법이 필요합니다.
+
+<br />
+파이썬에선 List Comprehension 처럼 편한 기능을 많이 제공하고 있습니다. 길이가 $n$이고
+모든 값이 0으로 초기화된 리스트를 만드려면
+
+```python
+a = [0] * n
+```
+
+처럼 간단하게 처리할 수 있습니다. 크기가 $n \times m$이고 모든 값이 0인 2차원 배열을 만든다고 하면
+
+```python
+a = [[0] * m for _ in range(n)]
+```
+
+처럼 한 줄로 끝낼 수 있습니다.
+
+<br />
+
+C++에선 STL을 통해 비슷한 기능을 지원받을 수 있습니다.
+algorithm 헤더의 fill 함수를 통해 **일차원 배열**을 원하는 값으로 채울 수 있습니다.
+
+```cpp
+#include <algorithm>
+
+using namespace std;
+
+int main() {
+  // 입력...
+  int a[n];
+  fill(a, a + n, 0);
+}
+```
+
+`fill(시작, 끝, 값)` 처럼 사용하면 됩니다.
+이 방법의 단점은 일차월 배열에만 적용할 수 있다는 것입니다. 만약 아래처럼 코드를 만들면
+
+```cpp
+#include <algorithm>
+
+using namespace std;
+
+int main() {
+    int a[10][20];
+    fill(a, a + 10 * 20, 1);
+}
+```
+
+아래와 같은 에러가 납니다.
+
+```text
+ error: array type 'int[20]' is not assignable
+        *__first = __value;
+        ~~~~~~~~ ^
+```
+
+그래서 반복을 통해 처리해 주거나 다른 방법을 사용해야 합니다.
+
+```cpp
+#include <algorithm>
+
+using namespace std;
+
+int main() {
+    int a[10][20];
+    for (int i = 0; i < 10; i++)
+        fill(a[i], a[i] + 20, 1);
+}
+```
+
+C++에서 배열을 초기화하는 다른 방법으로 `cstring (string.h)` 헤더의 memset 함수가 있습니다.
+
+```cpp
+#include <cstring>
+
+using namespace std;
+
+int main() {
+    int a[10][20];
+    memset(a, 0, sizeof(a));
+}
+```
+
+이 방법을 사용하면 2차원 뿐 아니라 많은 구조를 처리할 수 있습니다.
+다만 이름처럼 메모리를 채우는 방식이기 때문에 주의해야 합니다.
+무슨 말인가 하면, 만약 아래와 같은 코드를 썼다고 해봅시다.
+
+```cpp
+#include <iostream>
+#include <cstring>
+
+using namespace std;
+
+int main() {
+    int a[10][20];
+    memset(a, 10, sizeof(a));
+    cout << a[9][19];
+}
+```
+
+이 코드의 의도는 2차원 배열의 모든 값을 10으로 만드는 것이었겠지만 출력된 결과는 168430090 입니다.
+어떻게 된 걸까요? 출력을 2진수로 바꿔보면 아래와 같습니다.
+
+```text
+00001010 00001010 00001010 00001010
+```
+
+규칙이 보이시나요? 바이트 단위로 같은 형태가 반복되고 있습니다. 그리고 10을 이진수로 바꿔보면 1010 입니다.
+바이트 단위로는 `00001010`이 되겠죠.
+그래서 memset을 아무 값에나 사용하면 안됩니다. 0처럼 모든 비트가 0이거나 -1 처럼 모든 비트가 1인 경우
+memset을 적절하게 활용할 수 있습니다.
