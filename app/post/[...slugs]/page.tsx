@@ -51,7 +51,7 @@ export default async function Post({
     notFound();
   }
 
-  // const mdx = serializeMdx(post.content);
+  const mdx = await serializeMdx(post.content);
 
   return (
     <Content>
@@ -73,7 +73,7 @@ export default async function Post({
         <Tag>{post.tags}</Tag>
       </div>
       <div>
-        <PostContent mdx={post.content} />
+        <PostContent mdx={mdx} />
       </div>
       {post.series && (
         <PrevNextPost
