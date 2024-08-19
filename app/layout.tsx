@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Noto_Sans_KR } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: {
@@ -43,21 +41,23 @@ export const metadata: Metadata = {
   category: "technology",
 };
 
+const inter = Noto_Sans_KR({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-noto-sans-kr",
+});
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko">
+    <html lang="ko" className={inter.className}>
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
-        />
       </head>
-      <body className={inter.className}>
+      <body>
         <SpeedInsights />
         <Header />
         <main>{children}</main>

@@ -12,24 +12,6 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box !important;
-  /* font-family: "Noto Sans KR", Roboto, sans-serif; */
-}
-
-div,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-a,
-ul,
-ol,
-li,
-blockquote,
-img {
-  font-family: "Noto Sans KR", Roboto, sans-serif;
 }
 
 a {
