@@ -1,5 +1,4 @@
 import type { Config } from "tailwindcss";
-import { spacing } from "tailwindcss/defaultTheme";
 
 const config: Config = {
   content: [
@@ -9,28 +8,12 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic":
-          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+      colors: {
+        background: "var(--background)",
+        foreground: "var(--foreground)",
       },
-      typography: () => ({
-        DEFAULT: {
-          css: {
-            "h1, h2, h3, h4": {
-              "scroll-margin-top": spacing[32],
-            },
-          },
-        },
-      }),
     },
-    variants: {
-      typography: ["dark"],
-    },
-    plugins: [require("@tailwindcss/typography")],
   },
-  plugins: [require("@tailwindcss/typography")],
-  loader: "css-loader",
-  options: { modules: true, importLoaders: 1, sourceMap: true },
+  plugins: [],
 };
 export default config;
