@@ -13,9 +13,8 @@ export default async function Post({
     body: JSON.stringify({ path: slugs.join("/") }),
   });
 
+  // console.log(res);
   const data = await res.json();
-
-  console.log(data);
 
   return (
     <div>
