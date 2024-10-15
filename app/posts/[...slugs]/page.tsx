@@ -5,6 +5,7 @@ export default async function Post({
 }: {
   params: { slugs: string[] };
 }) {
+  console.log("Target URL:", getUrl("/api/posts"));
   const res = await fetch(getUrl("/api/posts"), {
     method: "POST",
     headers: {
