@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+import { join } from "path";
 
 export const getBaseUrl = () => {
   const headersList = headers();
@@ -9,5 +10,5 @@ export const getBaseUrl = () => {
 };
 
 export const getUrl = (path: string) => {
-  return `${getBaseUrl()}${path}`;
+  return join(getBaseUrl(), path);
 };
