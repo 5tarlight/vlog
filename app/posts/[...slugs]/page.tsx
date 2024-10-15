@@ -13,7 +13,13 @@ export default async function Post({
     body: JSON.stringify({ path: slugs.join("/") }),
   });
 
-  // console.log(res);
+  if (!res.ok) {
+    const errorText = await res.text(); // 오류 메시지를 텍스트로 출력
+    console.error("Fetch error:", res.status, res.statusText);
+    console.error("Response body:", errorText);
+    throw new Error(`Error fetching data: ${res.status} ${res.statusText}`);
+  }
+
   const data = await res.json();
 
   return (
