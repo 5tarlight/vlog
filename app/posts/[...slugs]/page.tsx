@@ -15,6 +15,8 @@ export default async function Post({
 
   const data = await res.json();
 
+  console.log(data);
+
   return (
     <div>
       <h1>Post: {slugs.join("/")}</h1>
