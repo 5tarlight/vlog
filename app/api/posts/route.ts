@@ -6,7 +6,7 @@ export async function POST(reqeust: NextRequest) {
     const { path } = (await reqeust.json()) as { path: string };
 
     if (!postExists(path)) {
-      return NextResponse.json({ message: "Not Found", path }, { status: 404 });
+      return NextResponse.json({ message: "Not Found", path });
     }
 
     return NextResponse.json({
