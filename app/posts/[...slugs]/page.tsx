@@ -1,4 +1,5 @@
 import { getUrl } from "@/lib/getUrl";
+import { parseToc } from "@/lib/parser";
 
 export default async function Post({
   params: { slugs },
@@ -15,18 +16,26 @@ export default async function Post({
   });
 
   if (!res.ok) {
-    const errorText = await res.text(); // 오류 메시지를 텍스트로 출력
+    const errorText = await res.text();
     console.error("Fetch error:", res.status, res.statusText);
     console.error("Response body:", errorText);
     throw new Error(`Error fetching data: ${res.status} ${res.statusText}`);
   }
 
-  const data = await res.json();
+  const data: {
+    message: string;
+    path: string;
+    content: string;
+  } = await res.json();
+
+  const toc = parseToc(data.content);
 
   return (
     <div>
       <h1>Post: {slugs.join("/")}</h1>
       <pre>{JSON.stringify(data, null, 2)}</pre>
+      <h2>Table of Contents</h2>
+      <pre>{JSON.stringify(toc, null, 2)}</pre>
     </div>
   );
 }
