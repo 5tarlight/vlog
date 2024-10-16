@@ -16,15 +16,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body>
+      <body
+        className={cn(
+          "bg-gradient-to-br from-blue-100 to-purple-100",
+          "dark:from-blue-900 dark:to-purple-900"
+        )}
+      >
         <Header />
         <main
           className={cn(
-            "max-w-[1024px] w-full mx-auto min-h-[100vh] my-8",
-            "p-4"
+            "w-full mx-auto min-h-[100vh] py-8 flex justify-center",
+            "px-4"
           )}
         >
-          {children}
+          <div className="max-w-[1024px] w-full">{children}</div>
         </main>
         <Footer />
       </body>

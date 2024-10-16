@@ -10,7 +10,7 @@ export default function Header() {
           "px-4 select-none"
         )}
       >
-        <div className="text-2xl font-extrabold">
+        <div className="text-lg md:text-2xl font-extrabold">
           <Link href="/">YEAHx4 Blog</Link>
         </div>
         <div></div>

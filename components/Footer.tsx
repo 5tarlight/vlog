@@ -6,7 +6,7 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="flex justify-center">
+    <footer className={cn("flex justify-center")}>
       <div
         className={cn(
           "max-w-[1024px] w-full border-t border-gray-500",
