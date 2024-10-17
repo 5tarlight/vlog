@@ -8,6 +8,9 @@ import DarkTheme from "@/components/theme/ThemeProvider";
 export const metadata: Metadata = {
   title: "YEAHx4 Blog",
   description: "YEAHx4 블로그",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
@@ -17,6 +20,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" suppressHydrationWarning>
+      <head>
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+      </head>
       <body
         className={cn(
           "bg-gradient-to-br from-blue-100 to-purple-100",
