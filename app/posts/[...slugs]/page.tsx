@@ -1,5 +1,5 @@
-import { getUrl } from "@/lib/getUrl";
-import { parseToc } from "@/lib/parser";
+import { getUrl } from "@/lib/utils/getUrl";
+import { parseToc } from "@/lib/post/parser";
 
 export default async function Post({
   params: { slugs },

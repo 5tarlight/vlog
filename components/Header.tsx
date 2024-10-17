@@ -1,5 +1,6 @@
-import { cn } from "@/utils/cn";
+import { cn } from "@/lib/utils/cn";
 import Link from "next/link";
+import ThemeChanger from "./header/ThemeChanger";
 
 export default function Header() {
   return (
@@ -13,7 +14,9 @@ export default function Header() {
         <div className="text-lg md:text-2xl font-extrabold">
           <Link href="/">YEAHx4 Blog</Link>
         </div>
-        <div></div>
+        <div className="flex gap-2">
+          <ThemeChanger />
+        </div>
       </div>
     </header>
   );

@@ -1,4 +1,4 @@
-import { postExists, readContent } from "@/lib/posts";
+import { postExists, readContent } from "@/lib/post/posts";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(reqeust: NextRequest) {
