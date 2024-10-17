@@ -40,7 +40,7 @@ export default async function Post({
       <div
         className={cn(
           "max-w-[678px] w-full bg-white p-8 rounded-md shadow-md",
-          "dark:bg-gray-800 dark:text-white"
+          "dark:bg-gray-800 dark:text-white transition-all"
         )}
       >
         {body.map((block, idx) => (
