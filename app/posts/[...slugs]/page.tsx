@@ -32,6 +32,9 @@ export default async function Post({
   const toc = parseToc(data.content);
   const { body, meta } = parsePost(data.content);
 
+  // To disable eslint: unused-vars
+  console.log(meta);
+
   return (
     <div className="flex justify-center gap-8">
       <div
