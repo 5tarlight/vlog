@@ -1,8 +1,7 @@
 import { getUrl } from "@/lib/utils/getUrl";
-import { parseToc } from "@/lib/post/parser";
+import { parsePost, parseToc } from "@/lib/post/parser";
 import TableOfContent from "@/components/post/TableOfContent";
 import PostBody from "@/components/post/PostBody";
-import { getPost } from "@/lib/post/posts";
 
 export default async function Post({
   params: { slugs },
@@ -31,14 +30,14 @@ export default async function Post({
   } = await res.json();
 
   const toc = parseToc(data.content);
-  const { content: body, frontmatter: meta } = await getPost(data.content);
+  const { body, meta } = parsePost(data.content);
 
   return (
     <div className="flex justify-center gap-8">
       <PostBody
-        body={body}
+        body={body.join("\n")}
         meta={meta}
-        readingTime={Math.ceil(data.content.length / 200)}
+        readingTime={Math.ceil(body.join("\n").length / 200)}
       />
       <TableOfContent toc={toc} />
     </div>

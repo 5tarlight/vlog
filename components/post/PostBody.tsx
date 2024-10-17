@@ -10,7 +10,7 @@ export default function PostBody({
   readingTime,
 }: {
   meta: PostMeta;
-  body: ReactElement;
+  body: string;
   readingTime: number;
 }) {
   return (
