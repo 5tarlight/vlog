@@ -1,7 +1,6 @@
 import { readFile } from "fs/promises";
 import path from "path";
 import { isDev } from "../utils/isDev";
-import { PostMeta } from "./parser";
 
 const posts = ["test"];
 

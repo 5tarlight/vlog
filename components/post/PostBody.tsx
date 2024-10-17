@@ -1,7 +1,6 @@
 import { PostMeta } from "@/lib/post/parser";
 import { cn } from "@/lib/utils/cn";
 import PostHead from "./PostHead";
-import { ReactElement } from "react";
 import "./prose.css";
 
 export default function PostBody({
