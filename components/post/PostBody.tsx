@@ -5,9 +5,11 @@ import PostHead from "./PostHead";
 export default function PostBody({
   meta,
   body,
+  readingTime,
 }: {
   meta: PostMeta;
-  body: string;
+  body: any;
+  readingTime: number;
 }) {
   return (
     <div
@@ -17,7 +19,7 @@ export default function PostBody({
       )}
     >
       <div>
-        <PostHead meta={meta} readingTime={Math.ceil(body.length / 200)} />
+        <PostHead meta={meta} readingTime={readingTime} />
       </div>
       {body}
     </div>

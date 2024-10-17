@@ -1,6 +1,8 @@
 import { readFile } from "fs/promises";
 import path from "path";
 import { isDev } from "../utils/isDev";
+import { compileMDX } from "next-mdx-remote/rsc";
+import { PostMeta } from "./parser";
 
 const posts = ["test"];
 
@@ -17,7 +19,7 @@ export const postExists = (slug: string) => {
 
 export const readContent = async (slug: string) => {
   if (!isDev && cache.has(slug)) {
-    return cache.get(slug);
+    return cache.get(slug)!!;
   }
 
   console.log(
@@ -30,4 +32,17 @@ export const readContent = async (slug: string) => {
   cache.set(slug, content);
 
   return content;
+};
+
+export const getPost = async (original: string) => {
+  return await compileMDX<PostMeta>({
+    source: original,
+    options: {
+      parseFrontmatter: true,
+      mdxOptions: {
+        remarkPlugins: [],
+        rehypePlugins: [],
+      },
+    },
+  });
 };
