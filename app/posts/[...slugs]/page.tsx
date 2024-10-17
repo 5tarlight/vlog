@@ -1,5 +1,5 @@
 import { getUrl } from "@/lib/utils/getUrl";
-import { parsePost, parseToc, PostMeta } from "@/lib/post/parser";
+import { parseToc } from "@/lib/post/parser";
 import TableOfContent from "@/components/post/TableOfContent";
 import PostBody from "@/components/post/PostBody";
 import { getPost } from "@/lib/post/posts";

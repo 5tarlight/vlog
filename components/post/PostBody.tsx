@@ -1,6 +1,7 @@
 import { PostMeta } from "@/lib/post/parser";
 import { cn } from "@/lib/utils/cn";
 import PostHead from "./PostHead";
+import { ReactElement } from "react";
 
 export default function PostBody({
   meta,
@@ -8,7 +9,7 @@ export default function PostBody({
   readingTime,
 }: {
   meta: PostMeta;
-  body: any;
+  body: ReactElement;
   readingTime: number;
 }) {
   return (

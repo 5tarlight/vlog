@@ -19,7 +19,7 @@ export const postExists = (slug: string) => {
 
 export const readContent = async (slug: string) => {
   if (!isDev && cache.has(slug)) {
-    return cache.get(slug)!!;
+    return cache.get(slug) || "Unabled to read content";
   }
 
   console.log(
