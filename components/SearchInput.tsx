@@ -14,6 +14,7 @@ export default function SearchInput() {
         className={cn(
           "flex justify-center w-full max-w-[512px] bg-white",
           "border-2 rounded-full shadow-md px-4 transition-all",
+          "dark:bg-gray-800 dark:text-white",
           isFocused ? "border-blue-500" : "border-gray-500"
         )}
       >

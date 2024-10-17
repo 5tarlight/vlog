@@ -1,10 +1,15 @@
 import { cn } from "@/lib/utils/cn";
 import Link from "next/link";
-import ThemeChanger from "./header/ThemeChanger";
+import ThemeChanger from "./theme/ThemeChanger";
 
 export default function Header() {
   return (
-    <header className="flex justify-center h-[80px] shadow-md sticky top-0 bg-white">
+    <header
+      className={cn(
+        "flex justify-center h-[80px] shadow-md sticky top-0 bg-white",
+        "dark:bg-gray-800 dark:text-white z-10"
+      )}
+    >
       <div
         className={cn(
           "max-w-[1024px] w-full items-center flex justify-between",
