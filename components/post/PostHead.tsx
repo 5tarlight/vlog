@@ -37,7 +37,9 @@ export default function PostHead({
             <p className="text-lg">YEAHx4</p>
             <p className="flex gap-2 items-center justify-center">
               <FaRegCalendarAlt /> {meta.date}
-              <MdOutlineWatchLater className="text-lg ml-4" /> {readingTime} min
+              <div className="items-center hidden sm:flex gap-2 ml-4">
+                <MdOutlineWatchLater className="text-lg" /> {readingTime} min
+              </div>
             </p>
           </div>
         </div>
