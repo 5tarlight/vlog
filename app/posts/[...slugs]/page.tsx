@@ -1,5 +1,5 @@
 import { getUrl } from "@/lib/utils/getUrl";
-import { parseToc } from "@/lib/post/parser";
+import { parsePost, parseToc } from "@/lib/post/parser";
 
 export default async function Post({
   params: { slugs },
@@ -29,13 +29,16 @@ export default async function Post({
   } = await res.json();
 
   const toc = parseToc(data.content);
+  const { body, meta } = parsePost(data.content);
 
   return (
     <div>
       <h1>Post: {slugs.join("/")}</h1>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
+      <pre>{JSON.stringify(meta, null, 2)}</pre>
       <h2>Table of Contents</h2>
       <pre>{JSON.stringify(toc, null, 2)}</pre>
+      <h2>body</h2>
+      <pre>{JSON.stringify(body, null, 2)}</pre>
     </div>
   );
 }

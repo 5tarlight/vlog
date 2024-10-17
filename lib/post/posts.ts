@@ -1,5 +1,6 @@
 import { readFile } from "fs/promises";
 import path from "path";
+import { isDev } from "../utils/isDev";
 
 const posts = ["test"];
 
@@ -15,7 +16,7 @@ export const postExists = (slug: string) => {
 };
 
 export const readContent = async (slug: string) => {
-  if (cache.has(slug)) {
+  if (!isDev && cache.has(slug)) {
     return cache.get(slug);
   }
 
