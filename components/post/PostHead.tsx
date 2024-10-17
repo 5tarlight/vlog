@@ -35,12 +35,12 @@ export default function PostHead({
           />
           <div className="flex flex-col ml-4">
             <p className="text-lg">YEAHx4</p>
-            <p className="flex gap-2 items-center justify-center">
+            <div className="flex gap-2 items-center justify-center">
               <FaRegCalendarAlt /> {meta.date}
               <div className="items-center hidden sm:flex gap-2 ml-4">
                 <MdOutlineWatchLater className="text-lg" /> {readingTime} min
               </div>
-            </p>
+            </div>
           </div>
         </div>
       </a>
