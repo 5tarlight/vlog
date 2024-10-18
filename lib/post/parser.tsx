@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
 
 export interface Toc {
   value: string;
@@ -84,8 +84,94 @@ export const parsePost = (
   return { meta, body };
 };
 
-export const renderLine = (line: string) => {
-  return line as ReactNode;
+export const renderLine = (line: string): ReactNode => {
+  const italicRegex = /_([^_]+)_/g;
+  const boldRegex = /\*\*([^\*]+)\*\*/g;
+  const codeRegex = /`(.*?)`/g;
+  const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+  const strikethroughRegex = /~([^~]+)~/g;
+  const underlineRegex = /__([^_]+)__/g;
+  const mathRegex = /\$([^\$]+)\$/g;
+
+  const processMarkdown = (text: string): ReactNode => {
+    let lastIndex = 0;
+    const elements: ReactNode[] = [];
+
+    const patterns = [
+      {
+        regex: boldRegex,
+        render: (key: string, match: string) => (
+          <strong key={key}>{match}</strong>
+        ),
+      },
+      {
+        regex: italicRegex,
+        render: (key: string, match: string) => <em key={key}>{match}</em>,
+      },
+      {
+        regex: codeRegex,
+        render: (key: string, match: string) => <code key={key}>{match}</code>,
+      },
+      {
+        regex: linkRegex,
+        render: (key: string, match: string, text?: string, url?: string) => (
+          <a href={url} key={key}>
+            {text}
+          </a>
+        ),
+      },
+      {
+        regex: strikethroughRegex,
+        render: (key: string, match: string) => <del key={key}>{match}</del>,
+      },
+      {
+        regex: underlineRegex,
+        render: (key: string, match: string) => <u key={key}>{match}</u>,
+      },
+      {
+        regex: mathRegex,
+        render: (key: string, match: string) => (
+          <span className="math" key={key}>
+            {match}
+          </span>
+        ),
+      },
+    ];
+
+    let idx = 0;
+    for (const { regex, render } of patterns) {
+      let match: RegExpExecArray | null;
+
+      while ((match = regex.exec(text)) !== null) {
+        idx++;
+        // 이전 인덱스와 현재 인덱스 사이의 텍스트를 추가
+        if (match.index > lastIndex) {
+          elements.push(text.slice(lastIndex, match.index));
+        }
+
+        console.log(match);
+
+        // 마크다운 구문을 JSX로 변환
+        if (match[0].startsWith("[")) {
+          elements.push(render(`inline-${idx}`, match[0], match[1], match[2])); // 링크의 경우
+        } else {
+          elements.push(render(`inline-${idx}`, match[1])); // 일반 마크다운 구문
+        }
+
+        lastIndex = match.index + match[0].length;
+      }
+    }
+
+    // 마지막 인덱스 이후의 남은 텍스트를 추가
+    if (lastIndex < text.length) {
+      elements.push(text.slice(lastIndex));
+    }
+
+    return elements;
+  };
+
+  // 마크다운 처리
+  return <>{processMarkdown(line)}</>;
 };
 
 function parseUnorderedList(content: string[], i: number, level = 0) {
@@ -118,14 +204,14 @@ function parseUnorderedList(content: string[], i: number, level = 0) {
 
       list.push(
         <li key={j}>
-          {itemText}
+          {renderLine(itemText)}
           <ul>{nestedList.list}</ul>
         </li>
       );
 
       j = nestedList.endIndex;
     } else {
-      list.push(<li key={j}>{itemText}</li>);
+      list.push(<li key={j}>{renderLine(itemText)}</li>);
     }
 
     j++;
@@ -172,14 +258,14 @@ function parseOrderedList(content: string[], i: number, level = 0) {
 
       list.push(
         <li key={j}>
-          {itemText}
+          {renderLine(itemText)}
           <ol>{nestedList.list}</ol>
         </li>
       );
 
       j = nestedList.endIndex;
     } else {
-      list.push(<li key={j}>{itemText}</li>);
+      list.push(<li key={j}>{renderLine(itemText)}</li>);
     }
 
     j++;
@@ -277,7 +363,7 @@ export const toHtml = (content: string[]) => {
         i++;
       }
 
-      html.push(<blockquote key={i}>{quote}</blockquote>);
+      html.push(<blockquote key={i}>{renderLine(quote)}</blockquote>);
     } else if (content[i] === "<br />") {
       html.push(<br key={i} />);
     } else if (content[i] === "") {
@@ -290,7 +376,7 @@ export const toHtml = (content: string[]) => {
         i++;
       }
 
-      html.push(<p key={i}>{paragraph}</p>);
+      html.push(<p key={i}>{renderLine(paragraph)}</p>);
     }
   }
 
