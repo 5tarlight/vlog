@@ -156,3 +156,30 @@
   background-color: #f5f5f5;
   border-radius: 4px;
 }
+
+.dark .prose code {
+  background-color: #333;
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.prose th,
+.prose td {
+  border: 1px solid #ddd;
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.prose th {
+  background-color: #faf1ff;
+  font-weight: bold;
+}
+
+.dark .prose th {
+  background-color: #814a9d;
+}

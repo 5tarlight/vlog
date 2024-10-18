@@ -279,7 +279,52 @@ function parseOrderedList(content: string[], i: number, level = 0) {
   return { list, endIndex: j - 1 };
 }
 
+const renderTable = (markdown: string): ReactNode => {
+  const lines = markdown.split("\n");
+  const table: ReactNode[] = [];
+  let header: ReactNode[] = [];
+  let rows: ReactNode[][] = [];
+  let isHeader = true;
+
+  lines.forEach((line, index) => {
+    if (line.trim().startsWith("|")) {
+      const cells = line
+        .split("|")
+        .slice(1, -1)
+        .map((cell) => cell.trim());
+      if (isHeader) {
+        header = cells.map((cell, i) => (
+          <th key={`header-${i}`}>{renderLine(cell)}</th>
+        ));
+        isHeader = false;
+      } else {
+        rows.push(
+          cells.map((cell, i) => (
+            <td key={`cell-${index}-${i}`}>{renderLine(cell)}</td>
+          ))
+        );
+      }
+    }
+  });
+
+  table.push(
+    <table key="table">
+      <thead>
+        <tr>{header}</tr>
+      </thead>
+      <tbody>
+        {rows.slice(1).map((row, i) => (
+          <tr key={`row-${i}`}>{row}</tr>
+        ))}
+      </tbody>
+    </table>
+  );
+
+  return table;
+};
+
 const IMAGE_REGEX = /!\[([^\]]+)\]\(([^)]+)\)/;
+const TABLE_ROW_REGEX = /^\|(.+)\|$/;
 
 export const toHtml = (content: string[]) => {
   const html: ReactNode[] = [];
@@ -374,6 +419,16 @@ export const toHtml = (content: string[]) => {
       html.push(<br key={i} />);
     } else if (content[i] === "") {
       html.push(<p key={i} />);
+    } else if (TABLE_ROW_REGEX.test(content[i])) {
+      const tableRows = [];
+      while (i < content.length && TABLE_ROW_REGEX.test(content[i])) {
+        tableRows.push(content[i]);
+        i++;
+      }
+      i--;
+
+      const table = renderTable(tableRows.join("\n"));
+      html.push(<div key={i}>{table}</div>);
     } else {
       let paragraph = content[i];
 
