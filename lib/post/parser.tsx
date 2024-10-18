@@ -149,8 +149,6 @@ export const renderLine = (line: string): ReactNode => {
           elements.push(text.slice(lastIndex, match.index));
         }
 
-        console.log(match);
-
         // 마크다운 구문을 JSX로 변환
         if (match[0].startsWith("[")) {
           elements.push(render(`inline-${idx}`, match[0], match[1], match[2])); // 링크의 경우

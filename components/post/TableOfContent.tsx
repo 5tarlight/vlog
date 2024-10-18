@@ -23,7 +23,7 @@ export default function TableOfContent({ toc }: { toc: Toc[] }) {
               "dark:text-gray-300 dark:hover:text-blue-400"
             )}
             style={{
-              marginLeft: `${tocItem.level * 1}rem`,
+              marginLeft: `${tocItem.level - 1}rem`,
             }}
           >
             <Link
