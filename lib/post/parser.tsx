@@ -1,4 +1,7 @@
+import CodeBlock from "@/components/post/CodeBlock";
 import React, { ReactNode } from "react";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { prism } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 export interface Toc {
   value: string;
@@ -135,6 +138,7 @@ export const renderLine = (line: string): ReactNode => {
       {
         regex: mathRegex,
         render: (key: string, match: string) => (
+          // TODO : MathJax
           <span key={key} className="math">
             {match}
           </span>
@@ -397,11 +401,16 @@ export const toHtml = (content: string[]) => {
         j++;
       }
 
-      html.push(
-        <pre key={i}>
-          <code className={`language-${lang}`}>{code.join("\n")}</code>
-        </pre>
-      );
+      // TODO : MathJax
+      if (lang === "math") {
+        html.push(
+          <pre key={i}>
+            <code className={`language-${lang}`}>{code.join("\n")}</code>
+          </pre>
+        );
+      } else {
+        html.push(<CodeBlock lang={lang} content={code.join("\n")} key={i} />);
+      }
 
       i = j;
     } else if (IMAGE_REGEX.test(content[i])) {

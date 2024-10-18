@@ -183,3 +183,7 @@
 .dark .prose th {
   background-color: #814a9d;
 }
+
+.prose pre span {
+  font-family: "JetBrains Mono", Consolas, "Ubuntu Mono", monospace;
+}
