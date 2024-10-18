@@ -110,7 +110,11 @@ export const renderLine = (line: string): ReactNode => {
       },
       {
         regex: codeRegex,
-        render: (key: string, match: string) => <code key={key}>{match}</code>,
+        render: (key: string, match: string) => (
+          <code className="inline-code" key={key}>
+            {match}
+          </code>
+        ),
       },
       {
         regex: linkRegex,
@@ -410,7 +414,7 @@ export const toHtml = (content: string[]) => {
       let quote = content[i].replace(">", "").trim();
 
       while (i + 1 < content.length && content[i + 1].startsWith(">")) {
-        quote += content[i + 1].replace(">", "").trim();
+        quote += " " + content[i + 1].replace(">", "").trim();
         i++;
       }
 

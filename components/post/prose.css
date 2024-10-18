@@ -151,13 +151,13 @@
   text-align: justify;
 }
 
-.prose code {
+.prose .inline-code {
   padding: 0.2rem 0.4rem;
   background-color: #f5f5f5;
   border-radius: 4px;
 }
 
-.dark .prose code {
+.dark .prose .inline-code {
   background-color: #333;
 }
 

@@ -26,7 +26,7 @@ export default function RootLayout({
       <body
         className={cn(
           "bg-gradient-to-br from-blue-100 to-purple-100",
-          "dark:from-blue-900 dark:to-purple-900"
+          "dark:from-gray-900 dark:to-blue-900"
         )}
       >
         <DarkTheme>

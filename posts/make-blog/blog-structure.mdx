@@ -126,6 +126,6 @@ export const readContent = async (slug: string) => {
 };
 ```
 
-참고로 `readFile`은 `fs/promises`의 함수입니다. production 빌드에서 글은 변하지 않기 떄문에
+참고로 `readFile`은 `fs/promises`의 함수입니다. production 빌드에서 글은 변하지 않기 때문에
 굳이 계속 새로 읽을 필요가 없습니다. 그래서 cache에 저장해두고 처음 한 번만 읽게 구현했습니다.
 이제 읽은 내용을 그대로 렌더링 하면 되는데, 이 부분은 다른 글에서 정리해 보도록 하겠습니다.
