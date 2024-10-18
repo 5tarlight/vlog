@@ -29,6 +29,10 @@ export default async function Post({
     content: string;
   } = await res.json();
 
+  if (data.message === "Not Found") {
+    return <div>Not Found: {data.path}</div>;
+  }
+
   const toc = parseToc(data.content);
   const { body, meta } = parsePost(data.content);
 

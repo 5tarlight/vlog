@@ -2,7 +2,7 @@ import { readFile } from "fs/promises";
 import path from "path";
 import { isDev } from "../utils/isDev";
 
-const posts = ["test"];
+const posts = ["test", "make-blog/blog-structure"];
 
 const cache = new Map<string, string>();
 

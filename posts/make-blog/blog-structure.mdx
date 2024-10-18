@@ -1,0 +1,131 @@
+---
+title: Next.js 14 블로그 만들기
+description: Next.js로 블로그를 만들어 봅시다
+cover:
+tags: blog, next.js
+date: 2024-10-18
+author: yeahx4
+series: Next.js 블로그 만들기
+seriesIndex: 0
+---
+
+안녕하세요. 많은 개발자들이 개발 블로그를 운영하고 있습니다.
+[tistory](https://www.tistory.com/), [velog](https://velog.io/) 처럼 서비스 위에
+블로그를 만드는 분도 있고 [github.io](https://velog.io/)를 통해 자신만의 블로그를 만들어
+운영하는 분도 있습니다. 저는 Next.js 14로 세상이 유일한 블로그를 만들어 보려 합니다. 블로그 만들기
+시리즈를 모아 보고 싶으시면 제목 위의 파란색 링크를 눌러 시리즈로 보실 수 있습니다.
+
+# 기술 스택
+
+Typescript를 사용한 Next.js 14와 Tailwind CSS를 통해 사이트를 만드려고 합니다.
+이 외에도 필요한 라이브러리가 몇 개 있지만 해당 파트에서 그때그때 언급하겠습니다. 그리고 프로젝트
+전반에 걸쳐 사용되는 tailwind 관련 유틸 함수가 있습니다.
+
+```ts
+export function cn(...classNames: (string | undefined)[]): string {
+  return classNames.filter(Boolean).join(" ");
+}
+```
+
+테일윈드를 쓰면 className이 굉장히 길어지기 때문에 배열로 클레스네임을 전달해서 합쳐주는 유틸
+함수입니다.
+
+배포는 Next.js로 개발된 만큼 편하게 Vercel을 통해서 배포하려고 합니다.
+
+# 블로그 구조
+
+블로그의 핵심적인 기능은 글을 쓰고 URL에 맞게 불러오는 것입니다. Next.js 13부터 server
+component가 들어왔기 때문에 로컬 파일에 직접 접근할 수 있습니다. 그래서 글을 mdx 형식으로
+`/posts` 폴더에 작성해 두고 `/posts/post-name` URL로 요청이 들어오면 실제로 글이 있는지
+검사하고 있으면 글을 보여주는 구조를 만드려고 합니다.
+
+사실 그냥 server component에서 fs로 파일을 읽어와도 되긴 하는데요, 이 프로젝트의 완전 초창기에는
+로컬에 저장할 계획이 아니었기 때문에 살짝 다른 구조를 가지게 되었습니다. Next.js의
+[API Routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes)
+기능을 사용해서 프론트에서 api로 요청을 보내고 api에서 글을 읽어서 보내주는 형식을 갖게 되었습니다.
+
+그리고 불러온 글을 지금 보시는 것처럼 화면에 보여주기만 하면 기본적인 블로그가 완성됩니다. 근데 제가
+원했던 블로그는 단순히 글만을 쓸 수 있는 블로그가 아니라 원하는 리엑트 컴포넌트나 부가적인 기능을 넣고
+싶었기 때문에 마크다운 렌더러를 직접 작성하게 되었습니다. Next.js로 블로그를 만드는 다른 블로그 글을
+보시면 [next-mdx-remote](https://github.com/hashicorp/next-mdx-remote)를 사용해서
+mdx를 JSX로 변환하곤 하는데, 생각보다 너무 느렸어요. 그냥 읽어서 raw 데이터를 보여줄 때는 길어봐야
+0.7초 정도 걸렸던 LCP(Last Contentful Paint)가 mdx-remote로 렌더링을 하면 4~15초 까지
+걸렸습니다. 리드미에 이런 문구가 적혀있습니다.
+
+> Data has shown that 99% of use cases for all developer tooling are building
+> unnecessarily complex personal blogs. Just kidding. But seriously, if you are
+> trying to build a blog for personal or small business use, consider just
+> using normal HTML and CSS. You definitely do not need to be using a heavy
+> full-stack JavaScript framework to make a simple blog. You'll thank yourself
+> later when you return to make an update in a couple years and there haven't
+> been 10 breaking releases to all of your dependencies.
+
+어쩃든 제 목적과 완전히 부합하는 렌더러를 찾지 못했고 직접 구현하기로 마음먹었습니다. 구현을 어느정도
+마친 지금은 훨씬 빠른 속도로(로컬 환경에서 0.2s 미만의 LCP를 보여주고 있습니다) 원하는 대로 렌더링을
+수행할 수 있게 되었습니다. 이 부분은 따로 자세히 다뤄 보도록 할게요.
+
+# 구현할 기능들
+
+블로그는 생각보다 기능이 많습니다. 직접 구현하다 보면 다들 이미 좋은 서비스 쓰는 이유가 있구나
+싶긴 합니다. 제가 다른 블로그에서 느꼈던 아쉬운 점들과 원하는 점들을 모두 합쳐 기능들을 구현해 보려고
+합니다. 우선 각 글들이 서로 독립되어서 이어지는 글을 못 쓰는게 아쉬웠기 때문에 시리즈 기능을 구현할
+예정입니다. 그 외에도 태그, 검색 기능도 있어야 하고 검색 엔진을 위한 sitemap.xml 이나 robots.txt
+그리고 RSS 같은 기능도 필요합니다. 이 부분도 각각 포스트로 어떻게 구현했는지 얘기해 볼게요.
+언제나 피드백은 환영입니다.
+
+## 글 불러오기
+
+위에서 언급한 대로 API Routes를 통해 글을 불러와야 합니다. `/app/api/posts/route.ts`를 만들고
+요청을 처리하는 코드를 작성해 주겠습니다. GET 요청을 통해 단순히 브라우저에서 접속하기만 해도 raw
+데이터가 표시되는걸 막기 위해 POST를 사용했습니다.
+
+```ts
+import { postExists, readContent } from "@/lib/post/posts";
+import { NextRequest, NextResponse } from "next/server";
+
+export async function POST(reqeust: NextRequest) {
+  try {
+    const { path } = (await reqeust.json()) as { path: string };
+
+    if (!postExists(path)) {
+      return NextResponse.json({ message: "Not Found", path });
+    }
+
+    return NextResponse.json({
+      message: "Ok",
+      path,
+      content: await readContent(path),
+    });
+  } catch (e) {
+    return NextResponse.json({ e }, { status: 500 });
+  }
+}
+```
+
+사실 여기에 크게 중요한 코드는 없고 `readContent`가 진짜입니다.
+
+```ts
+const cache = new Map<string, string>();
+export const isDev = process.env.NODE_ENV === "development";
+
+export const readContent = async (slug: string) => {
+  if (!isDev && cache.has(slug)) {
+    return cache.get(slug) || "Unabled to read content";
+  }
+
+  console.log(
+    "Reading file:",
+    getPostUrl(slug),
+    "Current cache length:",
+    cache.size
+  );
+  const content = await readFile(getPostUrl(slug), "utf-8");
+  cache.set(slug, content);
+
+  return content;
+};
+```
+
+참고로 `readFile`은 `fs/promises`의 함수입니다. production 빌드에서 글은 변하지 않기 떄문에
+굳이 계속 새로 읽을 필요가 없습니다. 그래서 cache에 저장해두고 처음 한 번만 읽게 구현했습니다.
+이제 읽은 내용을 그대로 렌더링 하면 되는데, 이 부분은 다른 글에서 정리해 보도록 하겠습니다.
