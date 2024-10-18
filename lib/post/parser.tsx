@@ -147,7 +147,7 @@ function parseOrderedList(content: string[], i: number, level = 0) {
     while (
       j + 1 < content.length &&
       content[j + 1].startsWith(" ") &&
-      !/^\d+\./.test(content[j].trimStart())
+      !/^\d+\./.test(content[j + 1].trimStart())
     ) {
       itemText += " " + content[j + 1].trim();
       j++;
@@ -194,17 +194,41 @@ export const toHtml = (content: string[]) => {
 
   for (let i = 0; i < content.length; i++) {
     if (content[i].startsWith("######"))
-      html.push(<h6 key={i}>{content[i].replace("######", "").trim()}</h6>);
+      html.push(
+        <h6 id={content[i].replace("######", "").trim()} key={i}>
+          {content[i].replace("######", "").trim()}
+        </h6>
+      );
     else if (content[i].startsWith("#####"))
-      html.push(<h5 key={i}>{content[i].replace("#####", "").trim()}</h5>);
+      html.push(
+        <h5 id={content[i].replace("#####", "").trim()} key={i}>
+          {content[i].replace("#####", "").trim()}
+        </h5>
+      );
     else if (content[i].startsWith("####"))
-      html.push(<h4 key={i}>{content[i].replace("####", "").trim()}</h4>);
+      html.push(
+        <h4 id={content[i].replace("####", "").trim()} key={i}>
+          {content[i].replace("####", "").trim()}
+        </h4>
+      );
     else if (content[i].startsWith("###"))
-      html.push(<h3 key={i}>{content[i].replace("###", "").trim()}</h3>);
+      html.push(
+        <h3 id={content[i].replace("###", "").trim()} key={i}>
+          {content[i].replace("###", "").trim()}
+        </h3>
+      );
     else if (content[i].startsWith("##"))
-      html.push(<h2 key={i}>{content[i].replace("##", "").trim()}</h2>);
+      html.push(
+        <h2 id={content[i].replace("##", "").trim()} key={i}>
+          {content[i].replace("##", "").trim()}
+        </h2>
+      );
     else if (content[i].startsWith("#"))
-      html.push(<h1 key={i}>{content[i].replace("#", "").trim()}</h1>);
+      html.push(
+        <h1 id={content[i].replace("#", "").trim()} key={i}>
+          {content[i].replace("#", "").trim()}
+        </h1>
+      );
     else if (content[i].startsWith("---")) html.push(<hr key={i} />);
     else if (content[i].startsWith("-")) {
       const parsedList = parseUnorderedList(content, i);
@@ -259,7 +283,14 @@ export const toHtml = (content: string[]) => {
     } else if (content[i] === "") {
       html.push(<p key={i} />);
     } else {
-      html.push(<p key={i}>{content[i]}</p>);
+      let paragraph = content[i];
+
+      while (i + 1 < content.length && content[i + 1] !== "") {
+        paragraph += " " + content[i + 1];
+        i++;
+      }
+
+      html.push(<p key={i}>{paragraph}</p>);
     }
   }
 

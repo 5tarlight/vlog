@@ -120,3 +120,33 @@
   background-color: #333;
   border-left: 4px solid #814a9d;
 }
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+  scroll-margin-top: 100px;
+}
+
+.prose a {
+  color: #0070f3;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(0, 118, 255, 0.2);
+}
+
+.dark .prose a {
+  color: #0cf;
+  border-bottom-color: rgba(0, 204, 255, 0.2);
+}
+
+.prose a:hover {
+  border-bottom-color: transparent;
+}
+
+.prose p {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  text-align: justify;
+}
