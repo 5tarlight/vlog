@@ -2,6 +2,7 @@ import { PostMeta } from "@/lib/post/parser";
 import { cn } from "@/lib/utils/cn";
 import PostHead from "./PostHead";
 import "./prose.css";
+import { ReactNode } from "react";
 
 export default function PostBody({
   meta,
@@ -9,7 +10,7 @@ export default function PostBody({
   readingTime,
 }: {
   meta: PostMeta;
-  body: string;
+  body: ReactNode[];
   readingTime: number;
 }) {
   return (

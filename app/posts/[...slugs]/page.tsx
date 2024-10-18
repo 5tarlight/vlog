@@ -1,5 +1,5 @@
 import { getUrl } from "@/lib/utils/getUrl";
-import { parsePost, parseToc } from "@/lib/post/parser";
+import { parsePost, parseToc, toHtml } from "@/lib/post/parser";
 import TableOfContent from "@/components/post/TableOfContent";
 import PostBody from "@/components/post/PostBody";
 
@@ -35,7 +35,7 @@ export default async function Post({
   return (
     <div className="flex justify-center gap-8">
       <PostBody
-        body={body.join("\n")}
+        body={toHtml(body)}
         meta={meta}
         readingTime={Math.ceil(body.join("\n").length / 200)}
       />
