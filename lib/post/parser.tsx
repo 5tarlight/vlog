@@ -283,7 +283,7 @@ const renderTable = (markdown: string): ReactNode => {
   const lines = markdown.split("\n");
   const table: ReactNode[] = [];
   let header: ReactNode[] = [];
-  let rows: ReactNode[][] = [];
+  const rows: ReactNode[][] = [];
   let isHeader = true;
 
   lines.forEach((line, index) => {
