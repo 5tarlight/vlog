@@ -1,7 +1,5 @@
 import CodeBlock from "@/components/post/CodeBlock";
 import React, { ReactNode } from "react";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { prism } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 export interface Toc {
   value: string;
