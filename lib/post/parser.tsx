@@ -114,9 +114,9 @@ export const renderLine = (line: string): ReactNode => {
       },
       {
         regex: linkRegex,
-        render: (key: string, match: string, text?: string, url?: string) => (
-          <a href={url} key={key}>
-            {text}
+        render: (key: string, match: string, href?: string) => (
+          <a key={key} href={href}>
+            {match}
           </a>
         ),
       },
@@ -131,44 +131,52 @@ export const renderLine = (line: string): ReactNode => {
       {
         regex: mathRegex,
         render: (key: string, match: string) => (
-          <span className="math" key={key}>
+          <span key={key} className="math">
             {match}
           </span>
         ),
       },
     ];
 
-    let idx = 0;
-    for (const { regex, render } of patterns) {
-      let match: RegExpExecArray | null;
+    while (lastIndex < text.length) {
+      let closestMatch = null;
+      let closestPattern = null;
+      let closestIndex = text.length;
 
-      while ((match = regex.exec(text)) !== null) {
-        idx++;
-        // 이전 인덱스와 현재 인덱스 사이의 텍스트를 추가
-        if (match.index > lastIndex) {
-          elements.push(text.slice(lastIndex, match.index));
+      for (const { regex, render } of patterns) {
+        regex.lastIndex = lastIndex;
+        const match = regex.exec(text);
+        if (match && match.index < closestIndex) {
+          closestMatch = match;
+          closestPattern = { regex, render };
+          closestIndex = match.index;
         }
-
-        // 마크다운 구문을 JSX로 변환
-        if (match[0].startsWith("[")) {
-          elements.push(render(`inline-${idx}`, match[0], match[1], match[2])); // 링크의 경우
-        } else {
-          elements.push(render(`inline-${idx}`, match[1])); // 일반 마크다운 구문
-        }
-
-        lastIndex = match.index + match[0].length;
       }
-    }
 
-    // 마지막 인덱스 이후의 남은 텍스트를 추가
-    if (lastIndex < text.length) {
-      elements.push(text.slice(lastIndex));
+      if (closestMatch && closestPattern) {
+        if (closestIndex > lastIndex) {
+          elements.push(text.slice(lastIndex, closestIndex));
+        }
+
+        const key = `inline-${closestIndex}`;
+        if (closestPattern.regex === linkRegex) {
+          elements.push(
+            closestPattern.render(key, closestMatch[1], closestMatch[2])
+          );
+        } else {
+          elements.push(closestPattern.render(key, closestMatch[1]));
+        }
+
+        lastIndex = closestPattern.regex.lastIndex;
+      } else {
+        elements.push(text.slice(lastIndex));
+        break;
+      }
     }
 
     return elements;
   };
 
-  // 마크다운 처리
   return <>{processMarkdown(line)}</>;
 };
 
