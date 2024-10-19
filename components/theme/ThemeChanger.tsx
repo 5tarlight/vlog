@@ -16,10 +16,6 @@ export default function ThemeChanger() {
     return null;
   }
 
-  const onClick = (mode: string) => () => {
-    setTheme(mode);
-  };
-
   const currentTheme = theme === "system" ? systemTheme : theme;
 
   return (
