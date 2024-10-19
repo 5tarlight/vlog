@@ -1,6 +1,5 @@
 import CodeBlock from "@/components/post/CodeBlock";
 import Equation from "@/components/post/Equation";
-import { MathJax } from "better-react-mathjax";
 import React, { ReactNode } from "react";
 
 export interface Toc {
