@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@types/react-syntax-highlighter": "^15.5.13",
+    "better-react-mathjax": "^2.0.3",
+    "mathjax": "^3.2.2",
     "next": "14.2.15",
     "next-themes": "^0.3.0",
     "react": "^18",

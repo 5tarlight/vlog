@@ -1,4 +1,6 @@
 import CodeBlock from "@/components/post/CodeBlock";
+import Equation from "@/components/post/Equation";
+import { MathJax } from "better-react-mathjax";
 import React, { ReactNode } from "react";
 
 export interface Toc {
@@ -136,10 +138,7 @@ export const renderLine = (line: string): ReactNode => {
       {
         regex: mathRegex,
         render: (key: string, match: string) => (
-          // TODO : MathJax
-          <span key={key} className="math">
-            {match}
-          </span>
+          <Equation key={key} eq={match} inline />
         ),
       },
     ];
@@ -399,13 +398,8 @@ export const toHtml = (content: string[]) => {
         j++;
       }
 
-      // TODO : MathJax
       if (lang === "math") {
-        html.push(
-          <pre key={i}>
-            <code className={`language-${lang}`}>{code.join("\n")}</code>
-          </pre>
-        );
+        html.push(<Equation key={i} eq={code.join("\n")} />);
       } else {
         html.push(<CodeBlock lang={lang} content={code.join("\n")} key={i} />);
       }

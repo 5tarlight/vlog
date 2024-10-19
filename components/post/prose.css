@@ -95,11 +95,11 @@
 }
 
 .prose ol li::marker {
-  color: #c3c3c3;
+  color: #a7a7a7;
 }
 
 .dark .prose ol li::marker {
-  color: #666;
+  color: #7b7b7b;
 }
 
 .prose img {
@@ -186,4 +186,8 @@
 
 .prose pre span {
   font-family: "JetBrains Mono", Consolas, "Ubuntu Mono", monospace;
+}
+
+.prose .inline-math span {
+  display: inline-flex !important;
 }
