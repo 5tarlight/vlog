@@ -33,6 +33,7 @@ export default function PostHead({
             width={48}
             height={48}
             className="rounded-full border-2 border-blue-500"
+            priority={false}
           />
           <div className="flex flex-col ml-4">
             <p className="text-lg">YEAHx4</p>

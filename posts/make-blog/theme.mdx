@@ -1,0 +1,66 @@
+---
+title: 블로그에 다크테마 적용하기
+description: Next.js로 만든 블로그에 다크테마를 추가합니다
+cover:
+tags: blog, next.js, theme, dark theme, tailwind css, next-themes
+date: 2024-10-19
+author: yeahx4
+series: make-blog
+seriesIndex: 1
+---
+
+# 요구 사항
+
+다크 테마를 활성화하면 모든 컴포넌트가 다크 테마로 변경되어야 합니다. 혼자 하얗게 남아있는
+컴포넌트 없이 전부 바뀌어야 합니다. 그리고 새로고침이나 다시 접속해도 이전에 설정한 테마가
+그대로 유지되어야 합니다. 새로고침을 해도 밝은 테마였다가 어두운 테마로 바뀌면서 눈뽕을
+당하는 일이 없어야 합니다. 사실 이 부분이 가장 까다로웠는데, client component나
+`localStorage`는 처음부터 작동하지 않기 때문에 처음에 기본 테마가 표시되다가 변경되기
+때문입니다. 그래서 [next-themes](https://www.npmjs.com/package/next-themes)라는
+라이브러리를 사용해서 해결했습니다. 이 글을 쓰는 지금은 npm 페이지에 리드미가 보이지 않아서
+[next-themes Github](https://github.com/pacocoursey/next-themes)으로 이동해서
+doc을 봐야 합니다.
+
+# next-themes
+
+## class로 테마 지정하기
+
+먼저 `next-themes`를 설치합니다.
+
+```bash
+$ npm install next-themes
+$ yarn add next-themes
+```
+
+그 다음 다크 테마를 어떤 방식으로 적용할지 선택해야 하는데, 이 블로그에서는 Tailwind CSS를
+사용해서 스타일링을 진행하고 있기 때문에 테일윈드와 호환이 되야 합니다. next-themes는
+`class`를 사용해 테마를 변경하는 기능을 지원합니다. root html 태그에 `.dark`,
+`.light` 클레스네임을 테마에 맞게 추가하고 이를 기반으로 테일윈드의 테마를 변경할 수 있습니다.
+우선, 테일윈드에서 테마를 class를 통해 확인하도록 설정합니다.
+
+```ts
+// tailwind.config.js
+
+const config: Config = {
+  darkMode: "class",
+  content: [
+    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        background: "var(--background)",
+        foreground: "var(--foreground)",
+      },
+    },
+  },
+  plugins: [],
+};
+export default config;
+```
+
+`darkMode: "class"`를 지정하면 html 태그의 클레스네임에 맞춰 스타일을 적용하게 됩니다.
+
+## provider 만들기
