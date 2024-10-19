@@ -28,15 +28,20 @@ export default function Equation({
   return (
     <MathJaxContext config={mathJaxConfig}>
       {inline ? (
-        <span className="inline-flex items-center mx-1 w-fit h-fit inline-math align-middle">
+        <span
+          className={cn(
+            "inline-flex items-center mx-1 w-fit h-fit",
+            "inline-math align-middle"
+          )}
+        >
           <MathJax>{`\\( ${eq} \\)`}</MathJax>
         </span>
       ) : (
         <div className="flex justify-center">
           <div
             className={cn(
-              "math-container overflow-x-scroll w-fit",
-              "px-4 scroll-m-[-1rem] h-fit overflow-y-hidden"
+              "math-container overflow-x-auto w-fit",
+              "px-4 h-fit overflow-y-hidden"
             )}
           >
             <MathJax>{`\\[ ${eq} \\]`}</MathJax>
