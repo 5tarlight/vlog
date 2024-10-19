@@ -5,7 +5,7 @@ cover:
 tags: blog, next.js
 date: 2024-10-18
 author: yeahx4
-series: Next.js 블로그 만들기
+series: make-blog
 seriesIndex: 0
 ---
 
@@ -126,6 +126,32 @@ export const readContent = async (slug: string) => {
 };
 ```
 
-참고로 `readFile`은 `fs/promises`의 함수입니다. production 빌드에서 글은 변하지 않기 때문에
-굳이 계속 새로 읽을 필요가 없습니다. 그래서 cache에 저장해두고 처음 한 번만 읽게 구현했습니다.
-이제 읽은 내용을 그대로 렌더링 하면 되는데, 이 부분은 다른 글에서 정리해 보도록 하겠습니다.
+참고로 `readFile`은 `fs/promises`의 함수입니다. production 빌드에서 글은 변하지
+않기 때문에 굳이 계속 새로 읽을 필요가 없습니다. 그래서 cache에 저장해두고 처음 한 번만
+읽게 구현했습니다. 서버 컴포넌트에서 fetch나 다른 방법을 통해 `/api/posts`로 POST 요청에
+path를 담아 전달하면 포스트의 내용을 얻을 수 있습니다. 참고로 Next.js의 fetch에 전달되는
+URL은 `https://example.com/api/posts`처럼 absolute URL이어야 하기 때문에 URL을
+하드코딩 하거나 현재 host를 가져와야 합니다. 그리고 SSR을 위해 서버사이드에서 처리하고
+싶었기 때문에 header를 읽어 처리하도록 구현했습니다.
+
+```ts
+import { headers } from "next/headers";
+import { join } from "path";
+
+export const getBaseUrl = () => {
+  const headersList = headers();
+  const host = headersList.get("host");
+  const protocol = headersList.get("x-forwarded-proto") ?? "http";
+
+  return `${protocol}://${host}`;
+};
+
+export const getUrl = (path: string) => {
+  return join(getBaseUrl(), path);
+};
+```
+
+이제 POST 요청을 보내면 mdx파일에 적힌 내용이 raw string으로 전달됩니다. 여기서 글 정보를
+담고 있는 frontmatter를 파싱하고 마크다운을 JSX로 렌더링하면 지금 보고 계시는 페이지가
+완성됩니다. 이 부분은 내용이 너무 길어질 것 같으니 시리즈의 다른 포스트에서 다뤄 보도록
+하겠습니다. 글 제목 위나 아래 네비게이션 메뉴를 통해 이동하실 수 있습니다.

@@ -1,4 +1,5 @@
 import { PostMeta } from "@/lib/post/parser";
+import { series } from "@/lib/post/posts";
 import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import Link from "next/link";
@@ -19,7 +20,7 @@ export default function PostHead({
           href={`/series/${meta.series}`}
           className="mb-2 text-blue-500 dark:text-blue-300 hover:underline"
         >
-          [{meta.series}] - ({meta.seriesIndex + 1})
+          [{series[meta.series].name}] - ({meta.seriesIndex + 1})
         </Link>
       )}
       <h1 className="text-2xl font-bold mb-4">{meta.title}</h1>
@@ -38,7 +39,8 @@ export default function PostHead({
             <div className="flex gap-2 items-center justify-center">
               <FaRegCalendarAlt /> {meta.date}
               <div className="items-center hidden sm:flex gap-2 ml-4">
-                <MdOutlineWatchLater className="text-lg" /> {readingTime} min
+                <MdOutlineWatchLater className="text-lg" /> {readingTime}{" "}
+                {readingTime > 1 ? "mins" : "min"}
               </div>
             </div>
           </div>

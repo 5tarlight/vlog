@@ -2,7 +2,26 @@ import { readFile } from "fs/promises";
 import path from "path";
 import { isDev } from "../utils/isDev";
 
-const posts = ["test", "make-blog/blog-structure"];
+export const series: {
+  [key: string]: {
+    name: string;
+    description: string;
+    posts: string[];
+  };
+} = {
+  "make-blog": {
+    name: "Next.js 블로그 만들기",
+    description: "Next.js 14로 블로그를 만듭니다.",
+    posts: ["blog-structure", "theme"],
+  },
+};
+
+const posts = [
+  "test",
+  ...Object.keys(series).flatMap((key) =>
+    series[key].posts.map((post) => `${key}/${post}`)
+  ),
+];
 
 const cache = new Map<string, string>();
 
@@ -31,16 +50,3 @@ export const readContent = async (slug: string) => {
 
   return content;
 };
-
-// export const getPost = async (original: string) => {
-//   return await compileMDX<PostMeta>({
-//     source: original,
-//     options: {
-//       parseFrontmatter: true,
-//       mdxOptions: {
-//         remarkPlugins: [],
-//         rehypePlugins: [],
-//       },
-//     },
-//   });
-// };
