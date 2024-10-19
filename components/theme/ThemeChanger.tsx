@@ -23,12 +23,11 @@ export default function ThemeChanger() {
   const currentTheme = theme === "system" ? systemTheme : theme;
 
   return (
-    <div className="cursor-pointer p-1">
-      {currentTheme === "dark" ? (
-        <BsFillMoonFill onClick={onClick("light")} />
-      ) : (
-        <BsFillSunFill onClick={onClick("dark")} />
-      )}
+    <div
+      className="cursor-pointer p-4"
+      onClick={() => setTheme(currentTheme === "dark" ? "light" : "dark")}
+    >
+      {currentTheme === "dark" ? <BsFillMoonFill /> : <BsFillSunFill />}
     </div>
   );
 }
