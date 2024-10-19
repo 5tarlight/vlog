@@ -64,3 +64,97 @@ export default config;
 `darkMode: "class"`를 지정하면 html 태그의 클레스네임에 맞춰 스타일을 적용하게 됩니다.
 
 ## provider 만들기
+
+`layout.tsx`에 Provider로 감싸 전역적으로 현재 테마를 받을 수 있도록 만듭니다.
+
+```tsx
+import { ThemeProvider } from "next-themes";
+import { ReactNode } from "react";
+
+export default function DarkTheme({ children }: { children: ReactNode }) {
+  return <ThemeProvider attribute="class">{children}</ThemeProvider>;
+}
+```
+
+```tsx
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="ko" suppressHydrationWarning>
+      <head>
+        {/* 생략 */}
+      </head>
+      <body>
+        <DarkTheme>
+          {/* 생략 */}
+        </DarkTheme>
+      </body>
+    </html>
+  );
+```
+
+이제 provider 안의 client component에서 `useTheme()` 훅을 통해 테마를 변경할 수
+있습니다. `next-themes`를 사용하면 html 태그에 클래스를 넣게 되는데, 이러면 경고가
+발생하기 때문에 무시해도 되긴 하지만 `suppressHydrationWarning` 옵션을 통해 경고를
+비활성화 해 주었습니다.
+
+# ThemeChanger 만들기
+
+지금 이 페이지에서도 보이듯 헤더 오른쪽의 아이콘을 클릭해서 원하는 테마로 변경할 수 있게
+만들어 보겠습니다.
+
+```tsx
+"use client";
+
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
+import { BsFillMoonFill, BsFillSunFill } from "react-icons/bs";
+
+export default function ThemeChanger() {
+  const [mounted, setMounted] = useState(false);
+  const { systemTheme, theme, setTheme } = useTheme();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
+
+  const onClick = (mode: string) => () => {
+    setTheme(mode);
+  };
+
+  const currentTheme = theme === "system" ? systemTheme : theme;
+
+  return (
+    <div className="cursor-pointer p-1">
+      {currentTheme === "dark" ? (
+        <BsFillMoonFill onClick={onClick("light")} />
+      ) : (
+        <BsFillSunFill onClick={onClick("dark")} />
+      )}
+    </div>
+  );
+}
+```
+
+아이콘은 [react-icons](https://react-icons.github.io/react-icons/)를 통해
+불러왔습니다. 마운트 되기 전에 `currentTheme` 같은 데이터를 불러올 수 없기 때문에
+`useEffect`를 통해 마운트가 되었는지 확인했습니다. 이제 아이콘을 누르면 테마가 변경됩니다.
+포스트의 내용에는 테일윈드를 적용할 수 없기 때문에 css를 직접 작성하고 있는데 html의 클래스에
+`.dark`가 있다는 점을 이용해서 아래와 같이 작성하면 포스트의 내용도 다크 테마를 지원할 수
+있습니다.
+
+```css
+.dark .some-component {
+  /* dark theme styles */
+}
+```
+
+그리고 transition 속성을 주면 천천히 바뀌게 되어 눈을 조금 더 편안하게 할 수 있습니다.
+이것으로 테마 적용 파트는 끝입니다. 다음 글에서 마크다운 렌더링으로 찾아뵙겠습니다. 감사합니다.

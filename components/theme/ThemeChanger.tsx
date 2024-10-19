@@ -23,7 +23,7 @@ export default function ThemeChanger() {
   const currentTheme = theme === "system" ? systemTheme : theme;
 
   return (
-    <div className="bg-darkModeBg cursor-pointer rounded-[50%] p-1">
+    <div className="cursor-pointer p-1">
       {currentTheme === "dark" ? (
         <BsFillMoonFill onClick={onClick("light")} />
       ) : (
