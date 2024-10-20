@@ -41,7 +41,7 @@ export default async function Post({
       <PostBody
         body={toHtml(body)}
         meta={meta}
-        readingTime={Math.round(body.join("\n").length / 300)}
+        readingTime={Math.round(body.join("\n").length / 600)}
       />
       <TableOfContent toc={toc} />
     </div>
