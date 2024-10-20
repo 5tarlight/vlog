@@ -41,6 +41,11 @@
 .prose hr {
   margin-top: 3rem;
   margin-bottom: 3rem;
+  border-color: #ccc;
+}
+
+.dark .prose hr {
+  border-color: #555;
 }
 
 .prose pre {

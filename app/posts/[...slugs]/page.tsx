@@ -2,7 +2,6 @@ import { getUrl } from "@/lib/utils/getUrl";
 import { parsePost, parseToc, toHtml } from "@/lib/post/parser";
 import TableOfContent from "@/components/post/TableOfContent";
 import PostBody from "@/components/post/PostBody";
-import readingTime from "reading-time";
 
 export default async function Post({
   params: { slugs },
@@ -42,7 +41,7 @@ export default async function Post({
       <PostBody
         body={toHtml(body)}
         meta={meta}
-        readingTime={Math.round(readingTime(body.join("\n")).minutes)}
+        readingTime={Math.round(body.join("\n").length / 300)}
       />
       <TableOfContent toc={toc} />
     </div>
