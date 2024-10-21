@@ -31,12 +31,12 @@ export async function generateMetadata({
     keywords: post.tags,
     openGraph: {
       title: post?.title,
-      // images: {
-      //   url: getImage(post?.meta.cover || "thumbnail/yeahx4bg.png"),
-      //   alt: "YEAHx4",
-      //   width: post?.meta.coverWidth || 1280,
-      //   height: post?.meta.coverHeight || 720,
-      // },
+      images: {
+        url: `https://post.yeahx4.me/img/cover/${post.cover}`,
+        alt: "YEAHx4",
+        width: 700,
+        height: 350,
+      },
       type: "article",
       authors: ["YEAHx4"],
     },
