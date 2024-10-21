@@ -10,15 +10,15 @@ export default function Series({
 }) {
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-      {/* Header Section */}
       <div className="text-center my-16">
-        <h1 className="font-bold text-2xl text-gray-800">시리즈</h1>
-        <p className="font-extrabold md:text-4xl text-3xl text-indigo-600">
+        <h1 className="font-bold text-2xl text-gray-800 dark:text-gray-100">
+          시리즈
+        </h1>
+        <p className="font-extrabold md:text-4xl text-3xl text-indigo-600 dark:text-indigo-300">
           {series[slug].name}
         </p>
       </div>
 
-      {/* Post Previews */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {getPostsBySeries(slug)
           .map(async (post) => ({

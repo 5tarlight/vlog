@@ -1,6 +1,5 @@
 import { PostMeta } from "@/lib/post/parser";
 import { series } from "@/lib/post/posts";
-import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import Link from "next/link";
 import { FaRegCalendarAlt } from "react-icons/fa";
