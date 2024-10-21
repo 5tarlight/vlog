@@ -7,7 +7,7 @@ export default function PostPreview({ meta }: { meta: PostMeta }) {
     <div
       className={cn(
         "bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden",
-        "transition-shadow duration-300 hover:shadow-lg"
+        "transition-shadow duration-300 hover:shadow-lg h-[420px]"
       )}
     >
       <img
@@ -24,7 +24,8 @@ export default function PostPreview({ meta }: { meta: PostMeta }) {
         <div>
           <h2
             className={cn(
-              "font-bold text-xl text-gray-800 dark:text-gray-200 mb-2"
+              "font-bold text-xl text-gray-800 dark:text-gray-200 mb-2",
+              "h-12 overflow-ellipsis"
             )}
           >
             {meta.title}
