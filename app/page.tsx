@@ -1,7 +1,6 @@
 import PostPreview from "@/components/PostPreview";
 import SearchInput from "@/components/SearchInput";
-import { parsePost } from "@/lib/post/parser";
-import { getRecentPostMeta, readContent } from "@/lib/post/posts";
+import { getRecentPostMeta } from "@/lib/post/posts";
 import { cn } from "@/lib/utils/cn";
 import Link from "next/link";
 
