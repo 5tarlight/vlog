@@ -1,6 +1,7 @@
 import { readFile } from "fs/promises";
 import path from "path";
 import { isDev } from "../utils/isDev";
+import { parsePost } from "./parser";
 
 export const series: {
   [key: string]: {
@@ -49,4 +50,38 @@ export const readContent = async (slug: string) => {
   cache.set(slug, content);
 
   return content;
+};
+
+export const readlAllPosts = async () => {
+  console.warn("Reading all posts");
+  return await Promise.all(posts.map(readContent));
+};
+
+export const getAllMeta = async () => {
+  return (await readlAllPosts()).map((content) => parsePost(content).meta);
+};
+
+export const getPostsBySeries = (seriesName: string) => {
+  return series[seriesName].posts.map((post) => `${seriesName}/${post}`);
+};
+
+export const getPostsByTag = async (tag: string) => {
+  return (await readlAllPosts()).filter((post) =>
+    parsePost(post).meta.tags.includes(tag)
+  );
+};
+
+export const getPostMeta = async (slug: string) => {
+  return parsePost(await readContent(slug)).meta;
+};
+
+export const getPrevNextPosts = (series: string, index: number) => {
+  const posts = getPostsBySeries(series);
+  const prev = posts[index - 1];
+  const next = posts[index + 1];
+
+  return {
+    prev: prev || null,
+    next: next || null,
+  };
 };

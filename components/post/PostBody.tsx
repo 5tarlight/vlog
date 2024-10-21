@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils/cn";
 import PostHead from "./PostHead";
 import "./prose.css";
 import { ReactNode } from "react";
+import PostFooter from "./PostFooter";
 
 export default function PostBody({
   meta,
@@ -24,6 +25,7 @@ export default function PostBody({
         <PostHead meta={meta} readingTime={readingTime} />
       </div>
       <div className="prose">{body}</div>
+      {meta.series && <PostFooter meta={meta} />}
     </div>
   );
 }
