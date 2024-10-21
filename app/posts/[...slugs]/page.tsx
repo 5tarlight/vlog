@@ -22,6 +22,15 @@ export async function generateMetadata({
     content: string;
   } = await res.json();
 
+  if (data.message === "Not Found") {
+    return {
+      title: "Not Found",
+      description: "Not Found",
+      applicationName: "YEAHx4 BLOG",
+      keywords: [],
+    };
+  }
+
   const { meta: post } = parsePost(data.content);
 
   return {

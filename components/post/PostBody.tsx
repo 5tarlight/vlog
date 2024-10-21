@@ -4,6 +4,7 @@ import PostHead from "./PostHead";
 import "./prose.css";
 import { ReactNode } from "react";
 import PostFooter from "./PostFooter";
+import Comment from "./Comment";
 
 export default function PostBody({
   meta,
@@ -26,6 +27,7 @@ export default function PostBody({
       </div>
       <div className="prose">{body}</div>
       {meta.series && <PostFooter meta={meta} />}
+      <Comment />
     </div>
   );
 }
