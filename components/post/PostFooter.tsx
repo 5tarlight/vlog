@@ -26,7 +26,7 @@ export default async function PostFooter({ meta }: { meta: PostMeta }) {
             <div className="flex justify-between items-center">
               <FaArrowLeft className="text-blue-500 dark:text-purple-500" />
               <span className="font-semibold text-blue-700 dark:text-purple-300">
-                이전 포스트:
+                이전 포스트
               </span>
             </div>
             <span className="text-lg font-bold text-blue-900 dark:text-purple-100">
@@ -52,7 +52,7 @@ export default async function PostFooter({ meta }: { meta: PostMeta }) {
           <div className="flex flex-col gap-2">
             <div className="flex justify-between items-center">
               <span className="font-semibold text-blue-700 dark:text-purple-300">
-                다음 포스트:
+                다음 포스트
               </span>
               <FaArrowRight className="text-blue-500 dark:text-purple-500" />
             </div>
