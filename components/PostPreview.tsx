@@ -10,13 +10,15 @@ export default function PostPreview({ meta }: { meta: PostMeta }) {
         "transition-shadow duration-300 hover:shadow-lg"
       )}
     >
-      {meta.cover && (
-        <img
-          src={`/img/cover/${meta.cover}`}
-          alt={meta.title}
-          className="w-full h-48 object-cover"
-        />
-      )}
+      <img
+        src={
+          meta.cover
+            ? `/img/cover/${meta.cover}`
+            : "https://cdn.jsdelivr.net/gh/5tarlight/vlog-image@main/thumbnail/yeahx4bg.png"
+        }
+        alt={meta.title}
+        className="w-full h-48 object-cover"
+      />
 
       <div className="p-6 h-full">
         <div>

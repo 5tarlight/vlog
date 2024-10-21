@@ -85,3 +85,15 @@ export const getPrevNextPosts = (series: string, index: number) => {
     next: next || null,
   };
 };
+
+export const getRecentPostMeta = async (cnt: number) => {
+  const meta = posts.map(async (post) => {
+    const content = await readContent(post);
+    return {
+      meta: parsePost(content).meta,
+      post,
+    };
+  });
+
+  return (await Promise.all(meta.slice(0, cnt))).reverse();
+};
