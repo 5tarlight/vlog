@@ -5,6 +5,7 @@ import "./prose.css";
 import { ReactNode } from "react";
 import PostFooter from "./PostFooter";
 import Comment from "./Comment";
+import SeriesList from "./SeriesList";
 
 export default function PostBody({
   meta,
@@ -25,6 +26,9 @@ export default function PostBody({
       <div>
         <PostHead meta={meta} readingTime={readingTime} />
       </div>
+      {meta.series && (
+        <SeriesList current={meta.seriesIndex} series={meta.series} />
+      )}
       <div className="prose">{body}</div>
       {meta.series && <PostFooter meta={meta} />}
       <Comment />
