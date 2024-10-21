@@ -47,7 +47,7 @@ export default function PostHead({
           </div>
         </div>
       </a>
-      <div className="flex flex-wrap mt-4 gap-2">
+      {/* <div className="flex flex-wrap mt-4 gap-2">
         {meta.tags.map((tag, idx) => (
           <Link
             key={idx}
@@ -62,7 +62,7 @@ export default function PostHead({
             {tag}
           </Link>
         ))}
-      </div>
+      </div> */}
     </div>
   );
 }
