@@ -3,6 +3,46 @@ import { parsePost, parseToc, toHtml } from "@/lib/post/parser";
 import TableOfContent from "@/components/post/TableOfContent";
 import PostBody from "@/components/post/PostBody";
 
+export async function generateMetadata({
+  params: { slugs },
+}: {
+  params: { slugs: string[] };
+}) {
+  const res = await fetch(getUrl("/api/posts"), {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ path: slugs.join("/") }),
+  });
+
+  const data: {
+    message: string;
+    path: string;
+    content: string;
+  } = await res.json();
+
+  const { meta: post } = parsePost(data.content);
+
+  return {
+    title: post.title || "Not Found",
+    description: post.description,
+    applicationName: "YEAHx4 BLOG",
+    keywords: post.tags,
+    openGraph: {
+      title: post?.title,
+      // images: {
+      //   url: getImage(post?.meta.cover || "thumbnail/yeahx4bg.png"),
+      //   alt: "YEAHx4",
+      //   width: post?.meta.coverWidth || 1280,
+      //   height: post?.meta.coverHeight || 720,
+      // },
+      type: "article",
+      authors: ["YEAHx4"],
+    },
+  };
+}
+
 export default async function Post({
   params: { slugs },
 }: {
