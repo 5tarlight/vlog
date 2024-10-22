@@ -63,8 +63,16 @@ export const parsePost = (
       break;
     }
 
-    // TODO : "title: abc: def" 형태의 데이터도 처리할 수 있도록 수정
-    const [key, value] = line.split(":").map((x) => x.trim());
+    const colon = line.indexOf(":");
+
+    if (colon === -1) {
+      console.warn(`Invalid meta line: ${line}`);
+      continue;
+    }
+
+    // const [key, value] = line.split(":").map((x) => x.trim());
+    const key = line.slice(0, colon).trim();
+    const value = line.slice(colon + 1).trim();
 
     if (key === "tags") {
       meta.tags = value.split(",").map((x) => x.trim());
