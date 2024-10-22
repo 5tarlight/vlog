@@ -109,6 +109,24 @@ export const parsePost = (
 나중에 수정하도록 하겠습니다. meta와 body로 본문을 나눴으니 body를 HTML로
 변환하기만 하면 사실상 완성입니다.
 
+**2024-10-23 수정**
+
+value에 콜론이 들어가도 문제가 없도록 수정했습니다. `[key, value]` 부분을
+
+```ts
+const colon = line.indexOf(":");
+
+if (colon === -1) {
+  console.warn(`Invalid meta line: ${line}`);
+  continue;
+}
+
+const key = line.slice(0, colon).trim();
+const value = line.slice(colon + 1).trim();
+```
+
+이렇게 수정했습니다.
+
 # 본문 렌더링
 
 마크다운은 크게 2종류로 분류할 수 있습니다.
