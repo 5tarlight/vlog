@@ -1,5 +1,6 @@
 import CodeBlock from "@/components/post/CodeBlock";
 import Equation from "@/components/post/Equation";
+import PostImage from "@/components/post/PostImage";
 import React, { ReactNode } from "react";
 
 export interface Toc {
@@ -412,7 +413,7 @@ export const toHtml = (content: string[]) => {
       const alt = match![1];
       const href = match![2];
 
-      html.push(<img key={i} src={href} alt={alt} />);
+      html.push(<PostImage key={i} src={href} alt={alt} />);
     } else if (content[i].startsWith(">")) {
       let quote = content[i].replace(">", "").trim();
 

@@ -59,9 +59,7 @@ export default function PostPreview({ meta }: { meta: PostMeta }) {
           >
             <span>
               Part {meta.seriesIndex + 1} of{" "}
-              <Link href={`/series/${meta.series}`} className="hover:underline">
-                <strong>{series[meta.series].name}</strong>
-              </Link>
+              <strong>{series[meta.series].name}</strong>
             </span>
           </div>
         )}
