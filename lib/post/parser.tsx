@@ -70,7 +70,6 @@ export const parsePost = (
       continue;
     }
 
-    // const [key, value] = line.split(":").map((x) => x.trim());
     const key = line.slice(0, colon).trim();
     const value = line.slice(colon + 1).trim();
 
