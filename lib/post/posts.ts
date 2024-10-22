@@ -96,5 +96,7 @@ export const getRecentPostMeta = async (cnt: number) => {
     };
   });
 
-  return (await Promise.all(meta.slice(0, cnt))).reverse();
+  return (await Promise.all(meta))
+    .sort((a, b) => Date.parse(b.meta.date) - Date.parse(a.meta.date))
+    .slice(0, cnt);
 };
