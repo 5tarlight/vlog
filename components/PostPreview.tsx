@@ -1,7 +1,6 @@
 import { PostMeta } from "@/lib/post/parser";
 import { series } from "@/lib/post/posts";
 import { cn } from "@/lib/utils/cn";
-import Link from "next/link";
 
 export default function PostPreview({ meta }: { meta: PostMeta }) {
   return (
