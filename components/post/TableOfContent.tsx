@@ -6,7 +6,7 @@ export default function TableOfContent({ toc }: { toc: Toc[] }) {
   return (
     <div
       className={cn(
-        "hidden lg:block w-[286px] bg-white dark:bg-gray-800",
+        "hidden lg:block w-full bg-white dark:bg-gray-800",
         "sticky top-28 h-fit p-8 rounded-md shadow-md border-l-8",
         "border-white hover:border-gray-300 transition-all",
         "hover:rounded-l-none dark:border-gray-800 dark:hover:border-gray-500"
@@ -18,7 +18,7 @@ export default function TableOfContent({ toc }: { toc: Toc[] }) {
           <li
             key={idx}
             className={cn(
-              "relative pl-4 text-gray-700 hover:font-bold",
+              "relative pl-4 text-gray-700 hover:underline",
               "hover:text-blue-600 transition-colors duration-300",
               "dark:text-gray-300 dark:hover:text-blue-400"
             )}

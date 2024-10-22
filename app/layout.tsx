@@ -62,7 +62,7 @@ export default function RootLayout({
               "px-4"
             )}
           >
-            <div className="max-w-[1024px] w-full">{children}</div>
+            <div className="w-full">{children}</div>
           </main>
           <Footer />
         </DarkTheme>

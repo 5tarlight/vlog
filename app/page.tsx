@@ -1,3 +1,4 @@
+import Content from "@/components/Content";
 import PostPreview from "@/components/PostPreview";
 import SearchInput from "@/components/SearchInput";
 import { getRecentPostMeta } from "@/lib/post/posts";
@@ -6,7 +7,7 @@ import Link from "next/link";
 
 export default async function Home() {
   return (
-    <>
+    <Content>
       <h1 className="text-center text-2xl md:text-4xl mt-16 font-extrabold">
         Welcome to YEAHx4 blog
       </h1>
@@ -35,6 +36,6 @@ export default async function Home() {
           })}
         </div>
       </div>
-    </>
+    </Content>
   );
 }

@@ -86,13 +86,18 @@ export default async function Post({
   const { body, meta } = parsePost(data.content);
 
   return (
-    <div className="flex justify-center gap-8">
-      <PostBody
-        body={toHtml(body)}
-        meta={meta}
-        readingTime={Math.round(body.join("\n").length / 600)}
-      />
-      <TableOfContent toc={toc} />
+    <div className="flex justify-center gap-8 px-4">
+      <div className="max-w-64 w-full hidden xl:block" />
+      <div className="max-w-4xl w-full">
+        <PostBody
+          body={toHtml(body)}
+          meta={meta}
+          readingTime={Math.round(body.join("\n").length / 600)}
+        />
+      </div>
+      <div className="max-w-64 w-full hidden lg:block">
+        <TableOfContent toc={toc} />
+      </div>
     </div>
   );
 }

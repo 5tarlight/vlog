@@ -19,7 +19,7 @@ export default function PostBody({
   return (
     <div
       className={cn(
-        "max-w-[678px] w-full bg-white p-8 rounded-md shadow-md",
+        "w-full bg-white p-8 rounded-md shadow-md",
         "dark:bg-gray-800 dark:text-white transition-all break-all"
       )}
     >
