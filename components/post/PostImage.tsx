@@ -1,9 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function PostImage({ src, alt }: { src: string; alt: string }) {
   const [popup, setPopup] = useState(false);
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Escape") {
+      setPopup(false);
+    }
+  };
+
+  useEffect(() => {
+    if (popup) {
+      window.addEventListener("keydown", handleKeyDown);
+    } else {
+      window.removeEventListener("keydown", handleKeyDown);
+    }
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [popup]);
 
   return (
     <>
