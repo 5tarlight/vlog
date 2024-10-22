@@ -1,3 +1,4 @@
+import Content from "@/components/Content";
 import PostPreview from "@/components/PostPreview";
 import { parsePost } from "@/lib/post/parser";
 import { getPostsBySeries, readContent, series } from "@/lib/post/posts";
@@ -34,31 +35,33 @@ export default function Series({
   }
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="text-center my-16">
-        <h1 className="font-bold text-2xl text-gray-800 dark:text-gray-100">
-          시리즈
-        </h1>
-        <p className="font-extrabold md:text-4xl text-3xl text-indigo-600 dark:text-indigo-300">
-          {series[slug].name}
-        </p>
-      </div>
+    <Content>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center my-16">
+          <h1 className="font-bold text-2xl text-gray-800 dark:text-gray-100">
+            시리즈
+          </h1>
+          <p className="font-extrabold md:text-4xl text-3xl text-indigo-600 dark:text-indigo-300">
+            {series[slug].name}
+          </p>
+        </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {getPostsBySeries(slug)
-          .map(async (post) => ({
-            meta: parsePost(await readContent(post)).meta,
-            post,
-          }))
-          .map(async (p, i) => {
-            const { meta, post } = await p;
-            return (
-              <Link href={`/posts/${post}`} key={i}>
-                <PostPreview meta={meta} />
-              </Link>
-            );
-          })}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {getPostsBySeries(slug)
+            .map(async (post) => ({
+              meta: parsePost(await readContent(post)).meta,
+              post,
+            }))
+            .map(async (p, i) => {
+              const { meta, post } = await p;
+              return (
+                <Link href={`/posts/${post}`} key={i}>
+                  <PostPreview meta={meta} />
+                </Link>
+              );
+            })}
+        </div>
       </div>
-    </div>
+    </Content>
   );
 }
