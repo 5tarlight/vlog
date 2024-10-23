@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils/cn";
+import cn from "@yeahx4/cn";
 import Link from "next/link";
 import { FaCreativeCommonsBy, FaGithub } from "react-icons/fa6";
 

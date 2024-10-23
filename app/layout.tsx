@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { cn } from "@/lib/utils/cn";
 import DarkTheme from "@/components/theme/ThemeProvider";
+import cn from "@yeahx4/cn";
 
 export const metadata: Metadata = {
   title: {

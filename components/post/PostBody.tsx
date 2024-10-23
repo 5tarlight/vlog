@@ -1,6 +1,6 @@
 import { PostMeta } from "@/lib/post/parser";
-import { cn } from "@/lib/utils/cn";
 import PostHead from "./PostHead";
+import cn from "@yeahx4/cn";
 import "./prose.css";
 import { ReactNode } from "react";
 import PostFooter from "./PostFooter";

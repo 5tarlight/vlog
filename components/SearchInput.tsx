@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils/cn";
+import cn from "@yeahx4/cn";
 import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { PostMeta } from "@/lib/post/parser";
-import { cn } from "@/lib/utils/cn";
+import cn from "@yeahx4/cn";
 import Link from "next/link";
 import { useState } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa6";

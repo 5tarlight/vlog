@@ -1,6 +1,6 @@
 import { PostMeta } from "@/lib/post/parser";
 import { getPostMeta, getPrevNextPosts } from "@/lib/post/posts";
-import { cn } from "@/lib/utils/cn";
+import cn from "@yeahx4/cn";
 import Link from "next/link";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa6";
 

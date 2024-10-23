@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils/cn";
+import cn from "@yeahx4/cn";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 
 const mathJaxConfig = {

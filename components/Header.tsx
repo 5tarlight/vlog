@@ -1,6 +1,6 @@
-import { cn } from "@/lib/utils/cn";
 import Link from "next/link";
 import ThemeChanger from "./theme/ThemeChanger";
+import cn from "@yeahx4/cn";
 
 export default function Header() {
   return (

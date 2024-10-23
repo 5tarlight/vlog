@@ -2,7 +2,7 @@ import Content from "@/components/Content";
 import PostPreview from "@/components/PostPreview";
 import SearchInput from "@/components/SearchInput";
 import { getRecentPostMeta } from "@/lib/post/posts";
-import { cn } from "@/lib/utils/cn";
+import cn from "@yeahx4/cn";
 import Link from "next/link";
 
 export default async function Home() {
