@@ -2,6 +2,7 @@ import { readFile } from "fs/promises";
 import path from "path";
 import { isDev } from "../utils/isDev";
 import { parsePost } from "./parser";
+import kmp from "../utils/kmp";
 
 export const series: {
   [key: string]: {
@@ -99,4 +100,51 @@ export const getRecentPostMeta = async (cnt: number) => {
   return (await Promise.all(meta))
     .sort((a, b) => Date.parse(b.meta.date) - Date.parse(a.meta.date))
     .slice(0, cnt);
+};
+
+const countOccurrence = (str: string, query: string) => {
+  // return str.split(query).length - 1;
+  return kmp(str, query);
+};
+
+export const searchPosts = async (query: string, limit = 6) => {
+  const start = Date.now();
+
+  const scores = await Promise.all(
+    posts.map(async (post) => {
+      const content = await readContent(post);
+      const { meta, body } = parsePost(content);
+
+      const titleScore = countOccurrence(meta.title.toLowerCase(), query);
+      const descriptionScore = countOccurrence(
+        meta.description.toLowerCase(),
+        query
+      );
+
+      const bodyScoreRaw = countOccurrence(body.join(" ").toLowerCase(), query);
+      const bodyLength = body.join(" ").length;
+      const bodyScore = bodyLength > 0 ? (bodyScoreRaw / bodyLength) * 100 : 0;
+
+      const tagScore = meta.tags.reduce(
+        (acc, tag) => acc + countOccurrence(tag.toLowerCase(), query),
+        0
+      );
+
+      const score =
+        7 * titleScore + 5 * descriptionScore + bodyScore + 6 * tagScore;
+
+      return {
+        post: { meta, body, id: post },
+        score,
+      };
+    })
+  );
+
+  const end = Date.now();
+  console.log("Search took", end - start, "ms for", query);
+
+  return scores
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
+    .filter((it) => it.score > 0);
 };
