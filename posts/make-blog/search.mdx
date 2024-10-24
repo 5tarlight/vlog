@@ -1,0 +1,208 @@
+---
+title: 검색 만들기 (feat. KMP)
+description: KMP를 사용해 블로그에 검색 기능을 추가합니다
+cover: make-post/search.png
+tags: blog, search, kmp
+date: 2024-10-25
+author: yeahx4
+series: make-blog
+seriesIndex: 4
+---
+
+검색 기능은 랜딩 페이지의 input을 통해 이용할 수 있습니다. 어떤 query가 주어지면
+**적절한** 검색 결과를 만들어서 사용자에게 보여줘야 합니다. 그럼 어떻게 해야 적절한
+검색 결과를 **빠르게** 얻을 수 있을까요?
+
+# 검색 페이지
+
+일단 랜딩 페이지에 있는 검색 input은 `SearchInput.tsx`라는 이름을 가지고 있습니다.
+검색 아이콘이 눌리거나 엔터가 눌려서 검색 명령이 떨어지면 `/search/[query]`로 URL을
+이동시킵니다. 그런데 살짝 주의해야 할 점은 쿼리에 어떤 문자열이 올지 모른다는 겁니다.
+예를 들어 `/`이 포함되면 완전 다른 페이지가 되어 404 Not Found를 받을 수 있고
+그 외에도 `?`, `.` 처럼 URL에 포함하기 힘든 단어들이 있습니다. 이런 문자열의 문제점은
+`encodeURIComponent`로도 인코딩이 되지 않는다는 것입니다. 정상적인 URL에서도 꼭
+필요한 존재이기 때문이죠.
+
+그래서 제가 선택한 방법은 Base64 인코딩을 통해 URL과 간섭하지 않는 문자열로 변환하는
+것입니다. Base64 인코딩의 대상이 되는 문자열은 latin 문자를 벗어나면 안됩니다.
+무슨 뜻이냐면, 한글같은 유니코드 문자들은 인코딩을 할 수 없다는 뜻입니다. 그렇다면
+`encodeURIComponent`를 통해 전부 라틴 문자로 바꿔주고 Base64로 인코딩을 하면
+모든 문자열에 대해서 안전한 검색 쿼리를 만들 수 있습니다. `btoa`를 사용하면
+Base64로 인코딩을 할 수 있습니다.
+
+```ts
+const search = () => {
+  router.push(`/search/${btoa(encodeURIComponent(value.trim()))}`);
+};
+```
+
+다시 읽어오는 입장에서는 반대로 Base64로 디코딩하고 `decodeURIComponent`로 원본
+문자열을 불러오면 됩니다. 다만 처음에 들어오는 입력이 Base64로 인코딩한 문자열 그대로가
+아니라 한번 더 encodeURIComponent된 문자열임에 주의해야 합니다.
+
+```ts
+const query = decodeURIComponent(atob(decodeURIComponent(slug)));
+```
+
+이제 쿼리를 온전하게 얻었으니 검색을 진행하면 되겠습니다.
+
+# 관련도
+
+검색을 수행할 때 최대한 검색 쿼리와 관련성이 높은 포스트를 먼저 보여주고 싶습니다.
+이 부분은 깊게 들어가면 끝도 없으니 너무 복잡하거나 오랜 시간동안 검색을 하지 않고도
+적당히 만족할 만한 결과를 얻는 것이 목표입니다. 가장 단순한 방법은 단순히 쿼리가
+몇 번 등장하는지 세고 그 순서대로 정렬하는 것입니다. 하지만 그렇게 하면 길이가 긴
+포스트가 더 높은 점수를 받을 가능성이 높습니다. 그래서 형평성을 위해 몇가지 시스템을
+도입하게 되었습니다. 우선 문자열에 특정 패턴이 몇 번 등장하는지를 세는 아래와 같은
+함수가 있다고 생각하고 진행해 봅시다.
+
+```ts
+const countOccurrence = (str: string, query: string): number
+```
+
+사용자가 어떤 내용을 검색할 때 본문에 있던 어떤 단어에 꽂혀 검색할 가능성이 높을까요,
+아니면 제목의 어떤 단어를 검색할 가능성이 높을까요? 보통 제목이 더 중요할 것입니다.
+그리고 미관상의 이유로 지금은 여러분께 보이지 않도록 해두었지만 각 포스트는 태그를
+가지고 있습니다. 태그는 그 포스트에서 사용된 키워드들을 담고 있기 때문에 꽤 높은 우선순위를
+갖습니다.
+
+본문 검색이 살짝 문제가 있는데, 길이가 긴 글일수록 더 많은 점수를 얻을 확률이 높아지기
+때문입니다. 그래서 적절히 글의 길이로 나눠서 처리해 주었습니다.
+
+최종적으로 얻어진 점수들을 정렬해서 상위 6개의 포스트를 추리면 검색의 큰 틀이 완성됩니다.
+
+```ts
+export const searchPosts = async (query: string, limit = 6) => {
+  const start = Date.now();
+
+  const scores = await Promise.all(
+    posts.map(async (post) => {
+      const content = await readContent(post);
+      const { meta, body } = parsePost(content);
+
+      const titleScore = countOccurrence(meta.title.toLowerCase(), query);
+      const descriptionScore = countOccurrence(
+        meta.description.toLowerCase(),
+        query
+      );
+
+      const bodyScoreRaw = countOccurrence(body.join(" ").toLowerCase(), query);
+      const bodyLength = body.join(" ").length;
+      const bodyScore = bodyLength > 0 ? (bodyScoreRaw / bodyLength) * 100 : 0;
+
+      const tagScore = meta.tags.reduce(
+        (acc, tag) => acc + countOccurrence(tag.toLowerCase(), query),
+        0
+      );
+
+      const score =
+        7 * titleScore + 5 * descriptionScore + bodyScore + 6 * tagScore;
+
+      return {
+        post: { meta, body, id: post },
+        score,
+      };
+    })
+  );
+
+  const end = Date.now();
+  console.log("Search took", end - start, "ms for", query);
+
+  return scores
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
+    .filter((it) => it.score > 0);
+};
+```
+
+그럼 이제 `countOccurrence` 함수만 만들면 완성입니다!
+
+# 패턴 개수 세기
+
+초기에는 가장 구현하기 쉬운 방법으로
+
+```ts
+const countOccurrence = (str: string, query: string) => {
+  return str.split(query).length - 1;
+};
+```
+
+split 한 다음 개수를 세 주었습니다. 가장 직관적인 방법이지만 split의 시간복잡도는
+원본 문자열의 길이를 $M$이라 할 때 $O(M)$입니다. 그래서 $N$개의 포스트가 있을 때
+$Q$ 길이의 쿼리를 하면 시간복잡도는 $O(NMQ)$가 됩니다.
+
+> 정확히는 M이 매번 달라지지만 적당히 길이의 평균 정도로 생각해 주세요.
+
+매번 문자열을 탐색해서 split하는 작업이 시간복잡도를 꽤 잡아먹고 있습니다. 이런 경우
+KMP를 사용해 속도를 향상시킬 수 있습니다.
+
+## KMP
+
+kmp 함수를 사용하면 길이가 $M$인 문자열에서 길이가 $Q$인 쿼리가 등장하는 개수를
+$O(M + Q)$에 처리할 수 있습니다. 그래서 KMP를 구현하면 전체적인 시간복잡도를
+$O(N(M + Q))$까지 줄일 수 있습니다. 평소에 ps할 때나 kmp 썼지 타입스크립트에서
+써보기는 처음입니다. 일단 타입스크립트로 KMP를 구현합니다.
+
+```ts
+export default function kmp(text: string, pattern: string): number {
+  if (pattern.length === 0) return 0;
+
+  const buildLPS = (pattern: string): number[] => {
+    const lps = new Array(pattern.length).fill(0);
+    let length = 0;
+    let i = 1;
+
+    while (i < pattern.length) {
+      if (pattern[i] === pattern[length]) {
+        length++;
+        lps[i] = length;
+        i++;
+      } else {
+        if (length !== 0) {
+          length = lps[length - 1];
+        } else {
+          lps[i] = 0;
+          i++;
+        }
+      }
+    }
+    return lps;
+  };
+
+  const lps = buildLPS(pattern);
+  let i = 0;
+  let j = 0;
+  let count = 0;
+
+  while (i < text.length) {
+    if (pattern[j] === text[i]) {
+      i++;
+      j++;
+    }
+
+    if (j === pattern.length) {
+      count++;
+      j = lps[j - 1];
+    } else if (i < text.length && pattern[j] !== text[i]) {
+      if (j !== 0) {
+        j = lps[j - 1];
+      } else {
+        i++;
+      }
+    }
+  }
+
+  return count;
+}
+```
+
+이제 단순히 kmp를 사용해서 패턴이 등장한 횟수를 세면 됩니다.
+
+```ts
+const countOccurrence = (str: string, query: string) => {
+  // return str.split(query).length - 1;
+  return kmp(str, query);
+};
+```
+
+기존과 동일하지만 조금 더 빠르게 작동합니다.

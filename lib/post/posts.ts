@@ -2,7 +2,6 @@ import { readFile } from "fs/promises";
 import path from "path";
 import { isDev } from "../utils/isDev";
 import { parsePost } from "./parser";
-import kmp from "../utils/kmp";
 
 export const series: {
   [key: string]: {
@@ -14,12 +13,11 @@ export const series: {
   "make-blog": {
     name: "Next.js 블로그 만들기",
     description: "Next.js 14로 블로그를 만듭니다.",
-    posts: ["blog-structure", "theme", "rendering", "open-graph"],
+    posts: ["blog-structure", "theme", "rendering", "open-graph", "search"],
   },
 };
 
 const posts = [
-  // "test",
   "math/vector-function",
   ...Object.keys(series).flatMap((key) =>
     series[key].posts.map((post) => `${key}/${post}`)
@@ -103,8 +101,8 @@ export const getRecentPostMeta = async (cnt: number) => {
 };
 
 const countOccurrence = (str: string, query: string) => {
-  // return str.split(query).length - 1;
-  return kmp(str, query);
+  return str.split(query).length - 1;
+  // return kmp(str, query);
 };
 
 export const searchPosts = async (query: string, limit = 6) => {

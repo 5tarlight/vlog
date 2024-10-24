@@ -3,7 +3,7 @@ export default function kmp(text: string, pattern: string): number {
 
   const buildLPS = (pattern: string): number[] => {
     const lps = new Array(pattern.length).fill(0);
-    let length = 0;
+    let length = 0; // Length of the previous longest prefix suffix
     let i = 1;
 
     while (i < pattern.length) {
@@ -13,7 +13,7 @@ export default function kmp(text: string, pattern: string): number {
         i++;
       } else {
         if (length !== 0) {
-          length = lps[length - 1];
+          length = lps[length - 1]; // Use the previous lps value
         } else {
           lps[i] = 0;
           i++;
@@ -24,8 +24,8 @@ export default function kmp(text: string, pattern: string): number {
   };
 
   const lps = buildLPS(pattern);
-  let i = 0;
-  let j = 0;
+  let i = 0; // Index for text
+  let j = 0; // Index for pattern
   let count = 0;
 
   while (i < text.length) {
@@ -35,16 +35,16 @@ export default function kmp(text: string, pattern: string): number {
     }
 
     if (j === pattern.length) {
-      count++;
-      j = lps[j - 1];
+      count++; // Found a match
+      j = lps[j - 1]; // Look for the next match
     } else if (i < text.length && pattern[j] !== text[i]) {
       if (j !== 0) {
-        j = lps[j - 1];
+        j = lps[j - 1]; // Use lps to avoid unnecessary comparisons
       } else {
         i++;
       }
     }
   }
 
-  return count;
+  return count; // Return total matches found
 }
