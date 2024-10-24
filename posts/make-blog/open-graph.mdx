@@ -16,8 +16,185 @@ seriesIndex: 3
 미리 보여줄 수 있습니다. 카카오톡, Discord, Slack 같은 메신저에 URL을 올렸는데
 아래에 제목, 설명, 이미지 등 다양한 정보가 표시되는걸 다들 한 번쯤 보셨을 것 같습니다.
 OG가 있으면 직접 URL을 방문하지 않아도 대략적인 내용을 유추해볼 수 있고 신뢰를 더 가질
-수 있습니다. 아무 미리보기 없이 링크만 띡 올라온 사이트는 눌러서 무슨 일이 생길지 모릅니다.
+수 있습니다. 아무 미리보기 없이 링크만 띡 올라온 사이트는 전혀 매력적이지 않죠.
 
 ![open grpah discord](/img/make-blog/open-graph/og-discord.png)
 
-TODO: vecel og
+단순히 title과 description을 설정해주는 것에서 벗어나 URL마다 포스트의 metadata를
+불러오고 적절한 open graph를 만들어서 보내줘야 합니다. Next.js는 이를 위한 굉장히
+편리한 기능을 제공합니다.
+
+# dynamic vs static
+
+Next.js 에서 metadata를 만드는 방법은 크게 2가지가 있습니다. 하나는 static이고
+다른 하나는 dynamic이죠. 모든 페이지에서 기본값으로 사용할 open graph는 항상 같은
+값을 가지기 때문에 static으로 만들고, 포스트 페이지의 open graph는 항상 달라야 하기
+때문에 dynamic하게 만들어야 합니다. Next.js에서 metadata를 추가하는 방법은 단순히
+페이지나 `layout.tsx`에서 metadata를 export해주면 됩니다.
+
+```ts
+import type { Metadata } from 'next'
+ 
+export const metadata: Metadata = {
+  title: '...',
+  description: '...',
+}
+ 
+export default function Page() {}
+```
+
+이런 경우 항상 값이 고정이기 때문에 값을 수정할 수 없습니다. 그래서 Next.js에서는
+`generateMetadata(...): Promise<Metadata>`를 export하면 동적으로
+metadata를 생성할 수 있는 기능이 있습니다.
+
+```tsx
+import type { Metadata, ResolvingMetadata } from 'next'
+ 
+export async function generateMetadata(
+  { ... }: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const id = (await params).id
+ 
+  const product = await fetch(...)
+  const previousImages = (await parent).openGraph?.images || []
+ 
+  return {
+    title: product.title,
+    openGraph: {
+      images: ['/some-specific-page-image.jpg', ...previousImages],
+    },
+  }
+}
+ 
+export default function Page({ params, searchParams }: Props) {}
+```
+
+generateMetadata의 첫 인자로는 실제 컴포넌트가 받는 Props가 전달되게 됩니다.
+위 예제에선 길이를 줄이기 위해 `Props`의 정의나 몇 코드를 생략했습니다. 그리고 두번째
+인자로 `ResolvingMetadata`를 받을 수 있는데, 상위 컴포넌트에 이미 metadata가 있을
+경우, 현재 metadata에서 지정해주지 않은 값은 상위 컴포넌트의 metadata를 따라갑니다.
+여기서 상위 컴포넌트의 metadata를 `parent: ResolvingMetadata`로 받고 있는 모습입니다.
+
+generateMetadata를 사용할 때 주의점은
+
+- static, dynamic이든 항상 서버 컴포넌트에서만 사용할 수 있습니다.
+- `fetch`는 자동으로 캐싱될 수 있습니다. (Next.js 15부터 fetch는 기본적으로 
+  자동으로 캐싱을 하지 않습니다)
+- 클라이언트에게 UI를 스트리밍하기 전에 실행됩니다. 항상 첫 `<head>`에 메타데이터가
+  있음을 보장할 수 있습니다.
+
+정도가 있습니다.
+
+# Global OG
+
+root나 다른 기타 위치에서 사용될 open graph를 먼저 만들어 보겠습니다. `layout.tsx`에
+적용하면 하위 페이지에 적용됩니다. 꼭 루트 layout.tsx가 아니더라도 상위 컴포넌트에
+메타데이터가 있으면 하위 컴포넌트가 이를 상속하게 됩니다.
+
+```ts
+export const metadata: Metadata = {
+  title: {
+    template: "%s | YEAHx4 블로그",
+    default: "YEAHx4 블로그",
+  },
+  description: "YEAHx4 개발 블로그",
+  openGraph: {
+    url: "https://post.yeahx4.me",
+    siteName: "YEAHx4 블로그",
+    images: {
+      url: "https://cdn.jsdelivr.net/gh/5tarlight/vlog-image@main/thumbnail/yeahx4bg.png",
+      alt: "YEAHx4",
+      width: 1280,
+      height: 720,
+    },
+  },
+  robots: {
+    nocache: true,
+    follow: true,
+    index: true,
+  },
+  twitter: {
+    creator: "@yeahx44",
+    images: {
+      url: "https://cdn.jsdelivr.net/gh/5tarlight/vlog-image@main/thumbnail/yeahx4bg.png",
+      alt: "YEAHx4",
+      width: 1280,
+      height: 720,
+    },
+  },
+  category: "technology",
+};
+```
+
+딱히 특별한건 없고 title을 보면 template 필드가 있습니다. 페이지별로 제목을 바꾸고 싶은데
+뒤에 사이트 이름을 붙이고 싶은 경우 template기능을 활용하면 `%s`에 하위 컴포넌트에서
+지정한 title이 오게 됩니다. 없을 경우 `default`가 그대로 제목이 됩니다.
+
+# dynamic OG
+
+그럼 이제 포스트 페이지의 메타데이터를 볼까요? 동적으로 생성해야 합니다.
+
+```ts
+export async function generateMetadata({
+  params: { slugs },
+}: {
+  params: { slugs: string[] };
+}) {
+  const res = await fetch(getUrl("/api/posts"), {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ path: slugs.join("/") }),
+  });
+
+  const data: {
+    message: string;
+    path: string;
+    content: string;
+  } = await res.json();
+
+  if (data.message === "Not Found") {
+    return {
+      title: "Not Found",
+      description: "Not Found",
+      applicationName: "YEAHx4 BLOG",
+      keywords: [],
+    };
+  }
+
+  const { meta: post } = parsePost(data.content);
+
+  return {
+    title: post.title || "Not Found",
+    description: post.description,
+    applicationName: "YEAHx4 BLOG",
+    keywords: post.tags,
+    openGraph: {
+      title: post?.title,
+      images: {
+        url: `https://post.yeahx4.me/img/cover/${post.cover}`,
+        alt: "YEAHx4",
+        width: 700,
+        height: 350,
+      },
+      type: "article",
+      authors: ["YEAHx4"],
+    },
+  };
+}
+```
+
+글의 메타데이터를 갖고와서 메타데이터에 연결해 주었습니다.
+
+이렇게 페이지에(특히 포스트) open graph를 적용해서 링크를 올렸을 때 자연스럽게 어떤
+내용이 있을지 예측할 수 있게 되었습니다. 링크를 봤을 때 더 눌러보고 싶은 사이트가 되면
+더 많은 사람들이 방문하겠죠?
+
+지금까지 포스트의 cover 이미지를 직접 만들어서 프로젝트에 넣어주고 있었는데 사실
+대부분의 경우 글자만 넣어서 만드는 것 같지 않나요? cover 이미지를 만드는데 쓸데없이 손이
+많이 간다고 느끼고 있습니다. 그러던 중 vercel에서
+[OG Image Generation](https://vercel.com/docs/functions/og-image-generation)이라는
+문서를 보게 되었고, 어쩌면 조금 더 편하게 작업할 수 있을 것 같다는 가능성을 보았습니다.
+처음 접해보는 라이브러리라 조금 더 공부해보고 실제 적용기를 포스팅해 보도록 하겠습니다.
