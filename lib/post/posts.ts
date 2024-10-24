@@ -13,7 +13,13 @@ export const series: {
   "make-blog": {
     name: "Next.js 블로그 만들기",
     description: "Next.js 14로 블로그를 만듭니다.",
-    posts: ["blog-structure", "theme", "rendering", "open-graph", "search"],
+    posts: [
+      "blog-structure",
+      "theme",
+      "rendering",
+      "open-graph",
+      // , "search" -> KMP가 더 느렸음. 추가 연구, 수정 필요
+    ],
   },
 };
 
