@@ -97,7 +97,7 @@ const font = await fetch(getUrl("/font/gotgam.ttf")).then((res) =>
 //...
 ```
 
-참고로 서버사이드에서 동작하기 떄문에 fetch의 URL을 그냥 `/font/example.ttf`처럼 쓰면
+참고로 서버사이드에서 동작하기 때문에 fetch의 URL을 그냥 `/font/example.ttf`처럼 쓰면
 제대로 불러오지 못합니다. 그래서 `getUrl`이라는 유틸 함수를 하나 사용했습니다. Host 헤더를
 읽어서 서버사이드에서도 현재 URL을 읽을 수 있게 합니다.
 
@@ -121,7 +121,7 @@ export const getUrl = (path: string) => {
 ## 파라미터
 
 `/api/posts/image`로 GET 요청을 날리면 이미지를 보내주는데, 이미지의 내용을 직접 정할 수
-있어야 합니다. 저는 주제목과 부제목을 사용할 예정이기 떄문에 아래와 같은 파라미터를 정했습니다.
+있어야 합니다. 저는 주제목과 부제목을 사용할 예정이기 때문에 아래와 같은 파라미터를 정했습니다.
 
 - `color`: 글씨 색
 - `bg` : 배경색
