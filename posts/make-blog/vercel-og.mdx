@@ -1,0 +1,65 @@
+---
+title: 커버 이미지 자동 생성하기 (vercel/og)
+description: 커버 이미지를 자동으로 생성합니다.
+cover: make-post/theme-cover.png
+tags: blog, next.js, vercel, vercel/og, og, image, generation, 커버, 이미지
+date: 2024-10-25
+author: yeahx4
+series: make-blog
+seriesIndex: 4
+---
+
+지금까지 커버 이미지는 직접 png 파일로 만들어서 직접 연결시키는 방향이었습니다. 그런데 많은 경우
+커버 이미지는 단순히 단색 배경에 간단한 글자입니다. 형식이 계속 반복되는 이미지를 계속 수작업으로
+만들어서 넣어주는 것은 굉장히 피곤할 뿐 아니라 시간 낭비입니다. Vercel에서는 반복되고 번거로운
+이미지를 자동으로 생성하는 라이브러리를 제공하고 있습니다.
+
+# @vercel/og
+
+[@vercel/og](https://vercel.com/docs/functions/og-image-generation)는 open
+graph에서 사용할 수 있도록 image generation을 제공합니다. 공식 문서에 따르면 쉽고 빠르게
+성능 좋은 이미지를 만들 수 있습니다. 일단 npm을 통해 vercel/og를 설치합니다.
+
+```bash
+npm install @vercel/og
+```
+
+정상적인 작동을 위해서 Node.js 20 이상과 Next.js 12 이상을 사용해야 합니다. Next의
+[Api Routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes)를
+통해 이미지를 받는 엔드포인트를 만들 수 있습니다. JSX 컴포넌트를 `ImageResponse`에 전달해서
+JSX를 기반으로 이미지를 만들 수 있습니다. 간단한 스타일과 flex같은 CSS를 지원합니다.
+아래의 코드를 `/app/api/posts/image/route.tsx`에 작성하고 브라우저에서 `/api/posts/image`로
+접근하면 하얀 배경에 Hello가 적힌 이미지를 볼 수 있습니다.
+
+```tsx
+import { ImageResponse } from "next/og";
+
+export async function GET() {
+  return new ImageResponse(
+    (
+      <div
+        style={{
+          fontSize: 40,
+          color: "black",
+          background: "white",
+          width: "100%",
+          height: "100%",
+          padding: "50px 200px",
+          textAlign: "center",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        👋 Hello
+      </div>
+    ),
+    {
+      width: 1200,
+      height: 630,
+    }
+  );
+}
+```
+
+# 파라미터 추가하기
+
