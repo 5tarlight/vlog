@@ -61,5 +61,148 @@ export async function GET() {
 }
 ```
 
-# 파라미터 추가하기
+# 커스터마이징
 
+## 폰트 추가하기
+
+기본적으로 sans 폰트를 사용하는데 커버 이미지에 쓰기엔 별로 예쁘지 않습니다. vercel/og 에서는
+ttf파일(또는 다른 폰트 파일)을 통해 직접 폰트를 지정하는 기능을 제공합니다. 일단 사용할 ttf 파일을
+`/public/font/font.ttf`에 놓습니다. 저는 상주곶감체를 쓸 예정이라 `gotgam.ttf`에 두었습니다.
+그리고, `ImageResponse`의 설정에 폰트를 추가해야 합니다.
+
+```ts
+const font = await fetch(getUrl("/font/gotgam.ttf")).then((res) =>
+  res.arrayBuffer()
+);
+
+// ...
+
+  {
+    width: 1200,
+    height: 630,
+    fonts: [
+      {
+        name: "gotgam",
+        data: font,
+        style: "normal",
+      },
+    ],
+  }
+
+//...
+```
+
+참고로 서버사이드에서 동작하기 떄문에 fetch의 URL을 그냥 `/font/example.ttf`처럼 쓰면
+제대로 불러오지 못합니다. 그래서 `getUrl`이라는 유틸 함수를 하나 사용했습니다. Host 헤더를
+읽어서 서버사이드에서도 현재 URL을 읽을 수 있게 합니다.
+
+```ts
+import { headers } from "next/headers";
+import { join } from "path";
+
+export const getBaseUrl = () => {
+  const headersList = headers();
+  const host = headersList.get("host");
+  const protocol = headersList.get("x-forwarded-proto") ?? "http";
+
+  return `${protocol}://${host}`;
+};
+
+export const getUrl = (path: string) => {
+  return join(getBaseUrl(), path);
+};
+```
+
+## 파라미터
+
+`/api/posts/image`로 GET 요청을 날리면 이미지를 보내주는데, 이미지의 내용을 직접 정할 수
+있어야 합니다. 저는 주제목과 부제목을 사용할 예정이기 떄문에 아래와 같은 파라미터를 정했습니다.
+
+- `color`: 글씨 색
+- `bg` : 배경색
+- `title` : 주제목 내용
+- `sub` : 부제목 내용
+- `ts` : 주제목 폰트 크기 (title size)
+- `ss` : 부제목 폰트 크기 (subtitle size)
+
+param을 통해 `.../image?color=ff0000&title=hello` 같은 모습으로 전달할 수 있게
+만들었습니다.
+
+```ts
+export async function GET(req: NextRequest) {
+  const query = req.nextUrl.searchParams;
+  const param = Object.fromEntries(query.entries());
+
+  const { color, bg, title, sub, ts, ss } = param;
+
+  const font = await fetch(getUrl("/font/gotgam.ttf")).then((res) =>
+    res.arrayBuffer()
+  );
+
+// ...
+```
+
+이제 저 파라미터를 가지고 JSX를 만들어서 `ImageResponse`에 리턴하면 됩니다.
+
+```tsx
+// ...
+
+return new ImageResponse(
+    (
+      <div
+        style={{
+          color: `#${color || "000"}`,
+          background: `#${bg || "fff"}`,
+          width: "100%",
+          height: "100%",
+          padding: "50px 200px",
+          textAlign: "center",
+          justifyContent: "center",
+          alignItems: "center",
+          display: "flex",
+          flexDirection: "column",
+          fontFamily: "gotgam",
+        }}
+      >
+        <span
+          style={{
+            fontSize: parseInt(ts || "72"),
+            fontWeight: "bolder",
+            marginBottom: 20,
+          }}
+        >
+          {title}
+        </span>
+        <span
+          style={{
+            fontSize: parseInt(ss || "48"),
+          }}
+        >
+          {sub}
+        </span>
+      </div>
+    ),
+    {
+      width: 1200,
+      height: 630,
+      fonts: [
+        {
+          name: "gotgam",
+          data: font,
+          style: "normal",
+        },
+      ],
+    }
+  );
+}
+```
+
+그럼 아래 URL로 한번 요청을 날려서 이미지를 만들어 봅시다.
+
+```url
+/api/posts/image?title=Main%20Title&sub=Sub%20Title&ts=120&ss=72&bg=000&color=fff
+```
+
+![cover example](/api/posts/image?title=Main%20Title&sub=Sub%20Title&ts=120&ss=72&bg=000&color=fff)
+
+잘 작동하네요! 한번 만들어진 이미지는 자동으로 캐싱되어 매번 새로 만들지 않습니다.

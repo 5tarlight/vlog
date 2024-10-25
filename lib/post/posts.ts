@@ -19,7 +19,7 @@ export const series: {
       "rendering",
       "open-graph",
       // , "search" -> KMP가 더 느렸음. 추가 연구, 수정 필요
-      "vercel-og"
+      "vercel-og",
     ],
   },
 };
@@ -108,7 +108,7 @@ export const getRecentPostMeta = async (cnt: number) => {
 };
 
 const countOccurrence = (str: string, query: string) => {
-  return str.split(query).length - 1;
+  return str.toLowerCase().split(query.toLowerCase()).length - 1;
   // return kmp(str, query);
 };
 
