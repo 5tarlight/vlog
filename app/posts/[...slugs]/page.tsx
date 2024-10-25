@@ -1,5 +1,5 @@
 import { getUrl } from "@/lib/utils/getUrl";
-import { parsePost, parseToc, toHtml } from "@/lib/post/parser";
+import { buildCoverUrl, parsePost, parseToc, toHtml } from "@/lib/post/parser";
 import TableOfContent from "@/components/post/TableOfContent";
 import PostBody from "@/components/post/PostBody";
 
@@ -41,7 +41,9 @@ export async function generateMetadata({
     openGraph: {
       title: post?.title,
       images: {
-        url: `https://post.yeahx4.me/img/cover/${post.cover}`,
+        url: post.cover
+          ? `https://post.yeahx4.me/img/cover/${post.cover}`
+          : buildCoverUrl(post),
         alt: "YEAHx4",
         width: 700,
         height: 350,

@@ -37,6 +37,12 @@ export interface PostMeta {
   cover: string;
   series: string;
   seriesIndex: number;
+  coverTitle?: string;
+  coverSub?: string;
+  coverColor?: string;
+  coverBg?: string;
+  coverTs?: number;
+  coverSs?: number;
 }
 
 export const parsePost = (
@@ -77,24 +83,29 @@ export const parsePost = (
       meta.tags = value.split(",").map((x) => x.trim());
     } else if (key === "seriesIndex") {
       meta.seriesIndex = parseInt(value);
-    } else if (key === "title") {
-      meta.title = value;
-    } else if (key === "description") {
-      meta.description = value;
-    } else if (key === "author") {
-      meta.author = value;
-    } else if (key === "cover") {
-      meta.cover = value;
-    } else if (key === "date") {
-      meta.date = value;
-    } else if (key === "series") {
-      meta.series = value;
+    } else if (key === "coverTs") {
+      meta.coverTs = parseInt(value);
+    } else if (key === "coverSs") {
+      meta.coverSs = parseInt(value);
     } else {
-      console.warn(`Unknown key: ${key}`);
+      (meta as any)[key] = value;
     }
   }
 
   return { meta, body };
+};
+
+export const buildCoverUrl = (meta: PostMeta) => {
+  let url = "/api/posts/image?";
+
+  if (meta.coverTitle) url += `title=${encodeURIComponent(meta.coverTitle)}&`;
+  if (meta.coverSub) url += `sub=${encodeURIComponent(meta.coverSub)}&`;
+  if (meta.coverColor) url += `color=${encodeURIComponent(meta.coverColor)}&`;
+  if (meta.coverBg) url += `bg=${encodeURIComponent(meta.coverBg)}&`;
+  if (meta.coverTs) url += `ts=${meta.coverTs}&`;
+  if (meta.coverSs) url += `ss=${meta.coverSs}&`;
+
+  return url;
 };
 
 export const renderLine = (line: string): ReactNode => {

@@ -1,4 +1,4 @@
-import { PostMeta } from "@/lib/post/parser";
+import { buildCoverUrl, PostMeta } from "@/lib/post/parser";
 import { series } from "@/lib/post/posts";
 import cn from "@yeahx4/cn";
 
@@ -14,7 +14,8 @@ export default function PostPreview({ meta }: { meta: PostMeta }) {
         src={
           meta.cover
             ? `/img/cover/${meta.cover}`
-            : "https://cdn.jsdelivr.net/gh/5tarlight/vlog-image@main/thumbnail/yeahx4bg.png"
+            : // : "https://cdn.jsdelivr.net/gh/5tarlight/vlog-image@main/thumbnail/yeahx4bg.png"
+              buildCoverUrl(meta)
         }
         alt={meta.title}
         className="w-full h-48 object-cover"
