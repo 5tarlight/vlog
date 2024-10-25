@@ -88,7 +88,7 @@ export const parsePost = (
     } else if (key === "coverSs") {
       meta.coverSs = parseInt(value);
     } else {
-      (meta as any)[key] = value;
+      (meta as unknown as Record<string, string>)[key] = value;
     }
   }
 
