@@ -1,13 +1,42 @@
+"use client";
+
 import Link from "next/link";
 import ThemeChanger from "./theme/ThemeChanger";
 import cn from "@yeahx4/cn";
+import { useEffect, useState } from "react";
 
 export default function Header() {
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  const handleScroll = () => {
+    if (typeof window !== "undefined") {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY > lastScrollY) {
+        setIsVisible(false);
+      } else {
+        setIsVisible(true);
+      }
+      setLastScrollY(currentScrollY);
+    }
+  };
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.addEventListener("scroll", handleScroll);
+      return () => {
+        window.removeEventListener("scroll", handleScroll);
+      };
+    }
+  }, [lastScrollY]);
+
   return (
     <header
       className={cn(
-        "flex justify-center h-[80px] shadow-md sticky top-0 bg-white",
-        "dark:bg-gray-800 dark:text-white z-10"
+        "fixed top-0 justify-center h-[80px] shadow-md w-full flex",
+        "dark:bg-gray-800 dark:text-white z-10 trasition-transform",
+        "duration-300 bg-white",
+        isVisible ? "translate-y-0" : "-translate-y-80"
       )}
     >
       <div
