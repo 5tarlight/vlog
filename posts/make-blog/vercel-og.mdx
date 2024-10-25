@@ -211,3 +211,46 @@ return new ImageResponse(
 ![cover example](/api/posts/image?title=Main%20Title&sub=Sub%20Title&ts=120&ss=72&bg=000&color=fff)
 
 잘 작동하네요! 한번 만들어진 이미지는 자동으로 캐싱되어 매번 새로 만들지 않습니다.
+
+# 교체
+
+이제 기존의 cover를 image generation으로 교체해야 합니다. 그렇다고 기존에 사용하던 방식을
+완전히 폐지하고 싶지는 않습니다. 필요할 경우 이미지로도 커버 이미지를 사용하고 싶습니다. 그래서
+frontmatter에 몇가지 파라미터를 더 추가했습니다. cover가 있을 경우 이전처럼 cover URL로
+이미지를 표시하고 아니라면 frontmatter에서 다른 값들을 읽어서 커버 이미지를 만들어야 합니다.
+아래 함수를 통해 frontmatter에서 URL을 만들 수 있습니다.
+
+```ts
+export const buildCoverUrl = (meta: PostMeta) => {
+  let url = "/api/posts/image?";
+
+  if (meta.coverTitle) url += `title=${encodeURIComponent(meta.coverTitle)}&`;
+  if (meta.coverSub) url += `sub=${encodeURIComponent(meta.coverSub)}&`;
+  if (meta.coverColor) url += `color=${encodeURIComponent(meta.coverColor)}&`;
+  if (meta.coverBg) url += `bg=${encodeURIComponent(meta.coverBg)}&`;
+  if (meta.coverTs) url += `ts=${meta.coverTs}&`;
+  if (meta.coverSs) url += `ss=${meta.coverSs}&`;
+
+  return url;
+};
+```
+
+이제 이 URL을 커버 이미지 대신에 사용하면 되겠네요.
+
+```tsx
+<img
+  src={
+    meta.cover
+      ? `/img/cover/${meta.cover}`
+      : buildCoverUrl(meta)
+  }
+  alt={meta.title}
+  className="w-full h-48 object-cover"
+/>
+```
+
+똑같은 코드를 포스트 페이지의 metadata에도 적용하면 됩니다.
+
+이제 단순히 단색 배경에 글씨를 쓰기 위해서 다른 사이트나 프로그램을 켜서 이미지를 만들고, 그 이미지를
+다운로드에서 public 폴더에 넣고, 그걸 다시 연결하는 작업을 하지 않아도 됩니다. 포스트 마크다운 파일을
+벗어나지 않고도 편하게 커버 이미지를 만들 수 있게 되었습니다!
