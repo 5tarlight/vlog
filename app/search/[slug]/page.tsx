@@ -4,6 +4,19 @@ import SearchInput from "@/components/SearchInput";
 import { searchPosts } from "@/lib/post/posts";
 import Link from "next/link";
 
+export async function generateMetadata({
+  params: { slug },
+}: {
+  params: { slug: string };
+}) {
+  const query = decodeURIComponent(atob(decodeURIComponent(slug)));
+
+  return {
+    title: "검색 결과",
+    description: `${query}에 대한 검색 결과입니다.`,
+  };
+}
+
 export default async function Search({
   params: { slug },
 }: {
