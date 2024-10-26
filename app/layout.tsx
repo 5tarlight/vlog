@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import DarkTheme from "@/components/theme/ThemeProvider";
 import cn from "@yeahx4/cn";
+import { Analytics } from "@vercel/analytics/react";
 
 export const metadata: Metadata = {
   title: {
@@ -54,6 +55,7 @@ export default function RootLayout({
           "dark:from-gray-900 dark:to-blue-900"
         )}
       >
+        <Analytics />
         <DarkTheme>
           <Header />
           <main
