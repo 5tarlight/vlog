@@ -1,0 +1,92 @@
+---
+title: sitemap.xml 자동 생성하기
+description: 블로그에 sitemap을 추가합니다. 자동으로 글 목록에 맞춰 생성합니다.
+cover:
+tags: blog, next.js, sitemap, sitemap.xml
+date: 2024-10-26
+author: yeahx4
+series: make-blog
+seriesIndex: 5
+coverTitle: sitemap.xml
+coverSub:
+coverTs: 120
+coverBg: 7C6CAF
+coverColor: ffffff
+---
+
+# sitemap
+
+[sitemap](https://developers.google.com/search/docs/crawling-indexing/sitemaps/overview)은
+사이트에 있는 페이지, 파일, 비디오를 설명하는 파일입니다. 검색 엔진은 sitemap에서 이 사이트에 어떤
+페이지가 있고, 그 페이지의 우선순위는 얼마나 높은지, 마지막으로 업데이트된 시점 등을 참고합니다.
+좋은 sitemap을 가지고 있으면 검색 엔진이 페이지를 더 잘 찾고 이해하는데 도움이 됩니다. 따라서
+검색 결과에 노출될 확률도 높아지겠죠.
+
+Google Developers의 문서를 보면 sitemap이 필요한 경우와 그렇지 않은 경우를 어느정도
+정리해 놓았습니다.
+
+필요한 경우는
+
+- 사이트가 큰 경우 : 페이지가 많아 검색엔진이 모든 페이지를 발견하지 못할 수 있는 경우
+- 외부에서 이 사이트로 연결되는 링크가 적은 경우
+- 많은 미디어(비디오, 이미지)를 가지고 있는 경우
+
+정도이고, 필요하지 않을 수 있는 경우는
+
+- 사이트가 작은 경우 : "작다"는 건 500개 미만의 페이지를 가지고 모든 페이지가 연결되어 찾을 수 있는
+  경우
+- 완전히 내부적으로 연결된 경우 : 어떤 페이지에서 시작해 모든 페이지를 찾을 수 있는 경우
+- 미디어가 많이 없는 경우
+
+라고 합니다. 그렇다면 지금 이 블로그는 어떨까요? 페이지가 많다의 기준이 좀 많이 널널하긴 하지만
+블로그 특성상 각 글이 시리즈가 아닌 이상 서로 독립되어 있고 랜딩 페이지에 모든 글을 넣을 순
+없기에 외부에서는 전혀 노출되지 않는 페이지가 있습니다. 물론 잠재적으로 500개가 넘는 포스트를 작성하면
+500개가 넘는 페이지가 생길 가능성도 있죠. 어쨋든 sitemap이 있어서 나쁠건 없으니 만들어 보도록
+하겠습니다.
+
+# Next.js sitemap
+
+sitemap에 포함되어야 할 URL은 `/`, 시리즈, 포스트 정도가 있습니다. public폴더에 `sitemap.xml`을
+만들어 하나하나 작성해도 되긴 하지만 매번 글을 쓸때마다 계속 업데이트해주기는 번거롭고 파일이 커지면
+직접 작성하기도 복잡해집니다. 그래서 Next.js에서는 `/app/sitemap.ts`에서 sitemap을 생성하는
+기능이 있습니다.
+
+sitemap에 포함할 정보는 URL, lastModified입니다. 지금까지는 포스트에 update필드가 없었는데
+이를 위해 미리 추가해 주었습니다. 없으면 작성일이랑 같은 값을 가집니다.
+
+```ts
+import { parsePost } from "@/lib/post/parser";
+import { posts, readContent, series } from "@/lib/post/posts";
+import type { MetadataRoute } from "next";
+import path from "path";
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const baseUrl = "https://post.yeahx4.me";
+  const makeUrl = (loc: string) => path.join(baseUrl, loc);
+
+  return [
+    { url: baseUrl, lastModified: new Date() },
+    ...(await Promise.all(
+      posts
+        .map(async (post) => ({
+          post,
+          meta: parsePost(await readContent(post)).meta,
+        }))
+        .map(async (p) => {
+          const { post, meta } = await p;
+          return {
+            url: makeUrl(post),
+            lastModified: new Date(meta.update),
+          };
+        })
+    )),
+    ...Object.keys(series).map((s) => ({
+      url: makeUrl(`series/${s}`),
+      lastModified: new Date(),
+    })),
+  ];
+}
+```
+
+배열로 리턴해주면 `/sitemap.xml`로 접근했을 때 처리해주게 됩니다. 저는 async-await가 필요해서
+Promise로 리턴해 주었습니다.

@@ -20,6 +20,7 @@ export const series: {
       "open-graph",
       // , "search" -> KMP가 더 느렸음. 추가 연구, 수정 필요
       "vercel-og",
+      "sitemap",
     ],
   },
 };
