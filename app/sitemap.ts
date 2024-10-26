@@ -1,5 +1,5 @@
 import { parsePost } from "@/lib/post/parser";
-import { posts, readContent } from "@/lib/post/posts";
+import { posts, readContent, series } from "@/lib/post/posts";
 import type { MetadataRoute } from "next";
 import path from "path";
 
@@ -23,5 +23,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           };
         })
     )),
+    ...Object.keys(series).map((s) => ({
+      url: makeUrl(`series/${s}`),
+      lastModified: new Date(),
+    })),
   ];
 }
