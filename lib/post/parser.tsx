@@ -33,6 +33,7 @@ export interface PostMeta {
   description: string;
   author: string;
   date: string;
+  update: string;
   tags: string[];
   cover: string;
   series: string;
@@ -55,6 +56,7 @@ export const parsePost = (
     author: "",
     cover: "",
     date: "",
+    update: "",
     tags: [],
     series: "",
     seriesIndex: -1,
@@ -90,6 +92,8 @@ export const parsePost = (
     } else {
       (meta as unknown as Record<string, string>)[key] = value;
     }
+
+    if (!meta.update) meta.update = meta.date;
   }
 
   return { meta, body };

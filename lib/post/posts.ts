@@ -24,7 +24,7 @@ export const series: {
   },
 };
 
-const posts = [
+export const posts = [
   "math/vector-function",
   ...Object.keys(series).flatMap((key) =>
     series[key].posts.map((post) => `${key}/${post}`)
