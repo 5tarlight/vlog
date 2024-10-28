@@ -2,6 +2,7 @@ import Content from "@/components/Content";
 import PostPreview from "@/components/PostPreview";
 import SearchInput from "@/components/SearchInput";
 import { searchPosts } from "@/lib/post/posts";
+import cn from "@yeahx4/cn";
 import Link from "next/link";
 
 export async function generateMetadata({
@@ -54,9 +55,20 @@ export default async function Search({
             return (
               <div
                 key={i}
-                className="w-full max-w-xs transition-transform transform hover:scale-105"
+                className={cn(
+                  "w-full max-w-xs transition-transform transform",
+                  "hover:scale-105"
+                )}
+                style={{
+                  opacity: 0.4 + 0.6 * (score / scoreSum),
+                }}
               >
-                <div className="text-center mb-4 w-full font-bold text-indigo-700 dark:text-indigo-300">
+                <div
+                  className={cn(
+                    "text-center mb-4 w-full font-bold text-indigo-700",
+                    "dark:text-indigo-300"
+                  )}
+                >
                   {Math.floor((score / scoreSum) * 10000) / 100} %
                 </div>
                 <Link href={`/posts/${id}`}>
