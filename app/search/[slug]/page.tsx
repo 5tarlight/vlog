@@ -60,7 +60,7 @@ export default async function Search({
                   "hover:scale-105"
                 )}
                 style={{
-                  opacity: 0.4 + 0.6 * (score / scoreSum),
+                  opacity: 0.3 + 0.7 * (score / scoreSum) * (score / scoreSum),
                 }}
               >
                 <div
