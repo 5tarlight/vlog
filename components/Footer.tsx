@@ -1,6 +1,6 @@
 import cn from "@yeahx4/cn";
 import Link from "next/link";
-import { FaCreativeCommonsBy, FaGithub } from "react-icons/fa6";
+import { FaCreativeCommonsBy, FaGithub, FaRss } from "react-icons/fa6";
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -19,7 +19,17 @@ export default function Footer() {
         <div className="text-3xl justify-self-center">
           <FaCreativeCommonsBy />
         </div>
-        <div className="flex gap-4 text-3xl justify-self-end">
+        <div className="flex gap-8 text-3xl justify-self-end">
+          <Link
+            href="/rss"
+            className={cn(
+              "hidden items-center text-lg font-extrabold gap-2",
+              "md:flex bg-yellow-400 dark:bg-yellow-600 px-2 py-1 rounded-md"
+            )}
+          >
+            <FaRss />
+            <span>RSS</span>
+          </Link>
           <Link href="https://github.com/5tarlight/vlog">
             <FaGithub />
           </Link>

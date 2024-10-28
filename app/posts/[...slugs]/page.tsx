@@ -51,6 +51,18 @@ export async function generateMetadata({
       type: "article",
       authors: ["YEAHx4"],
     },
+    twitter: {
+      card: "summary_large_image",
+      site: "@yeahx44",
+      images: {
+        url: post.cover
+          ? `https://post.yeahx4.me/img/cover/${post.cover}`
+          : buildCoverUrl(post),
+        alt: "YEAHx4",
+        width: 1280,
+        height: 720,
+      },
+    },
   };
 }
 
