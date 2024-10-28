@@ -49,6 +49,12 @@ export default function RootLayout({
     <html lang="ko" suppressHydrationWarning>
       <head>
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+        <link
+          rel="alternate"
+          href="/rss"
+          type="application/rss+xml"
+          title="RSS"
+        />
       </head>
       <body
         className={cn(
