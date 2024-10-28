@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import DarkTheme from "@/components/theme/ThemeProvider";
 import cn from "@yeahx4/cn";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   title: {
@@ -56,6 +57,7 @@ export default function RootLayout({
         )}
       >
         <Analytics />
+        <SpeedInsights />
         <DarkTheme>
           <Header />
           <main
