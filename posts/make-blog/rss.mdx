@@ -1,0 +1,105 @@
+---
+title: 블로그에 RSS 추가하기
+description: RSS를 추가합니다. RSS 피드를 구독해 외부에서도 새로운 글이 있는지 확인할 수 있습니다.
+cover:
+tags: blog, next.js, rss
+date: 2024-10-28
+author: yeahx4
+series: make-blog
+seriesIndex: 6
+coverTitle: RSS
+coverSub:
+coverTs: 160
+coverBg: 7C6CAF
+coverColor: ffffff
+---
+
+# RSS
+
+RSS는 일종의 구득 프로토콜입니다. 관심있는 뉴스나 블로그가 있는데 새로운 글이 올라왔는지
+계속 사이트에 들어가서 체크하기는 너무나 번거롭습니다. RSS를 RSS리더에 등록해 두면
+새로 추가된 글을 찾고 알림을 받을 수 있습니다. 사실 요새는 RSS는 자주 쓰는 기능은
+아니긴 합니다. 공급자 입장에서 구독을 사용자가 100% 관리하고 누가 구독했는지 조차
+알기 힘듭니다. 광고를 붙인다거나 하는건 불가능하죠. 그래서 점점 자체적인 구독시스템으로
+옮겨간 추세입니다. 크롬 확장에서 RSS를 사용한다거나 아니면 Discord 봇 같은 RSS 리더도
+있습니다. 이 블로그는 비영리고 편하게 업데이트 알림을 받을 수 있으면 좋겠다고 생각했기
+때문에 RSS를 지원하고자 합니다.
+
+# RSS + Next.js
+
+RSS는 특정 경로에서 xml 형식으로 보내주면 됩니다. 꼭 하나여야 하거나 정해진 경로가 있는건
+아니기 때문에 카테고리별로 RSS를 분리한다거나 원하는 경로에 할당할 수 있습니다. 이 블로그는
+저 혼자 운영하고 있고 글을 엄청나게 다양하게 쓰지는 않기 때문에 `/rss` 위치로 하나만
+구현하겠습니다.
+
+Next.js의 API Routes를 사용해 쉽게 구현할 수 있습니다. `/rss`로 GET 요청이 오면 포스트
+목록에서 필요한 몇몇 데이터만 XML 형식으로 만들어 보내주면 됩니다. 제목, 링크, 날짜, 설명을
+각 포스트별로 포함해야 합니다.
+
+```ts
+import { parsePost } from "@/lib/post/parser";
+import { posts, readContent } from "@/lib/post/posts";
+import { NextResponse } from "next/server";
+
+async function getRss() {
+  const items = await Promise.all(
+    posts.map(async (post) => {
+      const meta = parsePost(await readContent(post)).meta;
+
+      return `<item>
+                <title><![CDATA[${meta.title}]]></title>
+                <link>https://post.yeahx4.me/posts/${post}</link>
+                <pubDate>${new Date(meta.update).toUTCString()}</pubDate>
+                <description><![CDATA[${meta.description}]]></description>
+              </item>`;
+    })
+  );
+
+  return `<?xml version="1.0" encoding="UTF-8" ?>
+          <rss version="2.0">
+            <channel>
+              <title>YEAHx4 Blog</title>
+              <link>https://post.yeahx4.me</link>
+              <description>YEAHx4 Blog RSS</description>
+              <language>ko</language>
+              ${items.join("")}
+            </channel>
+          </rss>`;
+}
+
+export async function GET() {
+  const rssFeed = await getRss();
+  return new NextResponse(rssFeed, {
+    headers: {
+      "Content-Type": "application/rss+xml; charset=utf-8",
+    },
+  });
+}
+```
+
+저는 한글로 글을 작성하고 있기 때문에 `charset=utf-8`을 지정해 주어야 정상적으로 한글이
+표시됩니다. 그리고 XML에 `!CDATA`를 통해 XML을 교란할 수 있는 특수문자도 안전하게
+처리할 수 있게 했습니다.
+
+이제 `/rss`로 접근하면 raw xml을 볼 수 있습니다. 또, 외부에서 RSS가 어느 위치에 있는지
+알려주기 위해 `layout.tsx`에 아래 내용을 추가하면 RSS를 직접 써주지 않아도 알아서 찾을
+수 있습니다.
+
+```html
+<link
+  rel="alternate"
+  href="/rss"
+  type="application/rss+xml"
+  title="RSS"
+/>
+```
+
+# 구독하기
+
+RSS를 구독하기 위해서는 RSS 리더가 필요합니다. 여러 형태가 있는데 저는 크롬 확장으로 하겠습니다.
+저는 많이 쓰는
+[feeder](https://chromewebstore.google.com/detail/rss-feed-reader/pnjaodmkngahhkoihejjehlcdlnohgmp?hl=en)라는
+확장을 사용하겠습니다. 아무거나 사용해도 괜찮습니다. 리더에 URL을 등록합니다. 그러면 아래와 같이
+지금까지 쓴 포스트를 볼 수 있습니다
+
+![RSS Reader](/img/make-blog/rss/rss-reader.png)

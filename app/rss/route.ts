@@ -10,7 +10,7 @@ async function getRss() {
       return `<item>
                 <title><![CDATA[${meta.title}]]></title>
                 <link>https://post.yeahx4.me/posts/${post}</link>
-                <pubDate>${new Date(meta.date).toUTCString()}</pubDate>
+                <pubDate>${new Date(meta.update).toUTCString()}</pubDate>
                 <description><![CDATA[${meta.description}]]></description>
               </item>`;
     })
