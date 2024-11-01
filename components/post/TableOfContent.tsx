@@ -31,7 +31,8 @@ export default function TableOfContent({ toc }: { toc: Toc[] }) {
               className={cn(
                 "before:absolute before:left-0 before:top-1/2 before:w-2",
                 "before:h-2 before:bg-blue-300 before:rounded-full",
-                "dark:before:bg-blue-700 before:w-[0.3rem] before:h-[0.3rem]"
+                "dark:before:bg-blue-700 before:w-[0.3rem] before:h-[0.3rem]",
+                "break-all"
               )}
             >
               {tocItem.value}
