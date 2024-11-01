@@ -89,3 +89,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
 배열로 리턴해주면 `/sitemap.xml`로 접근했을 때 처리해주게 됩니다. 저는 async-await가 필요해서
 Promise로 리턴해 주었습니다.
+참고로 URL을 만들 때 `path.join`을 쓰면 `https://`를 `http:/`로 만들어 버리기 때문에
+주의해야 합니다.
