@@ -28,7 +28,7 @@ coverColor: ffffff
 [python.org](https://docs.python.org/3/library/itertools.html)의 문서를 보면
 itertools는 순수 파이썬에서 간결(succinct)하고 효율적인(efficient) 반복을 제공한다고
 되어 있습니다. PS나 실무에서 itertools를 적절하게 활용하면 재귀를 만들거나 긴 코드 없이도
-한줄로 끝낼 수 있습니다. 매력적이지 않나요? 특히 시간이 중요한 PS에서는 많은 도움이 될 것
+한 줄로 끝낼 수 있습니다. 매력적이지 않나요? 특히 시간이 중요한 PS에서는 많은 도움이 될 것
 같습니다. 구현 실수도 없엘 수 있고요.
 
 Python 3에서 itertools를 사용하려면 import해야 합니다. 이 글에서는 편의를 위해
@@ -133,7 +133,7 @@ count는 특정 숫자에서 시작해 하나씩 세어나가는 함수입니다
 
 ```py
 for i in count(10):
-  print(i, end=' ' )
+  print(i, end=' ')
   if i == 20:
     break
 
@@ -144,7 +144,7 @@ for i in count(10):
 
 ```py
 for i in count(10, -2):
-  print(i, end=' ' )
+  print(i, end=' ')
   if i == 0:
     break
 
@@ -197,7 +197,7 @@ for i in repeat(10, 3):
 ### accumulate
 
 이름처럼 점점 숫자를 누적합니다. 입력으로 배열을 넣으면 그 배열의 누적합이 나옵니다.
-누적합이 필요할 때 한줄이면 끝낼 수 있겠네요.
+누적합이 필요할 때 한 줄이면 끝낼 수 있겠네요.
 
 ```py
 a = [1, 2, 3, 4, 5]
@@ -219,7 +219,7 @@ list(compress('ABCDEF', [1, 0, 1, 0, 1, 1]))
 
 ### groupby
 
-첫번째 인자로 data를 받고 두번째 인자로 함수 key를 받습니다. data의 요소를 하나씩 순회하며
+첫 번째 인자로 data를 받고 두 번째 인자로 함수 key를 받습니다. data의 요소를 하나씩 순회하며
 key에 넣어 실행하고 리턴값이 같은 요소끼리 묶어 반환합니다. 튜플 형태로 `(key, iterable)`
 형식으로 리턴됩니다.
 
@@ -236,7 +236,7 @@ for l, g in groupby(['A','B','DEF'], len):
 
 ### batched
 
-첫번째로 iterable을 주고 두번째 인자로 정수 n을 주면 크기가 $n$인 배치를 만듭니다.
+첫 번째로 iterable을 주고 두 번째 인자로 정수 n을 주면 크기가 $n$인 배치를 만듭니다.
 파이썬 3.12 버전에 추가되어서 지금 Google Colab처럼 파이썬 버전이 낮으면 사용할 수 없습니다.
 
 ```py
@@ -268,7 +268,7 @@ list(chain.from_iterable(['ABC', 'DEF', 'GHI']))
 
 ### dropwhile
 
-첫번째 인자로 람다나 함수 predicate를 받고 두번째 인자로 data를 받습니다.
+첫 번째 인자로 람다나 함수 predicate를 받고 두 번째 인자로 data를 받습니다.
 data의 각 요소에 대해 predicate를 수행하고 predicate가 실패(false)하면 그 원소부터
 남은 원소를 전부 리턴합니다.
 
@@ -298,10 +298,10 @@ zip은 두 iterator중 하나가 소진될 때까지 시행하는데 zip_longest
 
 ```py
 list(zip('abcd', '123'))
-[('a', '1'), ('b', '2'), ('c', '3')]
+# [('a', '1'), ('b', '2'), ('c', '3')]
 
 list(zip_longest('abcd', '123', fillvalue='-'))
-[('a', '1'), ('b', '2'), ('c', '3'), ('d', '-')]
+# [('a', '1'), ('b', '2'), ('c', '3'), ('d', '-')]
 ```
 
 ### pairwise
@@ -327,7 +327,7 @@ list(starmap(pow, [(2,5), (3,2), (10,3)]))
 
 ### tee
 
-iterator를 입력으로 받아서 두번째 인자인 n개의 iterator로 반환합니다. 각 iterator는
+iterator를 입력으로 받아서 두 번째 인자인 n개의 iterator로 반환합니다. 각 iterator는
 서로 독립(independent)입니다. 만약 서로 연결된 iterator라면 한쪽에서 순회하면 나머지
 iterator가 가리키는 원소도 변하게 되는데 이걸 방지하고 싶은 경우 필요합니다.
 
