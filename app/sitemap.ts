@@ -1,11 +1,10 @@
 import { parsePost } from "@/lib/post/parser";
 import { posts, readContent, series } from "@/lib/post/posts";
 import type { MetadataRoute } from "next";
-import path from "path";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://post.yeahx4.me";
-  const makeUrl = (loc: string) => path.join(baseUrl, loc);
+  const makeUrl = (loc: string) => `${baseUrl}/${loc}`;
 
   return [
     { url: baseUrl, lastModified: new Date() },

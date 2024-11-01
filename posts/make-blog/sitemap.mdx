@@ -3,7 +3,7 @@ title: sitemap.xml 자동 생성하기
 description: 블로그에 sitemap을 추가합니다. 자동으로 글 목록에 맞춰 생성합니다.
 cover:
 tags: blog, next.js, sitemap, sitemap.xml
-date: 2024-10-26
+date: 2024-11-1
 author: yeahx4
 series: make-blog
 seriesIndex: 5
@@ -58,7 +58,6 @@ sitemap에 포함할 정보는 URL, lastModified입니다. 지금까지는 포�
 import { parsePost } from "@/lib/post/parser";
 import { posts, readContent, series } from "@/lib/post/posts";
 import type { MetadataRoute } from "next";
-import path from "path";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://post.yeahx4.me";
