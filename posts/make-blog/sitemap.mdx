@@ -74,7 +74,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         .map(async (p) => {
           const { post, meta } = await p;
           return {
-            url: makeUrl(post),
+            url: makeUrl(`posts/${post}`),
             lastModified: new Date(meta.update),
           };
         })
