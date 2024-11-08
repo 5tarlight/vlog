@@ -1,0 +1,104 @@
+---
+title: Rendering blocking 해결하기 (feat. Google Fonts)
+description: Google Fonts에서 폰트를 CSS로 불러오면 렌더링을 블로킹합니다. 블로킹을 해결해 더 빠르게 로딩되도록 최적화합니다.
+cover:
+tags: blog, next.js, google fonts, fonts, optimization, 최적화, 폰트
+date: 2024-11-8
+author: yeahx4
+series: make-blog
+seriesIndex: 7
+coverTitle: FCP 줄이기
+coverSub: w. Google Fonts
+coverTs: 100
+coverBg: 7C6CAF
+coverColor: ffffff
+---
+
+# 기존 방식
+
+이 블로그는 메인 폰트로 `Noto Sans KR`을 사용하고 있습니다. Google Fonts에서 제공해주는
+코드를 `@import`를 사용해서 `globals.css` 맨 위에 적용해 두고 있었습니다. 당연히 외관상으로는
+아무런 문제가 없습니다. 성능 측정을 위해서 [Lighthouse](https://pagespeed.web.dev/)를
+돌려 봤는데?
+
+![FCP 3.2s](/img/make-blog/font-opt/fcp-first.png)
+
+FCP가 3.2초가 나왔습니다. FCP는 First Contentful Paint의 약자로 화면에 콘텐츠가
+처음으로 표시되기까지 걸리는 시간을 말합니다. 3.2초나 지나서야 처음으로 뭔가 보이기 시작한다는
+의미입니다. 그 이후에도 이미지를 로딩한다던가 하는 작업이 더 진행되면서 페이지가 최종적으로 완성되고
+그 시점을 LCP(Last Contentful Paint)라고 합니다. 저는 커버 이미지를 동적으로 생성하고
+있기 때문에 로딩에 시간이 걸릴 수 밖에 없고 최대한 FCP라도 줄여야 했습니다.
+
+## FCP를 줄여야 하는 이유
+
+최적화를 주제로
+검색하면 어디든 빠지지 않는 내용으로 Pinterest에서 대기 시간을 40% 줄여 가입자 수를 15%
+늘렸다는 내용이 있습니다. 사람들은 인내심이 그렇게 좋지 않습니다. 로딩에 오랜 시간이 걸리면
+그냥 뒤로가기를 누르고 다른 페이지를 보러 갑니다. 일단 나중에 로드되는 컨텐츠가 있더라도
+사용자에게 뭐라도 빠르게 보여주면 사용자는 빠르다고 느끼게 됩니다. 그럼 제 블로그의 문제는
+무엇이었을까요?
+
+## Rendering Blocking
+
+Rendering blocking 요소는 말 그대로 렌더링을 차단해 지연시키는 요소입니다. 특정 몇몇 요소는
+페이지가 렌더링 되기 전에 실행되어야 해서 렌더링을 차단하고 불러오게 됩니다. 그런데 불러오는데
+오랜 시간이 걸리면 그만큼 렌더링이 지연되고 사용자 입장에서는 답답함을 느끼고 뒤로가기를
+누를 시간을 마련합니다. 렌더링 차단 요소로 유명한 것은 CSS, Javascript가 있습니다.
+Javascript는 script 태그에 `defer` 옵션을 주는 식으로 해결할 수 있지만 CSS는 살짝
+어렵습니다.
+
+Lighthouse를 보면 어디서 블로킹이 발생하고 있는지 볼 수 있습니다. (클릭하면 크게 보입니다)
+
+![Google Fonts CSS Rendering Blocking](/img/make-blog/font-opt/css-blocking.png)
+
+# 블로킹 해결하기
+
+Google Fonts에서 제공하는 CSS를 불러오는데 상당한 시간이 소요되면서 Blocking이 발생하고 있습니다.
+서드파티 CSS는 제가 로딩 속도를 증가시킬수 없는 영역이기 때문에 다른 방법을 찾아야 합니다.
+
+지금까지는 사용하기 편해서 CSS로 불러왔었는데, 속도를 위해서 파일로 불러오기로 했습니다.
+Google Fonts에 가서 Noto Sans KR 폰트를 다운로드합니다. `.ttf` 파일로 받아지는데
+웹에서는 woff2를 쓰면 더 효율적으로 폰트를 불러올 수 있습니다.
+
+## WOFF
+
+WOFF는 Web Open Font Format의 약자로 Mozilla와 다른 단체들이 만든 웹 폰트입니다.
+ttf와 다르게 압축이 되어있어 용량이 작습니다. woff2는 Brotil 압축 알고리즘을 사용해
+기존 방식보다 크기를 더 줄인 것이 특징입니다. 특히 한글 폰트는 영어 폰트에 비해 용량이 큰
+편이기 때문에 최대한 크기를 줄이는 것이 유리합니다.
+
+![woff-vs-ttf](/img/make-blog/font-opt/font-size.png)
+
+확실히 용량이 크게 줄어들었습니다. 대역폭을 줄이고 더 빠르게 폰트를 불러올 수 있습니다.
+
+## font-face
+
+이제 브라우저에게 Noto Sans KR 이라는 폰트를 알려주어야 합니다. 물론 `font-family` 옵션에
+매번 `url('...');` 처럼 woff2 파일을 알려줄 수 있지만 Noto Sans KR 이라는 폰트를 정의하고
+저 이름으로 사용하는 것이 훨씬 간편하고 효율적입니다. CSS의 `@font-face`는 이런 역할을
+수행합니다. 자세한 부분은 [MDN: font-face](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face)를
+참고해 주세요. `global.css`에 font-face를 추가합니다.
+
+```css
+@font-face {
+  font-family: "Noto Sans KR";
+  font-style: normal;
+  font-weight: 200, 400, 600, 800;
+  font-display: swap;
+  src: url("/font/NotoSansKR.woff2") format("font-woff2");
+}
+```
+
+font-display를 swap으로 설정하면 일단 기본 폰트로 페이지를 렌더링한 후 폰트가 준비되었을 때
+폰트를 바꾸게 됩니다. 폰트 로딩이 느릴 경우 사용자 입장에서는 폰트가 바뀌는 모습이 보일 수
+있는데, 일단 페이지가 보여지는게 우선입니다.
+
+# 결과
+
+이제 production에 배포하고 다시 Lighthouse를 돌려 보겠습니다.
+
+![lcp-0.9s](/img/make-blog/font-opt/lcp-last.png)
+
+와우! 3.2s에서 0.9s로 약 **72%의 속도 향상**을 보였습니다. Lighthouse의 rendering blocking
+섹션은 이제 더이상 표시되지도 않습니다! 굉장히 성공적이네요. 실제로 테스트해 볼 때도 확실히
+페이지 속도가 빨라진 것을 느낄 수 있었습니다.

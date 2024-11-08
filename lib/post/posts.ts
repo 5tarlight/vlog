@@ -22,6 +22,7 @@ export const series: {
       "vercel-og",
       "sitemap",
       "rss",
+      "font-optimization",
     ],
   },
 };
