@@ -3,7 +3,7 @@ title: Python itertools 완벽 가이드
 description: itertools에 대한 모든 것
 cover:
 tags: python, ps, algorithm, 파이썬, 알고리즘, itertools, 반복, python
-date: 2024-11-1
+date: 2024-11-10
 author: yeahx4
 series:
 seriesIndex:
@@ -86,15 +86,36 @@ len(list(permutations([1, 1, 0, 0, 0])))
 # 120
 ```
 
-$5! = 120$으로 중복되는 element가 있어도 모든 경우를 찾은 것을 알 수 있습니다. 두 번째 인자로
-추출할 요소의 개수 n을 전달하면 $n$개를 뽑아 배열해 만들 수 있는 순열을 찾습니다.
+$5! = 120$으로 중복되는 element가 있어도 모든 경우를 찾은 것을 알 수 있습니다. C++에선
+미리 정렬된 배열에서 `next_permutation`을 통해 비슷한 작동을 얻을 수 있습니다.
+
+```cpp
+#include "bits/stdc++.h"
+
+using namespace std;
+
+int main() {
+    int arr[] = { 0, 1, 1 };
+    do {
+        for (int a : arr) cout << a <<  ' ';
+        cout << '\n';
+    } while (next_permutation(arr, arr + 3));
+}
+```
+
+itertools의 permutation이었다면 $3! = 6$개의 경우가 나왔겠지만, 실제 출력은
+`011`, `101`, `110` 단 세가지 뿐입니다. C++에선 일치하는(중복된) 경우를 제외한다는 것을
+알 수 있습니다.
+
+배열의 모든 원소를 사용하는 것이 아니라 몇개를 뽑는 경우를 찾고 싶다면 두 번째 인자로 개수를
+지정해 줄 수 있습니다.
 
 ```py
 len(list(permutations([1, 1, 0, 0, 0], 2)))
 # 20
 ```
 
-$_{5}\mathrm{P}_{2} = 20$ 개의 경우를 찾을 수 있습니다. 마찬가지로 20개 중 중복되는 경우가
+$_{5}\mathrm{P}_{2} = 20$ 개의 경우를 찾을 수 있었습니다. 마찬가지로 20개 중 중복되는 경우가
 있습니다. 항상 사전순으로 빠른 경우부터 받을 수 있습니다.
 
 ### combinations
@@ -127,6 +148,18 @@ list(combinations_with_replacement('ABCD', 2))
 #  ('D', 'D')]
 ```
 
+### accumulate
+
+이름처럼 점점 숫자를 누적합니다. 입력으로 배열을 넣으면 그 배열의 누적합이 나옵니다.
+누적합이 필요할 때 한 줄이면 끝낼 수 있겠네요.
+
+```py
+a = [1, 2, 3, 4, 5]
+print(list(accumulate(a)))
+
+# [1, 3, 6, 10, 15]
+```
+
 ### count
 
 count는 특정 숫자에서 시작해 하나씩 세어나가는 함수입니다.
@@ -151,6 +184,9 @@ for i in count(10, -2):
 # 10 8 6 4 2 0 
 ```
 
+직접 조건을 걸어 break하지
+않으면 무한 루프를 돌게 됩니다. `list(count(0))` 같은 코드도 위험하니 사용해선 안됩니다.
+
 ### cycle
 
 cycle은 인자로 전달된 iterable을 무한히 반복합니다.
@@ -166,8 +202,6 @@ for c in cycle('abcd'):
 
 # abcdabcdab
 ```
-
-인자로 `'abcd'`를 넣어 주었는데 리스트 등 아무 iterable이나 올 수 있습니다.
 
 ### repeat
 
@@ -192,18 +226,6 @@ for i in repeat(10, 3):
   print(i, end=' ')
 
 # 10 10 10 
-```
-
-### accumulate
-
-이름처럼 점점 숫자를 누적합니다. 입력으로 배열을 넣으면 그 배열의 누적합이 나옵니다.
-누적합이 필요할 때 한 줄이면 끝낼 수 있겠네요.
-
-```py
-a = [1, 2, 3, 4, 5]
-print(list(accumulate(a)))
-
-# [1, 3, 6, 10, 15]
 ```
 
 ### compress
