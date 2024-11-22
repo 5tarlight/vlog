@@ -1,6 +1,7 @@
 "use client";
 
 import { PostMeta } from "@/lib/post/parser";
+import { prettifyDate } from "@/lib/utils/date";
 import cn from "@yeahx4/cn";
 import Link from "next/link";
 import { useState } from "react";
@@ -38,8 +39,13 @@ export default function SeriesListContent({
                 )}
               >
                 {index + 1}. {meta.title}
-                <p className="text-sm text-gray-500 dark:text-gray-400 hidden md:block">
-                  {meta.date}
+                <p
+                  className={cn(
+                    "text-sm text-gray-500 dark:text-gray-400 hidden",
+                    "md:block font-mono"
+                  )}
+                >
+                  {prettifyDate(meta.date)}
                 </p>
               </div>
             </Link>

@@ -1,5 +1,6 @@
 import { PostMeta } from "@/lib/post/parser";
 import { series } from "@/lib/post/posts";
+import { prettifyDate } from "@/lib/utils/date";
 import Image from "next/image";
 import Link from "next/link";
 import { FaRegCalendarAlt } from "react-icons/fa";
@@ -37,10 +38,13 @@ export default function PostHead({
           <div className="flex flex-col ml-4">
             <p className="text-lg">YEAHx4</p>
             <div className="flex gap-2 items-center justify-center">
-              <FaRegCalendarAlt /> {meta.date}
+              <FaRegCalendarAlt />
+              <span className="mt-1">{prettifyDate(meta.date)}</span>
               <div className="items-center hidden sm:flex gap-2 ml-4">
-                <MdOutlineWatchLater className="text-lg" /> {readingTime}{" "}
-                {readingTime > 1 ? "mins" : "min"}
+                <MdOutlineWatchLater className="text-lg" />
+                <span className="mt-1">
+                  {readingTime} {readingTime > 1 ? "mins" : "min"}
+                </span>
               </div>
             </div>
           </div>
