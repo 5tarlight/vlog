@@ -4,6 +4,7 @@ import Link from "next/link";
 import ThemeChanger from "./theme/ThemeChanger";
 import cn from "@yeahx4/cn";
 import { useEffect, useState } from "react";
+import SearchInput from "./SearchInput";
 
 export default function Header() {
   const [isVisible, setIsVisible] = useState(true);
@@ -48,7 +49,13 @@ export default function Header() {
         <div className="text-lg md:text-2xl font-extrabold">
           <Link href="/">YEAHx4 Blog</Link>
         </div>
-        <div className="flex gap-2">
+        <div className="hidden md:block w-[60%]">
+          <SearchInput header />
+        </div>
+        <div className="flex gap-2 items-center">
+          <Link href="/posts" className="mt-1">
+            글 목록
+          </Link>
           <ThemeChanger />
         </div>
       </div>

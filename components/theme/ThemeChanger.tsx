@@ -20,7 +20,7 @@ export default function ThemeChanger() {
 
   return (
     <div
-      className="cursor-pointer p-4"
+      className="cursor-pointer p-4 flex items-center"
       onClick={() => setTheme(currentTheme === "dark" ? "light" : "dark")}
     >
       {currentTheme === "dark" ? <BsFillMoonFill /> : <BsFillSunFill />}

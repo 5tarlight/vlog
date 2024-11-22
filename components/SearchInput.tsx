@@ -7,8 +7,10 @@ import { FaSearch } from "react-icons/fa";
 
 export default function SearchInput({
   value: initialValue = "",
+  header = false,
 }: {
   value?: string;
+  header?: boolean;
 }) {
   const [value, setValue] = useState(initialValue);
   const [isFocused, setIsFocused] = useState(false);
@@ -19,7 +21,7 @@ export default function SearchInput({
   };
 
   return (
-    <div className="flex mt-6 justify-center w-full">
+    <div className={cn("flex justify-center w-full", header ? "" : "mt-6")}>
       <div
         className={cn(
           "flex justify-center w-full max-w-[512px] bg-white",
@@ -39,7 +41,7 @@ export default function SearchInput({
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           onKeyDown={(e) => e.key === "Enter" && search()}
-          placeholder="글 제목, 태그, 내용을 검색해보세요"
+          placeholder={header ? "검색" : "글 제목, 태그, 내용을 검색해보세요"}
         />
         <button className="p-2" onClick={search}>
           <FaSearch />
