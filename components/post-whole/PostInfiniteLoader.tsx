@@ -45,9 +45,11 @@ export default function PostIinfiniteLoader({ posts }: { posts: string[] }) {
 
   return (
     <div className="max-w-5xl w-full mx-auto px-4">
-      {loadedPosts.map((post, index) => (
-        <PostSummary key={index} meta={post} />
-      ))}
+      <div className="flex flex-col gap-4">
+        {loadedPosts.map((post, index) => (
+          <PostSummary key={index} meta={post} />
+        ))}
+      </div>
 
       {loading ? <div>Loading...</div> : <div ref={triggerRef} />}
     </div>
