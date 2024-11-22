@@ -1,3 +1,6 @@
+import { posts } from "@/lib/post/posts";
+import PostIinfiniteLoader from "@/components/post-whole/PostInfiniteLoader";
+
 export default function Posts() {
-  return <div className="max-w-5xl w-full mx-auto px-4">Posts</div>;
+  return <PostIinfiniteLoader posts={posts} />;
 }
