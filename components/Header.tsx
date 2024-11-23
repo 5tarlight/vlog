@@ -53,9 +53,7 @@ export default function Header() {
           <SearchInput header />
         </div>
         <div className="flex gap-2 items-center">
-          <Link href="/posts" className="mt-1">
-            글 목록
-          </Link>
+          <Link href="/posts">글 목록</Link>
           <ThemeChanger />
         </div>
       </div>
