@@ -1,0 +1,271 @@
+---
+title: 무한 스크롤로 모든 포스트 페이지 구현하기
+description: Infinite Scroll로 모든 포스트를 조회할 수 있는 페이지를 만듭니다.
+cover:
+tags: blog, next.js, google fonts, fonts, optimization, 최적화, 폰트
+date: 2024-11-26
+author: yeahx4
+series: make-blog
+seriesIndex: 8
+coverTitle: Infinite Scroll
+coverSub:
+coverTs: 120
+coverBg: 7C6CAF
+coverColor: ffffff
+---
+
+지금 제 블로그는 메인 화면에 표시되는 최신 포스트 6개 말고 예전 포스트를 확인할 수
+있는 방법이 없습니다. 물론 검색 기능이 있긴 하지만, 제 블로그에 무슨 포스트가 있는지
+조차 모르는 분들에겐 그닥 유용하지 않은 기능입니다. 블로그에 있는 모든 글을 한번에
+몰아볼 수 있는 기능이 필요했고, 모든 글 페이지를 만들기로 했습니다. 지금은 헤더 오른쪽에서
+메뉴를 찾아볼 수 있습니다.
+
+모든 글 페이지는 말 그대로 모든 글을 표시하기 때문에 꽤 많은 양의 정보가 표시됩니다.
+그리고, 한번에 모든 글의 데이터를 불러오려면 서버에도 상당한 부하가 가게 됩니다.
+그래서 일반적으로 한번에 모든 글을 로드하지 않고 페이지 기능을 도입하거나 더보기
+버튼을 넣어서 추가적으로 로딩합니다. 하지만, 페이지는 한 눈에 모든 글을 돌아보기 좋지
+않다고 생각했습니다. 사용자가 추가적으로 행동을 해야 다음 글이 로드되는 것도 그렇게
+좋지는 않다고 생각했습니다. 더보기 버튼도 마찬가지입니다.
+
+그럼 사용자가 더보기 버튼을 누르기 전에 알아서 추가적으로 더 불러오면 되지 않을까요?
+
+# Infinite Scroll
+
+무한 스크롤은 스크롤이 충분히 내려가서 화면에 표시된 콘텐츠가 떨어졌을 때 추가적으로 새
+콘텐츠를 불러와서 아래에 덧붙이는 작업입니다. 사용자 입장에서는 스크롤이 계속 늘어나고
+무한하게 스크롤이 내려가는 것처럼 보이게 됩니다.
+
+## 작동방식
+
+제 블로그는 Next.js 14를 기반으로 만들어졌습니다. 그래서 서버 컴포넌트에서 직접
+mdx 파일에 접근하는 함수를 사용할 수 있지만, 무한 스크롤에서는 클라이언트 사이드에서
+작동해야 하기 때문에 로컬 파일에 직접 접근할 수 없습니다. 이럴 때를 대비해서 Next.js의
+Routes API 기능을 사용해 포스트 정보를 클라이언트 사이드에서도 읽을 수 있게 해두었습니다.
+`/api/posts`에 포스트 id를 넣어 요청하면 raw 데이터를 얻을 수 있습니다. 메타데이터를
+파싱하는 과정은 클라이언트 사이드에서도 수행 가능하고 굉장히 가벼우니 raw 데이터로도
+괜찮습니다.
+
+클라이언트 컴포넌트에서 글을 불러오는 문제는 해결되었습니다. 그럼 언제 글을 불러와야 할까요?
+이 부분에는 여러 방식이 있는데, 저는 가장 직관적인 방식을 사용하려고 합니다. 눈에 보이지
+않는 `div`를 하나 두고 그 컴포넌트가 화면에 표시되면 페이지의 끝에 도달했다는 뜻이므로
+추가적으로 글을 로딩하려고 합니다.
+
+## Trigger
+
+client component인 `PostInfiniteLoader.tsx`를 만들고 몇 state와 ref를
+설정하겠습니다.
+
+```ts
+const [loadedPosts, setLoadedPosts] = useState<PostMeta[]>([]);
+const [loading, setLoading] = useState(false);
+
+const triggerRef = useRef<HTMLDivElement>(null);
+const shouldLoad = useOnScreen(triggerRef);
+```
+
+여기서 `loadedPosts`는 이미 로딩된 포스트들로 화면에 표시되는 데이터들입니다.
+`loading`은 현재 로딩을 수행하고 있는지 나타내는 state로 로딩이 진행되고 있다면
+skeleton을 화면에 표시하게 됩니다. 여기서 제일 중요한 부분은 `shouldLoad`인데
+화면에 `triggerRef`가 지정된 div가 표시되고 있으면 true로 바뀌는 hook 입니다.
+그럼 `useOnScreen`은 어떻게 구현되었을까요?
+
+```ts
+"use client";
+
+import { RefObject, useEffect, useState } from "react";
+
+export default function useOnScreen(ref: RefObject<HTMLElement>) {
+  const [isIntersecting, setIntersecting] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !ref.current) return;
+
+    const observer = new IntersectionObserver(([entry]) =>
+      setIntersecting(entry.isIntersecting)
+    );
+
+    observer.observe(ref.current);
+
+    return () => observer.disconnect();
+  }, [ref]);
+
+  return isIntersecting;
+}
+```
+
+ref를 파라미터로 받아서 `IntersectionObserver`를 통해 화면에 표시되고 있는지(상호작용
+할 수 있는지)를 검사하고 있습니다. `useEffect`를 통해서 unmount될 때는 이벤트 리스너를
+해제하고 있습니다. 이제 useOnScreen을 통해서 div가 화면에 표시되고 있는지를 실시간으로
+읽어올 수 있게 되었습니다.
+
+## 글 불러오기
+
+`PostInfiniteLoader` 컴포넌트 자체는 client component이기 때문에 시리즈 데이터와
+글 목록 조차 읽어올 수 없습니다(목록과 파일에서 읽는 코드가 같은 파일에 있기 때문에
+그렇습니다). 그래서 server component인 `/posts/page.tsx`에서 읽어와 props로
+전달해 주고 있습니다.
+
+```tsx
+import { posts, series } from "@/lib/post/posts";
+import PostIinfiniteLoader from "@/components/post-whole/PostInfiniteLoader";
+
+export default function Posts() {
+  return <PostIinfiniteLoader posts={posts} series={series} />;
+}
+```
+
+```tsx
+export default function PostIinfiniteLoader({
+  posts,
+  series,
+}: {
+  posts: string[];
+  series: {
+    [key: string]: {
+      name: string;
+      description: string;
+      posts: string[];
+    };
+  };
+}) {
+  // ...
+}
+```
+
+위에서 살펴본 대로 `shouldLoad`가 있으니 이제 글을 불러와 봅시다.
+
+```tsx
+useEffect(() => {
+    if (loading || loadedPosts.length === posts.length || !shouldLoad) return;
+
+    const loadNextPost = async () => {
+      setLoading(true);
+      const start = Date.now();
+
+      const nextPost = posts[loadedPosts.length];
+      if (!nextPost) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/posts", {
+          method: "POST",
+          body: JSON.stringify({ path: nextPost }),
+        });
+
+        const { content } = await res.json();
+        const meta = parsePost(content).meta;
+
+        const end = Date.now();
+        if (end - start < 200) {
+          await new Promise((resolve) =>
+            setTimeout(resolve, 200 - (end - start))
+          );
+        }
+
+        setLoadedPosts((prev) => [...prev, meta]);
+      } catch (error) {
+        console.error("Failed to load post:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadNextPost();
+  }, [shouldLoad, loading]);
+```
+
+일단, 지금 불러와야 하는지 확인하고 불러올 글이 있는지 확인합니다. 모든 조건이 갖춰지면
+`try-catch` 블록을 통해 새 포스트를 읽어옵니다. 글을 불러오는 동안 `loading` state가
+true로 설정되고 skeleton이 보이게 되는데, 로딩 속도가 굉장히 빠르기 때문에 skeleton이
+깜빡거리다 사라져서 최소 200ms까지 기다리게 구현했습니다.
+
+마지막으로 `useEffect`의 dependencies를 `[shouldLoad, loading]`로
+설정한 이유는 처음 빈 페이지에서 글을 불러올 때, `shouldLoad`가 계속 true로
+유지되어 있기 때문입니다. 그러면 하나의 글을 불러온 뒤 더이상 새로운 글을 로드하지
+않습니다. 그래서 loading이 변한 이후에도 한번 더 체크해서 계속 글을 불러오도록
+구현했습니다.
+
+## 글 표시하기
+
+이제 ref를 연결하고, state에 맞춰 글 목록을 표시하기만 하면 됩니다.
+
+```tsx
+return (
+  <div className="max-w-5xl w-full mx-auto px-4">
+    <div className="flex flex-col gap-8">
+      {loadedPosts.map((post, index) => (
+        <Link href={`/posts/${posts[index]}`} key={index}>
+          <PostSummary
+            meta={post}
+            seriesName={post.series && series[post.series].name}
+          />
+        </Link>
+      ))}
+    </div>
+
+    {loading ? (
+      <div className="mt-8">
+        <PostSkeleton />
+      </div>
+    ) : (
+      <div ref={triggerRef} />
+    )}
+  </div>
+);
+```
+
+## Skeleton
+
+스켈레톤은 글을 자연스럽게 로딩하기 위해서 사용하는 컴포넌트입니다. 실제로 로딩될 콘텐츠의
+모양에 맞춰 표시합니다. 빙글빙글 돌아가는 spinner loader나 `loading...` 같은
+문구를 사용해도 같은 효과를 낼 수 있지만, 스켈레톤을 사용하면 로드되기 전에 미리 형태를
+어느정도 알 수 있고 로딩이 더 빠른듯한 느낌을 받을 수 있습니다. 그리고 큰 컴포넌트가 로딩되기
+전에 미리 자리를 차지해서 갑자기 레이아웃이 변하는 cumulative layout shift 문제를
+줄일 수 있습니다.
+
+스켈레톤은 딱히 어려운 기능은 없고, 다른 컨텐츠의 레이아웃과 비슷하게 만들어서 배경이
+일렁거리며 로딩되는 애니메이션을 주면 됩니다.
+
+```tsx
+import cn from "@yeahx4/cn";
+
+export default function PostSkeleton() {
+  return (
+    <div
+      className={cn(
+        "flex flex-col md:flex-row items-start md:items-center p-4",
+        "gap-4 md:gap-8 bg-white dark:bg-dark-bg rounded-lg shadow-lg",
+        "dark:bg-gray-800 transition-all duration-300 hover:shadow-xl",
+        "h-48 animate-pulse"
+      )}
+    >
+      <div className="flex items-center justify-center w-48 h-40 bg-gray-300 rounded sm:w-96 dark:bg-gray-700">
+        <svg
+          className="w-10 h-10 text-gray-200 dark:text-gray-600"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor"
+          viewBox="0 0 20 18"
+        >
+          <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z" />
+        </svg>
+      </div>
+      <div className="w-full">
+        <div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
+        <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[480px] mb-2.5"></div>
+        <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
+        <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[440px] mb-2.5"></div>
+        <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[460px] mb-2.5"></div>
+        <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
+      </div>
+      <span className="sr-only">Loading...</span>
+    </div>
+  );
+}
+```
+
+맨 밑에 `sr-only` 클래스네임이 붙은 span이 하나 있는데, `sr-only`는 Screen Reader
+only의 약자입니다. 스크린 리더를 사용해서 화면에 스켈레톤이 보이고 있는지
+알 수 없는 분들을 위해 넣어주었습니다.

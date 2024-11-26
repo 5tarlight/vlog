@@ -23,6 +23,7 @@ export const series: {
       "sitemap",
       "rss",
       "font-optimization",
+      "posts-infinite-scroll",
     ],
   },
 };
