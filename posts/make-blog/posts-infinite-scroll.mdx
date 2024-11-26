@@ -40,7 +40,8 @@ coverColor: ffffff
 제 블로그는 Next.js 14를 기반으로 만들어졌습니다. 그래서 서버 컴포넌트에서 직접
 mdx 파일에 접근하는 함수를 사용할 수 있지만, 무한 스크롤에서는 클라이언트 사이드에서
 작동해야 하기 때문에 로컬 파일에 직접 접근할 수 없습니다. 이럴 때를 대비해서 Next.js의
-Routes API 기능을 사용해 포스트 정보를 클라이언트 사이드에서도 읽을 수 있게 해두었습니다.
+[API Routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes)
+기능을 사용해 포스트 정보를 클라이언트 사이드에서도 읽을 수 있게 해두었습니다.
 `/api/posts`에 포스트 id를 넣어 요청하면 raw 데이터를 얻을 수 있습니다. 메타데이터를
 파싱하는 과정은 클라이언트 사이드에서도 수행 가능하고 굉장히 가벼우니 raw 데이터로도
 괜찮습니다.

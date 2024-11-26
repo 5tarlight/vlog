@@ -154,7 +154,8 @@
   margin-top: 1rem;
   margin-bottom: 1rem;
   text-align: justify;
-  line-height: 1.7;
+  line-height: 1.6;
+  font-size: 17px;
 }
 
 .prose .inline-code {
