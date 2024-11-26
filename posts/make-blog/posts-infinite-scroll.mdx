@@ -136,44 +136,44 @@ export default function PostIinfiniteLoader({
 
 ```tsx
 useEffect(() => {
-    if (loading || loadedPosts.length === posts.length || !shouldLoad) return;
+  if (loading || loadedPosts.length === posts.length || !shouldLoad) return;
 
-    const loadNextPost = async () => {
-      setLoading(true);
-      const start = Date.now();
+  const loadNextPost = async () => {
+    setLoading(true);
+    const start = Date.now();
 
-      const nextPost = posts[loadedPosts.length];
-      if (!nextPost) {
-        setLoading(false);
-        return;
+    const nextPost = posts[loadedPosts.length];
+    if (!nextPost) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/posts", {
+        method: "POST",
+        body: JSON.stringify({ path: nextPost }),
+      });
+
+      const { content } = await res.json();
+      const meta = parsePost(content).meta;
+
+      const end = Date.now();
+      if (end - start < 200) {
+        await new Promise((resolve) =>
+          setTimeout(resolve, 200 - (end - start))
+        );
       }
 
-      try {
-        const res = await fetch("/api/posts", {
-          method: "POST",
-          body: JSON.stringify({ path: nextPost }),
-        });
+      setLoadedPosts((prev) => [...prev, meta]);
+    } catch (error) {
+      console.error("Failed to load post:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        const { content } = await res.json();
-        const meta = parsePost(content).meta;
-
-        const end = Date.now();
-        if (end - start < 200) {
-          await new Promise((resolve) =>
-            setTimeout(resolve, 200 - (end - start))
-          );
-        }
-
-        setLoadedPosts((prev) => [...prev, meta]);
-      } catch (error) {
-        console.error("Failed to load post:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadNextPost();
-  }, [shouldLoad, loading]);
+  loadNextPost();
+}, [shouldLoad, loading]);
 ```
 
 일단, 지금 불러와야 하는지 확인하고 불러올 글이 있는지 확인합니다. 모든 조건이 갖춰지면
