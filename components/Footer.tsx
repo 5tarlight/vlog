@@ -16,7 +16,7 @@ export default function Footer() {
         )}
       >
         <div className="justify-self-start">
-          &copy; 2024{year !== 2024 && `~${year}`} YEAHx4.
+          &copy; 2024{year !== 2024 && `-${year}`} YEAHx4.
         </div>
         <div className="text-3xl justify-self-center">
           <FaCreativeCommonsBy />
