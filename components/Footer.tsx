@@ -3,6 +3,8 @@ import Link from "next/link";
 import { FaCreativeCommonsBy, FaGithub, FaRss } from "react-icons/fa6";
 
 export default function Footer() {
+  // WARN : This will not automatically updated!
+  // You should re-build or re-deploy to update
   const year = new Date().getFullYear();
 
   return (
