@@ -5,11 +5,17 @@ import { searchPosts } from "@/lib/post/posts";
 import cn from "@yeahx4/cn";
 import Link from "next/link";
 
-export async function generateMetadata({
-  params: { slug },
-}: {
-  params: { slug: string };
-}) {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+) {
+  const params = await props.params;
+
+  const {
+    slug
+  } = params;
+
   const query = decodeURIComponent(atob(decodeURIComponent(slug)));
 
   return {
@@ -18,11 +24,17 @@ export async function generateMetadata({
   };
 }
 
-export default async function Search({
-  params: { slug },
-}: {
-  params: { slug: string };
-}) {
+export default async function Search(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+) {
+  const params = await props.params;
+
+  const {
+    slug
+  } = params;
+
   const query = decodeURIComponent(atob(decodeURIComponent(slug)));
   const posts = await searchPosts(query);
 

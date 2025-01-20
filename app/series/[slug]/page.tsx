@@ -5,11 +5,17 @@ import { getPostsBySeries, readContent, series } from "@/lib/post/posts";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-export async function generateMetadata({
-  params: { slug },
-}: {
-  params: { slug: string };
-}) {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+) {
+  const params = await props.params;
+
+  const {
+    slug
+  } = params;
+
   const seriesData = series[slug];
 
   if (!seriesData) {
@@ -25,11 +31,17 @@ export async function generateMetadata({
   };
 }
 
-export default function Series({
-  params: { slug },
-}: {
-  params: { slug: string };
-}) {
+export default async function Series(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+) {
+  const params = await props.params;
+
+  const {
+    slug
+  } = params;
+
   if (!series[slug]) {
     notFound();
   }

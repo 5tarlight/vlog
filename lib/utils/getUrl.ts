@@ -1,8 +1,8 @@
-import { headers } from "next/headers";
+import { headers, type UnsafeUnwrappedHeaders } from "next/headers";
 import { join } from "path";
 
 export const getBaseUrl = () => {
-  const headersList = headers();
+  const headersList = (headers() as unknown as UnsafeUnwrappedHeaders);
   const host = headersList.get("host");
   const protocol = headersList.get("x-forwarded-proto") ?? "http";
 

@@ -3,11 +3,12 @@ import { buildCoverUrl, parsePost, parseToc, toHtml } from "@/lib/post/parser";
 import TableOfContent from "@/components/post/TableOfContent";
 import PostBody from "@/components/post/PostBody";
 
-export async function generateMetadata({
-  params: { slugs },
-}: {
-  params: { slugs: string[] };
+export async function generateMetadata(props: {
+  params: Promise<{ slugs: string[] }>;
 }) {
+  const params = await props.params;
+  const { slugs } = params;
+
   const res = await fetch(getUrl("/api/posts"), {
     method: "POST",
     headers: {
@@ -66,11 +67,13 @@ export async function generateMetadata({
   };
 }
 
-export default async function Post({
-  params: { slugs },
-}: {
-  params: { slugs: string[] };
+export default async function Post(props: {
+  params: Promise<{ slugs: string[] }>;
 }) {
+  const params = await props.params;
+
+  const { slugs } = params;
+
   const res = await fetch(getUrl("/api/posts"), {
     method: "POST",
     headers: {
