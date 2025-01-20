@@ -1,12 +1,6 @@
 import PostPageNavigation from "@/components/post-whole/PostPageNavigation";
 import PostSummary from "@/components/post-whole/PostSummary";
-import { renderLine } from "@/lib/post/parser";
-import {
-  getContentPreview,
-  getMaxPage,
-  getPostsByPage,
-  series,
-} from "@/lib/post/posts";
+import { getMaxPage, getPostsByPage, series } from "@/lib/post/posts";
 import { isNumeric } from "@/lib/utils/isNumeric";
 import { redirect } from "next/navigation";
 
