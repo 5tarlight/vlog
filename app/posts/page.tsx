@@ -1,8 +1,13 @@
 import PostPageNavigation from "@/components/post-whole/PostPageNavigation";
 import PostSummary from "@/components/post-whole/PostSummary";
-import { getMaxPage, getPostsByPage, series } from "@/lib/post/posts";
+import { renderLine } from "@/lib/post/parser";
+import {
+  getContentPreview,
+  getMaxPage,
+  getPostsByPage,
+  series,
+} from "@/lib/post/posts";
 import { isNumeric } from "@/lib/utils/isNumeric";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export default async function Posts({
@@ -30,13 +35,15 @@ export default async function Posts({
       <h1 className="text-center text-4xl mt-8 font-extrabold">전체 글</h1>
 
       <div className="flex gap-6 flex-col my-16">
-        {meta.map((m, i) => (
-          <Link href={`/posts/${m.id}`} key={i}>
-            <PostSummary
-              meta={m.meta}
-              seriesName={m.meta.series && series[m.meta.series].name}
-            />
-          </Link>
+        {meta.map(async (m, i) => (
+          <PostSummary
+            key={i}
+            id={m.id}
+            meta={m.meta}
+            seriesName={m.meta.series && series[m.meta.series].name}
+            // content={renderLine(await getContentPreview(m.id))}
+            // content={await getContentPreview(m.id)}
+          />
         ))}
       </div>
 

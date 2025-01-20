@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
 
   const { color, bg, title, sub, ts, ss } = param;
 
-  const font = await fetch(getUrl("/font/gotgam.ttf")).then((res) =>
+  const font = await fetch(await getUrl("/font/gotgam.ttf")).then((res) =>
     res.arrayBuffer()
   );
 

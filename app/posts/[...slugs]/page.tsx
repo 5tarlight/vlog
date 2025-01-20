@@ -9,7 +9,7 @@ export async function generateMetadata(props: {
   const params = await props.params;
   const { slugs } = params;
 
-  const res = await fetch(getUrl("/api/posts"), {
+  const res = await fetch(await getUrl("/api/posts"), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -74,7 +74,7 @@ export default async function Post(props: {
 
   const { slugs } = params;
 
-  const res = await fetch(getUrl("/api/posts"), {
+  const res = await fetch(await getUrl("/api/posts"), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

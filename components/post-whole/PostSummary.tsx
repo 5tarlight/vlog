@@ -1,73 +1,66 @@
-"use client";
-
 import { buildCoverUrl, PostMeta } from "@/lib/post/parser";
 import { prettifyDate } from "@/lib/utils/date";
 import cn from "@yeahx4/cn";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { FaRegCalendarAlt } from "react-icons/fa";
 
 export default function PostSummary({
   meta,
   seriesName,
+  // content,
+  id,
 }: {
+  id: string;
   meta: PostMeta;
   seriesName?: string;
+  // content: string | ReactNode;
 }) {
-  const router = useRouter();
+  const postUrl = `/posts/${id}`;
 
   return (
     <div
       className={cn(
-        "flex flex-col md:flex-row items-start md:items-center p-4",
-        "gap-4 md:gap-8 bg-white dark:bg-dark-bg rounded-lg shadow-lg",
-        "dark:bg-gray-800 transition-all duration-300 hover:shadow-xl"
+        "gap-6 md:gap-6 flex flex-col md:flex-row",
+        "border-y-2 dark:border-gray-500 border-gray-300 py-4 px-2"
       )}
     >
-      <div className="flex-shrink-0 w-full md:w-auto">
-        <Image
-          alt={meta.title}
-          src={meta.cover ? `/img/cover/${meta.cover}` : buildCoverUrl(meta)}
-          width={288}
-          height={162}
-          className="rounded-md object-cover w-full h-auto"
-          priority
-        />
+      <div>
+        <Link href={postUrl}>
+          <Image
+            alt={meta.title}
+            src={meta.cover ? `/img/cover/${meta.cover}` : buildCoverUrl(meta)}
+            width={288}
+            height={162}
+            className="rounded-md object-cover w-full h-auto"
+            priority
+          />
+        </Link>
       </div>
-      <div
-        className={cn(
-          "flex flex-col text-light-text dark:text-dark-text gap-2 w-full"
-        )}
-      >
-        <div>
-          {meta.series && (
-            <span
-              className={cn(
-                "text-xs md:text-sm text-blue-500 dark:text-purple-400",
-                "hover:underline"
-              )}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                router.push(`/series/${meta.series}`);
-              }}
-            >
-              [{seriesName}]
-            </span>
+      <div className="flex flex-col w-full">
+        <Link href={postUrl} className="mb-2">
+          <h2 className="font-bold text-2xl">{meta.title}</h2>
+        </Link>
+        <div className="flex gap-2 items-center text-sm text-gray-500 dark:text-gray-300">
+          {seriesName && (
+            <>
+              <Link
+                className="hover:underline text-blue-500 dark:text-purple-400"
+                href={`/series/${meta.series}`}
+              >
+                [{seriesName}]
+              </Link>
+              <span> - </span>
+            </>
           )}
-          <h2 className="text-lg md:text-xl font-bold">{meta.title}</h2>
+          <span>{prettifyDate(meta.date)}</span>
         </div>
-        <p
-          className={cn(
-            "text-sm md:text-base text-gray-500",
-            "dark:text-gray-400 mb-4"
-          )}
-        >
-          {meta.description}
-        </p>
-        <div className="flex gap-4 items-center ">
-          <span className="text-xs md:text-sm">By {meta.author}</span>
-          <span className="text-xs md:text-sm">{prettifyDate(meta.date)}</span>
-        </div>
+        <Link href={postUrl}>
+          <p className="text-gray-500 dark:text-gray-300">{meta.description}</p>
+        </Link>
+        {/* <div className={cn("text-sm", "text-ellipsis overflow-hidden")}>
+          {content}
+        </div> */}
       </div>
     </div>
   );

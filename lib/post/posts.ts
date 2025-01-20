@@ -74,6 +74,30 @@ export const getAllMeta = async () => {
   return (await readlAllPosts()).map((content) => parsePost(content).meta);
 };
 
+export const getContentPreview = async (slug: string) => {
+  const content = await readContent(slug);
+  const { body } = parsePost(content);
+
+  let preview = "";
+  let length = 0;
+  const bannedPrefix = ["```", ">", "#", "-", "*"];
+
+  for (let i = 0; i < body.length; i++) {
+    if (
+      !body[i] ||
+      bannedPrefix.some((prefix) => body[i].trim().startsWith(prefix))
+    )
+      continue;
+
+    preview += body[i] + " ";
+    length += body[i].length;
+
+    if (length > 100) break;
+  }
+
+  return preview;
+};
+
 export const getAllMetaWithId = async () => {
   return (await readlAllPosts()).map((content, i) => ({
     meta: parsePost(content).meta,
