@@ -1,6 +1,7 @@
 "use client";
 
 import { buildCoverUrl, PostMeta } from "@/lib/post/parser";
+import { prettifyDate } from "@/lib/utils/date";
 import cn from "@yeahx4/cn";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -34,7 +35,7 @@ export default function PostSummary({
       </div>
       <div
         className={cn(
-          "flex flex-col text-light-text dark:text-dark-text gap-2"
+          "flex flex-col text-light-text dark:text-dark-text gap-2 w-full"
         )}
       >
         <div>
@@ -63,10 +64,10 @@ export default function PostSummary({
         >
           {meta.description}
         </p>
-        <span className="text-xs md:text-sm">By {meta.author}</span>
-        <time className="text-xs md:text-sm">
-          {new Date(meta.date).toLocaleDateString()}
-        </time>
+        <div className="flex gap-4 items-center ">
+          <span className="text-xs md:text-sm">By {meta.author}</span>
+          <span className="text-xs md:text-sm">{prettifyDate(meta.date)}</span>
+        </div>
       </div>
     </div>
   );

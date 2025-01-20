@@ -177,3 +177,7 @@ export async function getPostsByPage(page: number, limit: number) {
 
   return sortedPosts.slice(start, end);
 }
+
+export async function getMaxPage(limit: number) {
+  return Math.ceil(posts.length / limit);
+}
