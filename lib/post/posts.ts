@@ -74,6 +74,13 @@ export const getAllMeta = async () => {
   return (await readlAllPosts()).map((content) => parsePost(content).meta);
 };
 
+export const getAllMetaWithId = async () => {
+  return (await readlAllPosts()).map((content, i) => ({
+    meta: parsePost(content).meta,
+    id: posts[i],
+  }));
+};
+
 export const getPostsBySeries = (seriesName: string) => {
   return series[seriesName].posts.map((post) => `${seriesName}/${post}`);
 };
@@ -159,3 +166,14 @@ export const searchPosts = async (query: string, limit = 6) => {
     .slice(0, limit)
     .filter((it) => it.score > 0);
 };
+
+export async function getPostsByPage(page: number, limit: number) {
+  const sortedPosts = (await getAllMetaWithId()).sort(
+    (a, b) => Date.parse(b.meta.date) - Date.parse(a.meta.date)
+  );
+
+  const start = (page - 1) * limit;
+  const end = page * limit;
+
+  return sortedPosts.slice(start, end);
+}

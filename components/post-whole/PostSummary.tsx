@@ -1,3 +1,5 @@
+"use client";
+
 import { buildCoverUrl, PostMeta } from "@/lib/post/parser";
 import cn from "@yeahx4/cn";
 import Image from "next/image";
