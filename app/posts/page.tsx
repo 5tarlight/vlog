@@ -1,24 +1,29 @@
+import PostPageNavigation from "@/components/post-whole/PostPageNavigation";
 import PostSummary from "@/components/post-whole/PostSummary";
 import { getMaxPage, getPostsByPage, series } from "@/lib/post/posts";
+import { isNumeric } from "@/lib/utils/isNumeric";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { MdArrowBack, MdArrowForward } from "react-icons/md";
 
 export default async function Posts({
   searchParams,
 }: {
-  searchParams: Promise<{ page: number | undefined }>;
+  searchParams: Promise<{ page: string | undefined }>;
 }) {
   const params = await searchParams;
 
-  if (!params.page) {
+  if (!params.page || !isNumeric(params.page)) {
     redirect("/posts?page=1");
   }
 
   const PAGE_SIZE = 5;
-  const page = params.page;
+  const page = parseInt(params.page);
   const meta = await getPostsByPage(page, PAGE_SIZE);
   const maxPage = await getMaxPage(PAGE_SIZE);
+
+  if (page > maxPage) {
+    redirect(`/posts?page=${maxPage}`);
+  }
 
   return (
     <div className="max-w-5xl w-full mx-auto">
@@ -35,19 +40,7 @@ export default async function Posts({
         ))}
       </div>
 
-      <div className="flex gap-4 justify-center mb-8 items-center">
-        <div className="flex items-center gap-1">
-          <MdArrowBack />
-          <span>Prev</span>
-        </div>
-        <div>
-          {page} / {maxPage}
-        </div>
-        <div className="flex items-center gap-1">
-          <span>Next</span>
-          <MdArrowForward />
-        </div>
-      </div>
+      <PostPageNavigation page={page} maxPage={maxPage} />
     </div>
   );
 }
