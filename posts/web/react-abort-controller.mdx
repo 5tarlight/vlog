@@ -1,0 +1,196 @@
+---
+title: AbortController로 필요 없는 API 요청 취소하기
+description: AbortController를 사용하면 시간이 오래 걸리는 요청을 중간에 취소할 수 있습니다.
+cover:
+tags: web, react, fetch, abortcontroller, 리액트
+date: 2025-02-18
+author: yeahx4
+series:
+seriesIndex:
+coverTitle: AbortController
+coverSub: React.js
+coverTs: 90
+coverBg: E5BE01
+coverColor: ffffff
+---
+
+# 언마운트된 컴포넌트의 State
+
+리액트 프로젝트에서 fetch를 통해 데이터를 불러올 때, `useEffect`에서 요청을 하고
+데이터가 도착하면 state를 업데이트 하는 패턴을 굉장히 자주 사용합니다. 그런데 만약
+요청이 완료되기 전에 컴포넌트가 unmount되면 어떤 일이 일어날까요?
+
+```jsx
+import { useEffect, useState } from "react";
+
+function SlowFetcher() {
+  const [data, setData] = useState("");
+
+  const slowFetch = async () => {
+    console.log("Fetching data...");
+
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        console.log("Data fetched!");
+        resolve("slow data");
+      }, 3000);
+    });
+  };
+
+  useEffect(() => {
+    slowFetch().then((data) => {
+      setData(data);
+    });
+  }, []);
+
+  return <h1>data: {data}</h1>;
+}
+
+export default SlowFetcher;
+```
+
+3초 후에 데이터를 가져오고 state를 업데이트하는 컴포넌트를 만들었습니다. 이 컴포넌트를 `App.js`에서
+불러와서 렌더링하면 평범하게 3초 후에 "data: slow data"가 화면에 렌더링됩니다. `App.js`에
+`SlowFetcher` 컴포넌트를 언마운트하는 코드를 추가해보겠습니다.         
+
+```jsx
+import { useState } from "react";
+import SlowFetcher from "./Slow";
+
+function App() {
+  const [mounted, setMounted] = useState(true);
+
+  return (
+    <>
+      <button onClick={() => setMounted(false)}>Unmount</button>
+      {mounted && <SlowFetcher />}
+    </>
+  );
+}
+
+export default App;
+```
+
+3초가 지나기 전에 버튼을 눌러 언마운트 시킨다면 어떤 일이 일어날까요?
+
+![NotAborted](/img/web/react-abort-controller/fetched_data.png)
+
+화면에 컴포넌트는 보이지 않지만 요청은 여전히 진행되어 로그가 찍히게 됩니다.
+컴포넌트는 언마운트되어 더이상 응답 데이터가 필요하지 않지만 한 번 진행된 요청은 계속 진행되어
+불필요한 네트워크와 메모리 자원을 낭비하게 됩니다. 특히, 시간이 오래걸리는 요청은 데이터가 큰
+경우가 많기 때문에 이런 요청이 많다면 성능에 영향을 미칠 수 있습니다. 예전 버전 리액트에서는
+언마운트된 컴포넌트의 state를 수정하면 Can't perform a React state update on an unmounted component라는
+경고가 뜨기도 했습니다.
+
+# State 갱신하지 않기
+
+과거에는 이미 시작된 요청을 중단시킬 마땅한 방법이 없었습니다. 그래서 예전에는 마운트 되었는지 확인하는
+state를 하나 두고 언마운트 되었다면 다른 state를 업데이트 하지 않는 방법으로 에러를 없에고는
+했습니다.
+
+```jsx
+useEffect(() => {
+  let mounted = true;
+  slowFetch().then((data) => {
+    if (mounted) setData(data);
+  });
+
+  return () => {
+    mounted = false;
+  };
+}, []);
+```
+
+하지만 불필요한 HTTP 요청이 발생하는 것은 해결할 수 없었습니다.
+
+# AbortController
+
+AbortController는 요청을 중간에 취소할 수 있게 해주는 API입니다. 리액트 뿐 아니라
+바닐라 Javascript에서도 사용할 수 있습니다. IE를 제외한 최신 브라우저에서 모두 지원합니다.
+
+![Can I Use](/img/web/react-abort-controller/can-i-use.png)
+
+constructor를 사용해서 인스턴스를 생성하고 `abort` 메소드를 사용해서 요청을 취소할 수 있습니다.
+
+```js
+const controller = new AbortController();
+controller.abort();
+console.log(controller.signal.aborted); // true
+```
+
+이제 `fetch`를 통한 요청을 `AbortController`를 사용해서 취소해 보겠습니다.
+실제 오래 걸리는 요청을 테스트하기 위해 [httpbin](https://httpbin.org/)의 `/delay` API를
+사용해서 테스트하겠습니다. `https://httpbin.org/delay/3`으로 요청을 보내면 3초 후에
+응답을 받을 수 있습니다.
+
+```jsx
+function App() {
+  const URL = "https://httpbin.org/delay/3";
+  const [data, setData] = useState({});
+
+  const req = async () => {
+    return (await fetch(URL)).json();
+  };
+
+  useEffect(() => {
+    req().then((data) => {
+      setData(data);
+    });
+  }, []);
+
+  return <>{JSON.stringify(data)}</>;
+}
+```
+
+평범한 fetch 코드입니다. 개발 도구의 Network 탭을 보면 3초 후에 응답을 받는 것을 확인할 수 있습니다.
+(두 번 요청을 보내는 것은 개발 모드에서 Strict Mode 때문입니다.)
+
+![NormalFetch](/img/web/react-abort-controller/normal-fetch.png)
+
+이제 버튼을 눌러 요청을 중단할 수 있도록 해보겠습니다. `controller.signal`을 fetch의 
+`signal` 옵션으로 넘겨줍니다. 그리고 버튼을 눌렀을 때 `controller.abort()`를 호출하면
+요청이 중단됩니다. 요청이 중단될 때 `AbortError`가 발생하므로 이를 처리해서 요청이 
+취소되었음을 알 수 있습니다.
+
+```jsx
+function App() {
+  const URL = "https://httpbin.org/delay/3";
+  const controller = new AbortController();
+  const [data, setData] = useState({});
+
+  const req = async () => {
+    return (await fetch(URL, { signal: controller.signal })).json();
+  };
+
+  const abort = () => controller.abort();
+
+  useEffect(() => {
+    req()
+      .then((data) => {
+        setData(data);
+      })
+      .catch((err) => {
+        if (err.name === "AbortError") {
+          setData({ message: "Request aborted" });
+        } else {
+          throw err;
+        }
+      });
+  }, []);
+
+  return (
+    <>
+      <button onClick={abort}>Abort</button>
+      {JSON.stringify(data)}
+    </>
+  );
+}
+```
+
+3초가 지나기 전에 버튼을 누르면 요청이 취소되어 `Request aborted`가 화면에 렌더링됩니다.
+개발자 도구의 Network 탭을 보면 요청이 취소되었음을 확인할 수 있습니다.
+
+![AbortedFetch](/img/web/react-abort-controller/aborted-fetch.png)
+
+이 요청은 1.1KB 정도의 데이터를 받아오는 요청이었는데, 위 이미지에서는 0B로 표시되어
+메모리도 절약되었습니다.

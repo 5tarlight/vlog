@@ -32,6 +32,7 @@ export const posts = [
   "math/vector-function",
   // "dev-blog-guideline", -> Low Quality
   "python/itertools",
+  "web/react-abort-controller",
   ...Object.keys(series).flatMap((key) =>
     series[key].posts.map((post) => `${key}/${post}`)
   ),
