@@ -1,0 +1,217 @@
+---
+title: Quaternion
+description: Quaternion은 3차원 공간에서 회전을 나타내는 방법입니다.
+cover:
+tags: math, quaternion
+date: 2025-03-04
+author: yeahx4
+series: 
+seriesIndex: -1
+coverTitle: Quaternion
+coverSub: 
+coverTs: 120
+coverBg: E06577
+coverColor: ffffff
+update: 2025-03-04
+---
+
+Quaternion(쿼터니온)은 3D 벡터 공간에서 어떤 물체의 회전을 나타내는 방법입니다.
+3D 그래픽에서 많이 사용되는 회전 표현 방법 중 하나입니다. Quaternion은 4차원 벡터로 표현되고,
+조금 직관적이지 못한 형태를 하고 있습니다. 하지만, 다른 방법에 비해 장점이 있기 때문에
+많이 사용되고 있습니다. Unity 같은 게임 엔진에서도 Quaternion을 사용하여 회전을 표현합니다.
+
+# Rotation Matrix
+
+사람에게 직관적인 표현 방법은 어떤 축을 기준으로 $\theta$만큼 회전한다고 표현하는 것입니다.
+이 방식을 오일러 각(Euler angles)이라고 합니다. 사람이 이해하기 굉장히 쉽다는 장점이 
+있습니다. 회전 행렬(rotation matrix)을 이용하면 특정 축을 기준으로 회전한 결과를 구할 수 있습니다.
+
+2차원에서는 반시계(counterclockwise) 방향으로 $\theta$만큼 회전한 경우의 회전 행렬은 다음과 같습니다.
+
+```math
+R(\theta) = 
+\begin{bmatrix}
+\cos \theta & -\sin \theta \\
+\sin \theta & \cos \theta
+\end{bmatrix}
+```
+
+따라서 2차원 위의 어떤 벡터 $\mathbf{v} = (x, y)$를 $\theta$만큼 회전한다고 하면,
+회전된 벡터 $\mathbf{v'} = (x', y')$는 다음과 같이 구할 수 있습니다.
+
+```math
+\begin{bmatrix}
+x' \\
+y'
+\end{bmatrix}
+=
+\begin{bmatrix}
+\cos \theta & -\sin \theta \\
+\sin \theta & \cos \theta
+\end{bmatrix}
+\begin{bmatrix}
+x \\
+y
+\end{bmatrix}
+= R\mathbf{v}
+```
+
+그대로 3차원으로 확장할 수 있는데, 2차원에서는 회전 행렬이 하나만 필요했었다면 3차원에서는
+$x, y, z$축에 대한 3개의 회전 행렬이 필요합니다. 각각 아래와 같습니다.
+
+```math
+R_x(\theta) = \begin{bmatrix}
+1 & 0 & 0 \\ 0 & \cos \theta & -\sin \theta \\ 0 & \sin \theta & \cos \theta
+\end{bmatrix}, \,\,\,\,\,\,\,\,\,
+R_y(\theta) = \begin{bmatrix}
+\cos \theta & 0 & \sin \theta \\ 0 & 1 & 0 \\ - \sin \theta & 0 & \cos \theta
+\end{bmatrix}, \,\,\,\,\,\,\,\,\,
+R_z(\theta) = \begin{bmatrix}
+\cos \theta & - \sin \theta & 0 \\ \sin \theta & \cos \theta & 0 \\ 0 & 0 & 1
+\end{bmatrix}
+```
+
+이런 방식은 굉장히 직관적이기는 하지만, 회전 행렬을 이용하면 회전을 연속적으로 적용할 때
+매번 회전 행렬을 곱해야 하기 때문에 계산량이 많아집니다. 행렬 연산은 비싸기 때문에
+성능이 중요한 경우 문제를 일으킬 수 있습니다. 또,  각 축이 서로 독립적이지 않기 때문에
+회전 순서에 영향을 받습니다. 예를 들어, $x$축으로 90도 회전한 후 $y$축으로 90도 회전한 경우
+$v' = R_y R_x v$인데, $y$축으로 먼저 회전한 경우, $v' = R_x R_y v$가 되어 
+다른 결과를 얻게 됩니다.
+
+## Gimbal Lock
+
+짐벌 락(Gimbal lock)은 오일러 각을 이용한 회전 표현 방법에서 발생하는 문제입니다.
+
+![Gimbal Lock](/img/math/quaternion/Gimbal_Lock_Plane.gif)
+
+각 축이 서로 의존하기 때문에 한 축이 다른 축을 가로막는 현상이 발생합니다. 이런 경우
+회전을 제대로 표현할 수 없게 되는데, 이를 짐벌 락이라고 합니다. 위 그림에서 볼 수 있듯이
+한 축이 90도 회전하면 다른 축이 회전할 수 있는 자유도가 사라지게 됩니다. 다른 축과
+합쳐져 표현할 수 있는 범위가 줄어듭니다. 이것을 Gimbal Lock이라고 하고,
+Quaternion이 해결합니다.
+
+# Quaternion
+
+Quaternion은 4차원 벡터로 표현되는데, 다음과 같은 형태를 가집니다.
+
+```math
+q = w + xi + yj + zk
+```
+
+여기서 $i, j, k$는 $x, y, z$축을 나타내는 **허수** 단위입니다. 즉,
+$i^2 = j^2 = k^2 = ijk = -1$입니다. $w$는 스칼라 부분이고, $x, y, z$는 벡터 부분입니다.
+$q$는 단위 벡터(unit vector)이어야 합니다. 즉, $w^2 + x^2 + y^2 + z^2 = 1$이어야 합니다.
+
+2차원에서 오일러 공식을 이용해 회전을 표현할 수 있습니다.
+
+```math
+e^{i \theta} = \cos \theta + i \sin \theta
+```
+
+이 식을 3차원으로 3개의 축에 대해서 확장한 것이 Quaternion입니다. (아래 식이
+$\theta / 2$인 것은 이후 설명하겠습니다.)
+
+```math
+q = \cos \frac{\theta}{2} + (xi + yj + zk)\sin \frac{\theta}{2} 
+```
+
+이제 어떤 벡터 $\mathbf{v} = (x, y, z)$를 $q$로 회전한다고 했을 때, 회전된 벡터 $\mathbf{v'}$는
+다음과 같이 구할 수 있습니다. (이 식이 어떻게 유도되었는지는 뒤에 설명하겠습니다.)
+
+```math
+\mathbf{v'} = q \mathbf{v} q^{-1}
+```
+
+다만, $q$는 4차원 벡터이고, $\mathbf{v}$는 3차원 벡터이기 때문에 변환을 해주어야 하는데,
+$\mathbf{v} = (0, x, y, z)$로 변환하여 계산합니다. 그리고, $q^{-1}$은 $q$의 역원(conjugate)입니다.
+
+```math
+q^{-1} = \frac{w - xi - yj - zk}{w^2 + x^2 + y^2 + z^2}
+```
+
+이때, $q$가 단위 벡터(unit vector)이어야 하니 분모가 1이 되어 $q^{-1} = q^*$(켤레 복소수)가
+됩니다.
+
+## 반각을 쓰는 이유
+
+위 식에서 $\theta$가 아닌 $\theta / 2$를 사용하는 이유는 쿼터니언을 사용할 때 두 번
+곱하기 때문입니다. 쿼터니언을 사용할 때 두 번 곱하면 $\theta$만큼이 아니라 $2\theta$만큼
+회전하게 됩니다. 따라서, $\theta / 2$를 사용하여 $\theta$만큼 회전하도록 합니다.
+
+```math
+q \cdot q = \cos \theta + (xi + yj + zk)\sin \theta
+```
+
+## Product
+
+두 쿼터니언 $p, q$의 곱셈은 다음과 같이 정의됩니다.
+
+```math
+\begin{align*}
+pq = \,\, & \left( w_1w_2 - x_1x_2 - y_1y_2 - z_1z_2 \right) \\
+    & + \left( w_1x_2 + x_1w_2 + y_1z_2 - z_1y_2 \right)i \\
+    & + \left( w_1y_2 - x_1z_2 + y_1w_2 + z_1x_2 \right)j \\
+    & + \left( w_1z_2 + x_1y_2 - y_1x_2 + z_1w_2 \right)k
+\end{align*}
+```
+
+이 식은 사용하기에 굉장히 복잡하기 때문에, 다른 표현 방법을 사용해 간결히 표현하고는 합니다.
+쿼터니온은 스칼라부와 벡터부로 나누어 표현할 수 있기 때문에 $q = (w, \mathbf{v})$로 표현할 수 있습니다.
+이를 이용해 곱셈을 다음과 같이 표현할 수 있습니다.
+
+```math
+q_1 q_2 = \left( s + \vec{v} \right)\left( t + \vec{w} \right)
+= \left(st -  \vec{v} \cdot \vec{w} \right) + \left( s \vec{w} + t \vec{v} + \vec{v} \times \vec{w} \right)
+```
+
+쿼터니온의 곱셈을 이용하면 회전을 연속적으로 적용하는 상황을 표현할 수 있습니다. 예를 들어,
+두 쿼터니언 $q_1, q_2$가 있을 때, 먼저 $q_1$로 회전한 후 $q_2$로 회전하는 것은
+$q = q_2 q_1$로 표현할 수 있습니다.
+
+# 식 유도
+
+이제 위에서 $\mathbf{v'} = q \mathbf{v} q^{-1}$이 어떻게 유도되었는지 살펴봅시다.
+
+## Rodrigues' rotation formula
+
+$\mathbf{v} \in \mathbb{R}^3$인 어떤 벡터를 방향을 나타내는 어떤 단위벡터
+$\mathbf{k}$를 기준으로 $\theta$만큼 회전한다고 합시다. 이때, 회전된 벡터 $\mathbf{v'}$는
+다음과 같이 구할 수 있습니다. 이 식을 Rodrigues' rotation formula라고 합니다.
+
+```math
+\mathbf{v'} = \mathbf{v} \cos \theta + (\mathbf{k} \times \mathbf{v}) \sin \theta + \mathbf{k}(\mathbf{k} \cdot \mathbf{v})(1 - \cos \theta)
+```
+
+이 식을 이용해 Quaternion을 유도해봅시다.
+
+## Quaternion 유도
+
+먼저, $\mathbf{v} = (0, x, y, z)$로 변환하여 계산합니다. 그리고, $\mathbf{k} = (0, i, j, k)$로
+변환하여 계산합니다. 이때, $\mathbf{k} \times \mathbf{v}$는 다음과 같이 계산됩니다.
+
+```math
+\mathbf{k} \times \mathbf{v} = \begin{bmatrix}
+i & j & k \\
+0 & x & y \\
+0 & z & 0
+\end{bmatrix} = (0, xk - yj, zi - 0)
+```
+
+따라서, Rodrigues' rotation formula를 이용하면 다음과 같이 계산됩니다.
+
+```math
+\begin{align*}
+\mathbf{v'} &= \mathbf{v} \cos \frac{\theta}{2} + (\mathbf{k} \times \mathbf{v}) \sin \frac{\theta}{2} + \mathbf{k}(\mathbf{k} \cdot \mathbf{v})(1 - \cos \frac{\theta}{2}) \\
+&= (0, x, y, z) \cos \frac{\theta}{2} + (0, xk - yj, zi) \sin \frac{\theta}{2} + (0, xi + yj + zk)(0 + 0 + 0)(1 - \cos \frac{\theta}{2}) \\
+&= (0, x, y, z) \cos \frac{\theta}{2} + (0, xk - yj, zi) \sin \frac{\theta}{2} \\
+&= (0, x \cos \frac{\theta}{2} - y \sin \frac{\theta}{2}k + z \sin \frac{\theta}{2}j, x \sin \frac{\theta}{2}k + y \cos \frac{\theta}{2} - z \sin \frac{\theta}{2}i)
+\end{align*}
+```
+
+이제 이 결과를 Quaternion 형태로 변환하면 다음과 같습니다.
+
+```math
+q = \cos \frac{\theta}{2} + (xi + yj + zk)\sin \frac{\theta}{2}
+```
+
+따라서, $\mathbf{v'} = q \mathbf{v} q^{-1}$이 성립합니다.

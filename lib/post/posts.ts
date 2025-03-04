@@ -33,6 +33,7 @@ export const posts = [
   // "dev-blog-guideline", -> Low Quality
   "python/itertools",
   "web/react-abort-controller",
+  "math/quaternion",
   ...Object.keys(series).flatMap((key) =>
     series[key].posts.map((post) => `${key}/${post}`)
   ),
