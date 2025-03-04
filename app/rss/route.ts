@@ -8,24 +8,24 @@ async function getRss() {
       const meta = parsePost(await readContent(post)).meta;
 
       return `<item>
-                <title><![CDATA[${meta.title}]]></title>
-                <link>https://post.yeahx4.me/posts/${post}</link>
-                <pubDate>${new Date(meta.update).toUTCString()}</pubDate>
-                <description><![CDATA[${meta.description}]]></description>
-              </item>`;
+  <title><![CDATA[${meta.title}]]></title>
+  <link>https://post.yeahx4.me/posts/${post}</link>
+  <pubDate>${new Date(meta.update).toUTCString()}</pubDate>
+  <description><![CDATA[${meta.description}]]></description>
+</item>`;
     })
   );
 
   return `<?xml version="1.0" encoding="UTF-8" ?>
-          <rss version="2.0">
-            <channel>
-              <title>YEAHx4 Blog</title>
-              <link>https://post.yeahx4.me</link>
-              <description>YEAHx4 Blog RSS</description>
-              <language>ko</language>
-              ${items.join("")}
-            </channel>
-          </rss>`;
+  <rss version="2.0">
+    <channel>
+      <title>YEAHx4 Blog</title>
+      <link>https://post.yeahx4.me</link>
+      <description>YEAHx4 Blog RSS</description>
+      <language>ko</language>
+      ${items.join("")}
+    </channel>
+  </rss>`;
 }
 
 export async function GET() {
