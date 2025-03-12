@@ -9,7 +9,7 @@ export default async function Home() {
   return (
     <Content>
       <h1 className="text-center text-2xl md:text-4xl mt-16 font-extrabold">
-        Welcome to YEAHx4 blog
+        YEAHx4 Tech blog
       </h1>
       <SearchInput />
 
