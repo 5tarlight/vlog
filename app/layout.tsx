@@ -24,7 +24,6 @@ export const metadata: Metadata = {
     },
   },
   robots: {
-    nocache: true,
     follow: true,
     index: true,
   },

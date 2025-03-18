@@ -1,4 +1,5 @@
 User-agent: *
 Disallow: /search
+Allow: /
 
 Sitemap: https://post.yeahx4.me/sitemap.xml

@@ -24,7 +24,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     )),
     ...Object.keys(series).map((s) => ({
       url: makeUrl(`series/${s}`),
-      lastModified: new Date(),
+      lastModified: "2025-03-18",
     })),
   ];
 }
