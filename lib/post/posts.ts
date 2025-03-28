@@ -24,6 +24,7 @@ export const series: {
       "rss",
       "font-optimization",
       "posts-infinite-scroll",
+      "posts-ssg",
     ],
   },
 };
