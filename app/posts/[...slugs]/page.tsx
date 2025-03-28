@@ -1,29 +1,22 @@
-import { getStaticUrl, getUrl } from "@/lib/utils/getUrl";
 import { buildCoverUrl, parsePost, parseToc, toHtml } from "@/lib/post/parser";
 import TableOfContent from "@/components/post/TableOfContent";
 import PostBody from "@/components/post/PostBody";
+import { posts, readContent } from "@/lib/post/posts";
+
+export async function generateStaticParams() {
+  return posts.map((post) => ({
+    slugs: post.split("/"),
+  }));
+}
 
 export async function generateMetadata(props: {
   params: Promise<{ slugs: string[] }>;
 }) {
   const params = await props.params;
   const { slugs } = params;
+  const path = slugs.join("/");
 
-  const res = await fetch(await getUrl("/api/posts"), {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ path: slugs.join("/") }),
-  });
-
-  const data: {
-    message: string;
-    path: string;
-    content: string;
-  } = await res.json();
-
-  if (data.message === "Not Found") {
+  if (!posts.includes(path)) {
     return {
       title: "Not Found",
       description: "Not Found",
@@ -32,7 +25,8 @@ export async function generateMetadata(props: {
     };
   }
 
-  const { meta: post } = parsePost(data.content);
+  const content = await readContent(path);
+  const { meta: post } = parsePost(content);
 
   return {
     title: post.title || "Not Found",
@@ -67,59 +61,24 @@ export async function generateMetadata(props: {
   };
 }
 
-export async function generateStaticParams() {
-  const res = await fetch(getStaticUrl("/api/posts"), {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  const data: { message: string; posts: string[] } = await res.json();
-
-  if (data.message === "Not Found") {
-    return [];
-  }
-
-  return data.posts.map((post) => ({
-    slugs: post.split("/"),
-  }));
-}
-
 export default async function Post(props: {
   params: Promise<{ slugs: string[] }>;
 }) {
   const params = await props.params;
-
   const { slugs } = params;
 
-  const res = await fetch(await getUrl("/api/posts"), {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ path: slugs.join("/") }),
-  });
-
-  if (!res.ok) {
-    const errorText = await res.text();
-    console.error("Fetch error:", res.status, res.statusText);
-    console.error("Response body:", errorText);
-    throw new Error(`Error fetching data: ${res.status} ${res.statusText}`);
+  if (!posts.includes(slugs.join("/"))) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <h1 className="text-3xl font-bold -mt-32">Not Found</h1>
+      </div>
+    );
   }
 
-  const data: {
-    message: string;
-    path: string;
-    content: string;
-  } = await res.json();
+  const content = await readContent(slugs.join("/"));
 
-  if (data.message === "Not Found") {
-    return <div>Not Found: {data.path}</div>;
-  }
-
-  const toc = parseToc(data.content);
-  const { body, meta } = parsePost(data.content);
+  const toc = parseToc(content);
+  const { body, meta } = parsePost(content);
 
   return (
     <div className="flex justify-center gap-8">
