@@ -19,8 +19,7 @@ export async function POST(reqeust: NextRequest) {
   }
 }
 
-export async function GET(reqeust: NextRequest) {
-  // return all posts
+export async function GET() {
   return NextResponse.json({
     message: "Ok",
     posts: posts,
