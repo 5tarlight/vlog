@@ -14,7 +14,7 @@ coverBg: 7C6CAF
 coverColor: ffffff
 ---
 
-예전에 [CSS Rendering Blocking 줄이기](http://localhost:3000/posts/make-blog/font-optimization)라는
+예전에 [CSS Rendering Blocking 줄이기](http://post.yeahx4.me/posts/make-blog/font-optimization)라는
 포스트에서 큰 CSS에 의해 발생하는 퍼포먼스 저하를 해결했었습니다. 그 이후로 나름 빨라지긴 했지만,
 여전히 포스트를 열 때마다 살짝 대기시간이 있었습니다. 제 블로그는 포스트 페이지로 요청이 들어오면
 파일을 읽는 요청을 보내 글 내용을 읽고, 그걸 렌더링하는 방식입니다. 이 과정에서 매 요청마다
@@ -90,7 +90,7 @@ Vercel에 배포하고, 포스트 페이지를 열어보면 다음과 같은 PRE
 ## 성능 측정
 
 이제 구글 크롬의 Lighthouse를 통해 성능을 측정해 보겠습니다. 과거 
-[CSS Rendering Blocking 줄이기](http://localhost:3000/posts/make-blog/font-optimization)에서
+[CSS Rendering Blocking 줄이기](http://post.yeahx4.me/posts/make-blog/font-optimization)에서
 측정한 결과는 FCP(First Contentful Paint) 0.9s였습니다.
 
 ![lighthouse 결과](/img/make-blog/ssg/lh-result.png)
