@@ -1,4 +1,4 @@
-import { getUrl } from "@/lib/utils/getUrl";
+import { getStaticUrl, getUrl } from "@/lib/utils/getUrl";
 import { buildCoverUrl, parsePost, parseToc, toHtml } from "@/lib/post/parser";
 import TableOfContent from "@/components/post/TableOfContent";
 import PostBody from "@/components/post/PostBody";
@@ -65,6 +65,25 @@ export async function generateMetadata(props: {
       },
     },
   };
+}
+
+export async function generateStaticParams() {
+  const res = await fetch(getStaticUrl("/api/posts"), {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  const data: { message: string; posts: string[] } = await res.json();
+
+  if (data.message === "Not Found") {
+    return [];
+  }
+
+  return data.posts.map((post) => ({
+    slugs: post.split("/"),
+  }));
 }
 
 export default async function Post(props: {

@@ -1,4 +1,4 @@
-import { postExists, readContent } from "@/lib/post/posts";
+import { postExists, posts, readContent } from "@/lib/post/posts";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(reqeust: NextRequest) {
@@ -17,4 +17,12 @@ export async function POST(reqeust: NextRequest) {
   } catch (e) {
     return NextResponse.json({ e }, { status: 500 });
   }
+}
+
+export async function GET(reqeust: NextRequest) {
+  // return all posts
+  return NextResponse.json({
+    message: "Ok",
+    posts: posts,
+  });
 }
