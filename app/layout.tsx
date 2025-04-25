@@ -58,8 +58,8 @@ export default function RootLayout({
       </head>
       <body
         className={cn(
-          "bg-gradient-to-br from-blue-100 to-purple-100",
-          "dark:from-gray-900 dark:to-blue-900"
+          "bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200",
+          "transition-colors duration-300 ease-in-out"
         )}
       >
         <Analytics />
