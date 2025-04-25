@@ -1,43 +1,16 @@
-"use client";
-
 import Link from "next/link";
 import ThemeChanger from "./theme/ThemeChanger";
 import cn from "@yeahx4/cn";
-import { useEffect, useState } from "react";
-import SearchInput from "./SearchInput";
+import Image from "next/image";
+import { LuGithub } from "react-icons/lu";
 
 export default function Header() {
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-
-  const handleScroll = () => {
-    if (typeof window !== "undefined") {
-      const currentScrollY = window.scrollY;
-      if (currentScrollY > lastScrollY) {
-        setIsVisible(false);
-      } else {
-        setIsVisible(true);
-      }
-      setLastScrollY(currentScrollY);
-    }
-  };
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      window.addEventListener("scroll", handleScroll);
-      return () => {
-        window.removeEventListener("scroll", handleScroll);
-      };
-    }
-  }, [lastScrollY]);
-
   return (
     <header
       className={cn(
         "fixed top-0 justify-center h-[80px] shadow-md w-full flex",
         "dark:bg-gray-800 dark:text-white z-10 trasition-transform",
-        "duration-300 bg-white",
-        isVisible ? "translate-y-0" : "-translate-y-80"
+        "duration-300 bg-white bg-opacity-80 backdrop-blur-md"
       )}
     >
       <div
@@ -46,14 +19,58 @@ export default function Header() {
           "px-4 select-none"
         )}
       >
-        <div className="text-lg md:text-2xl font-extrabold">
-          <Link href="/">YEAHx4 Blog</Link>
+        <div className="text-lg md:text-xl font-extrabold">
+          <Link href="/" className="flex items-center gap-2">
+            <Image
+              src="/yeahx4.png"
+              alt="YEAHx4"
+              width={40}
+              height={40}
+              className="inline-block rounded-full align-middle -mt-2"
+            />
+            <span className="text-center leading-none align-middle">
+              YEAHx4
+            </span>
+          </Link>
         </div>
-        <div className="hidden md:block w-[60%]">
-          <SearchInput header />
+        <div className="flex gap-4 items-center">
+          {/* <SearchInput header /> */}
+          <Link
+            href="/posts"
+            className={cn(
+              "relative after:absolute after:left-0 after:bottom-0 after:w-0",
+              "after:h-[1px] after:bg-current after:transition-all after:duration-300",
+              "hover:after:w-full text-neutral-800/90 dark:text-white/80"
+            )}
+          >
+            Posts
+          </Link>
+          <Link
+            href="/projects"
+            className={cn(
+              "relative after:absolute after:left-0 after:bottom-0 after:w-0",
+              "after:h-[1px] after:bg-current after:transition-all after:duration-300",
+              "hover:after:w-full text-neutral-800/90 dark:text-white/80"
+            )}
+          >
+            Projects
+          </Link>
+          <Link
+            href="/about"
+            className={cn(
+              "relative after:absolute after:left-0 after:bottom-0 after:w-0",
+              "after:h-[1px] after:bg-current after:transition-all after:duration-300",
+              "hover:after:w-full text-neutral-800/90 dark:text-white/80"
+            )}
+          >
+            About
+          </Link>
         </div>
-        <div className="flex gap-2 items-center">
-          <Link href="/posts">글 목록</Link>
+        <div className="flex gap-1 items-center text-lg">
+          {/* <Link href="/posts">글 목록</Link> */}
+          <Link href="https://github.com/5tarlight/vlog" target="_blank">
+            <LuGithub />
+          </Link>
           <ThemeChanger />
         </div>
       </div>

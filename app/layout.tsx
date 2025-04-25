@@ -12,7 +12,8 @@ export const metadata: Metadata = {
     template: "%s | YEAHx4 블로그",
     default: "YEAHx4 블로그",
   },
-  description: "YEAHx4 개발 블로그",
+  description:
+    "예사롭지 않은 블로그. 웹, wasm, AI를 좋아하는 개발자 김규산의 개인 블로그입니다. 예사롭지 않은 경험을 공유합니다.",
   openGraph: {
     url: "https://post.yeahx4.me",
     siteName: "YEAHx4 블로그",
