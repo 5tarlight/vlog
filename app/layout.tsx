@@ -58,7 +58,7 @@ export default function RootLayout({
       </head>
       <body
         className={cn(
-          "bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200",
+          "bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200",
           "transition-colors duration-300 ease-in-out"
         )}
       >

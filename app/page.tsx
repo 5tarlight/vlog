@@ -11,7 +11,7 @@ export default async function Home() {
           예사롭지않은블로그
         </h1>
 
-        <div className="flex flex-col items-center mt-8 text-gray-600 dark:text-gray-400">
+        <div className="flex flex-col items-center mt-8 text-neutral-600 dark:text-neutral-400">
           <p>
             웹과 wasm, AI에 관심이 많은 대학생 <b>김규산</b>의 블로그입니다.
           </p>
@@ -22,7 +22,7 @@ export default async function Home() {
           <Link href="https://yeahx4.me">
             <button
               className={cn(
-                "bg-black hover:bg-gray-800 text-white py-2 px-4 rounded",
+                "bg-black hover:bg-neutral-800 text-white py-2 px-4 rounded",
                 "flex items-center gap-2 hover:gap-3 transition-all",
                 "dark:bg-white dark:text-black duration-150",
                 "group"
@@ -55,7 +55,7 @@ export default async function Home() {
       <div className="text-center my-16 flex justify-center">
         <h1
           className={cn(
-            "font-bold text-3xl text-gray-800 dark:text-gray-100",
+            "font-bold text-3xl text-neutral-800 dark:text-neutral-100",
             "pb-4 border-b-8 px-4 border-blue-400 dark:border-blue-500 w-fit"
           )}
         >
