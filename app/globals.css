@@ -10,6 +10,14 @@
   src: url("/font/NotoSansKR.woff2") format("font-woff2");
 }
 
+@font-face {
+  font-family: "Pretendard";
+  font-style: normal;
+  font-weight: 200, 400, 600, 800;
+  font-display: swap;
+  src: url("/font/Pretendard.woff2") format("font-woff2");
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -36,7 +44,7 @@ option,
 strong,
 em,
 blockquote {
-  font-family: "Noto Sans KR", sans-serif;
+  font-family: "Pretendard", "Noto Sans KR", sans-serif;
 }
 
 html {
