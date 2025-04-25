@@ -8,12 +8,20 @@ import Link from "next/link";
 export default async function Home() {
   return (
     <Content>
-      <h1 className="text-center text-2xl md:text-4xl mt-16 font-extrabold">
-        YEAHx4 Tech blog
-      </h1>
-      <SearchInput />
+      <div className="flex flex-col items-center">
+        <h1 className="text-center text-2xl md:text-4xl mt-16 font-extrabold">
+          예사롭지않은블로그
+        </h1>
 
-      <div className="my-16">
+        <div className="flex flex-col items-center mt-4 text-gray-600 dark:text-gray-400">
+          <p>
+            웹과 wasm, AI에 관심이 많은 대학생 <b>김규산</b>의 블로그입니다.
+          </p>
+          <p>예사롭지 않은 경험, 기술, 회고록 등을 올립니다.</p>
+        </div>
+      </div>
+
+      {/* <div className="my-16">
         <div className="text-center my-16 flex justify-center">
           <h1
             className={cn(
@@ -35,7 +43,7 @@ export default async function Home() {
             );
           })}
         </div>
-      </div>
+      </div> */}
     </Content>
   );
 }
