@@ -3,6 +3,7 @@ import ThemeChanger from "./theme/ThemeChanger";
 import cn from "@yeahx4/cn";
 import Image from "next/image";
 import { LuGithub } from "react-icons/lu";
+import { IoSearchSharp } from "react-icons/io5";
 
 export default function Header() {
   return (
@@ -66,8 +67,11 @@ export default function Header() {
             About
           </Link>
         </div>
-        <div className="flex gap-1 items-center text-lg">
+        <div className="flex gap-4 items-center text-lg">
           {/* <Link href="/posts">글 목록</Link> */}
+          <Link href="/search">
+            <IoSearchSharp />
+          </Link>
           <Link href="https://github.com/5tarlight/vlog" target="_blank">
             <LuGithub />
           </Link>
