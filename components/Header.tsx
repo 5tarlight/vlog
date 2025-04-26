@@ -67,12 +67,25 @@ export default function Header() {
             About
           </Link>
         </div>
-        <div className="flex gap-4 items-center text-lg">
+        <div className="flex gap-1 items-center text-lg">
           {/* <Link href="/posts">글 목록</Link> */}
-          <Link href="/search">
+          <Link
+            href="/search"
+            className={cn(
+              "p-2 hover:bg-neutral-200 transition-all rounded-full",
+              "dark:hover:bg-neutral-600"
+            )}
+          >
             <IoSearchSharp />
           </Link>
-          <Link href="https://github.com/5tarlight/vlog" target="_blank">
+          <Link
+            href="https://github.com/5tarlight/vlog"
+            target="_blank"
+            className={cn(
+              "p-2 hover:bg-neutral-200 transition-all rounded-full",
+              "dark:hover:bg-neutral-600"
+            )}
+          >
             <LuGithub />
           </Link>
           <ThemeChanger />
