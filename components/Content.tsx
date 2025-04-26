@@ -10,7 +10,7 @@ export default function Content({
 }) {
   return (
     <div className="flex justify-center">
-      <div className={cn(className, "max-w-5xl w-full")}>{children}</div>
+      <div className={cn(className, "max-w-5xl w-full px-4")}>{children}</div>
     </div>
   );
 }

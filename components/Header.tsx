@@ -11,7 +11,7 @@ export default function Header() {
       className={cn(
         "fixed top-0 justify-center h-[80px] shadow-md w-full flex",
         "dark:bg-neutral-900/70 dark:text-white z-10 trasition-transform",
-        "duration-300 bg-white backdrop-blur-md"
+        "duration-300 bg-white/60 backdrop-blur-md"
       )}
     >
       <div

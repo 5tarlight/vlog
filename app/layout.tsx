@@ -68,8 +68,7 @@ export default function RootLayout({
           <Header />
           <main
             className={cn(
-              "w-full mx-auto min-h-[100vh] py-8 flex justify-center",
-              "px-4 pt-32"
+              "w-full mx-auto min-h-[100vh] py-8 flex justify-center"
             )}
           >
             <div className="w-full">{children}</div>
