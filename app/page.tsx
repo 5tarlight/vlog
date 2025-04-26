@@ -10,7 +10,7 @@ export default async function Home() {
     <>
       <Content>
         <div className="flex flex-col items-center mt-32">
-          <h1 className="text-center text-2xl md:text-4xl mt-16 font-extrabold">
+          <h1 className="text-center text-2xl md:text-4xl font-extrabold">
             예사롭지않은블로그
           </h1>
 
@@ -54,7 +54,9 @@ export default async function Home() {
       </Content>
 
       <section
-        className={cn("w-full py-32 bg-neutral-200 mt-32 dark:bg-neutral-900")}
+        className={cn(
+          "w-full py-32 bg-neutral-100 mt-24 dark:bg-neutral-900/50"
+        )}
       >
         <Content>
           <h3 className="font-extrabold text-2xl mb-4">Featured Posts</h3>

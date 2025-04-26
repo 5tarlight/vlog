@@ -57,7 +57,7 @@ export default function Header() {
             Projects
           </Link>
           <Link
-            href="/about"
+            href="https://yeahx4.me"
             className={cn(
               "relative after:absolute after:left-0 after:bottom-0 after:w-0",
               "after:h-[1px] after:bg-current after:transition-all after:duration-300",
