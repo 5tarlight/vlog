@@ -34,7 +34,7 @@ export default function Header() {
             </span>
           </Link>
         </div>
-        <div className="flex gap-4 items-center">
+        <div className="gap-4 items-center hidden sm:flex">
           {/* <SearchInput header /> */}
           <Link
             href="/posts"

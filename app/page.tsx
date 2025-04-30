@@ -15,8 +15,9 @@ export default async function Home() {
           </h1>
 
           <div className="flex flex-col items-center mt-8 text-neutral-600 dark:text-neutral-400">
+            <p>웹과 wasm, AI에 관심이 많은 대학생</p>
             <p>
-              웹과 wasm, AI에 관심이 많은 대학생 <b>김규산</b>의 블로그입니다.
+              <b>김규산</b>의 블로그입니다.
             </p>
             <p>예사롭지 않은 경험, 기술, 회고록 등을 올립니다.</p>
           </div>
