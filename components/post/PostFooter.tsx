@@ -17,23 +17,20 @@ export default async function PostFooter({ meta }: { meta: PostMeta }) {
         <Link
           href={`/posts/${prev}`}
           className={cn(
-            "w-full md:w-1/2 border-2 rounded-md p-6 hover:shadow-lg transition-all",
-            "border-blue-300 dark:border-purple-700 text-right",
-            "hover:bg-blue-50 dark:hover:bg-purple-900"
+            "w-full md:w-1/2 border rounded-2xl p-6 transition-all hover:shadow-md",
+            "border-neutral-300 dark:border-neutral-700",
+            "bg-white dark:bg-neutral-900 hover:bg-neutral-100 dark:hover:bg-neutral-800",
+            "text-neutral-900 dark:text-neutral-100"
           )}
         >
           <div className="flex flex-col gap-2">
-            <div className="flex justify-between items-center">
-              <FaArrowLeft className="text-blue-500 dark:text-purple-500" />
-              <span className="font-semibold text-blue-700 dark:text-purple-300">
-                이전 포스트
-              </span>
+            <div className="flex justify-between items-center text-sm">
+              <FaArrowLeft className="text-neutral-500" />
+              <span className="font-medium tracking-wide">이전 포스트</span>
             </div>
-            <span className="text-lg font-bold text-blue-900 dark:text-purple-100">
-              {prevMeta.title}
-            </span>
+            <span className="text-lg font-semibold">{prevMeta.title}</span>
           </div>
-          <div className="mt-4 text-sm text-gray-700 dark:text-gray-300">
+          <div className="mt-4 text-sm text-neutral-600 dark:text-neutral-400">
             {prevMeta.description}
           </div>
         </Link>
@@ -43,24 +40,21 @@ export default async function PostFooter({ meta }: { meta: PostMeta }) {
         <Link
           href={`/posts/${next}`}
           className={cn(
-            "w-full md:w-1/2 border-2 rounded-md p-6 hover:shadow-lg transition-all",
-            "border-blue-300 dark:border-purple-700",
-            "hover:bg-blue-50 dark:hover:bg-purple-900",
+            "w-full md:w-1/2 border rounded-2xl p-6 transition-all hover:shadow-md",
+            "border-neutral-300 dark:border-neutral-700",
+            "bg-white dark:bg-neutral-900 hover:bg-neutral-100 dark:hover:bg-neutral-800",
+            "text-neutral-900 dark:text-neutral-100",
             (!prev && "md:ml-auto") || ""
           )}
         >
           <div className="flex flex-col gap-2">
-            <div className="flex justify-between items-center">
-              <span className="font-semibold text-blue-700 dark:text-purple-300">
-                다음 포스트
-              </span>
-              <FaArrowRight className="text-blue-500 dark:text-purple-500" />
+            <div className="flex justify-between items-center text-sm">
+              <span className="font-medium tracking-wide">다음 포스트</span>
+              <FaArrowRight className="text-neutral-500" />
             </div>
-            <span className="text-lg font-bold text-blue-900 dark:text-purple-100">
-              {nextMeta.title}
-            </span>
+            <span className="text-lg font-semibold">{nextMeta.title}</span>
           </div>
-          <div className="mt-4 text-sm text-gray-700 dark:text-gray-300">
+          <div className="mt-4 text-sm text-neutral-600 dark:text-neutral-400">
             {nextMeta.description}
           </div>
         </Link>
