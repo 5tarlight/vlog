@@ -1,7 +1,10 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
 export default function NotFoundJoke() {
   const funnyMessages = [
     "이런! 여긴 아무것도 없어요.",
-    "우리가 이 페이지를 본 마지막 사람은... 다시 돌아오지 못했어요.",
     "누군가 이 페이지를 지운 것 같아요. 범인은 아직도 잡히지 않았어요.",
     "404. 커피 타러 갔다가 길을 잃었어요.",
     "죄송합니다. 여기 있던 콘텐츠는 야근하다 도망갔어요.",
@@ -16,7 +19,6 @@ export default function NotFoundJoke() {
     "여기는 비밀의 방입니다. 아무도 못 들어와요.",
     "고양이가 코드를 건드렸어요.",
     "404. 귀여운 토끼가 링크를 잘못 안내했어요.",
-    "이건 테스트였고... 당신은 통과하지 못했어요!",
     "당신은 숨겨진 페이지를 찾아냈습니다... 라고 하고 싶네요.",
     "당신은 새로운 세계의 문을 열려 했지만, 열쇠가 없네요.",
 
@@ -29,10 +31,12 @@ export default function NotFoundJoke() {
     "if (page.exists()) { show() } else { throw 404 }",
   ];
 
-  const now = new Date();
-  const second = now.getSeconds(); // 0~59
-  const index = second % funnyMessages.length;
-  const message = funnyMessages[index];
+  const [message, setMessage] = useState("");
 
-  return <p className="text-xs text-neutral-400 italic mt-2">{message}</p>;
+  useEffect(() => {
+    const idx = Math.floor(Math.random() * funnyMessages.length);
+    setMessage(funnyMessages[idx]);
+  }, []);
+
+  return <p className="text-xs text-neutral-400 italic mt-2 h-3">{message}</p>;
 }
