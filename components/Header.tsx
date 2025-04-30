@@ -10,7 +10,7 @@ export default function Header() {
     <header
       className={cn(
         "fixed top-0 justify-center h-[80px] shadow-md w-full flex",
-        "dark:bg-neutral-900/70 dark:text-white z-10 trasition-transform",
+        "dark:bg-neutral-900/70 dark:text-white z-10 transition-transform",
         "duration-300 bg-white/60 backdrop-blur-md"
       )}
     >
