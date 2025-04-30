@@ -42,9 +42,9 @@ export const posts = [
 ];
 
 export const featured = [
+  "how-git-works",
   "make-blog/posts-ssg",
   "make-blog/vercel-og",
-  "make-blog/font-optimization",
 ];
 
 const cache = new Map<string, string>();

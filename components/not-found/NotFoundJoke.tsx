@@ -28,8 +28,11 @@ export default function NotFoundJoke() {
     "import 페이지 from '다른 차원'; // 실패",
     "if (page.exists()) { show() } else { throw 404 }",
   ];
-  const message =
-    funnyMessages[Math.floor(Math.random() * funnyMessages.length)];
+
+  const now = new Date();
+  const second = now.getSeconds(); // 0~59
+  const index = second % funnyMessages.length;
+  const message = funnyMessages[index];
 
   return <p className="text-xs text-neutral-400 italic mt-2">{message}</p>;
 }
