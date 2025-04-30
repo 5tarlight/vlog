@@ -12,7 +12,7 @@ export default function Footer() {
       <div
         className={cn(
           "max-w-[1024px] w-full border-t border-gray-500",
-          "grid grid-cols-2 sm:grid-cols-3 p-4 h-32 items-center"
+          "grid grid-cols-1 sm:grid-cols-3 p-4 h-32 items-center"
         )}
       >
         <div className="justify-self-start flex gap-1.5">
