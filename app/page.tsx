@@ -61,7 +61,7 @@ export default async function Home() {
         <Content>
           <h3 className="font-extrabold text-2xl mb-4">Featured Posts</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {(await getFeaturedPostMeta()).map(async (p, i) => {
+            {(await getFeaturedPostMeta()).map((p, i) => {
               const { meta, post } = p;
               return (
                 <Link href={`/posts/${post}`} key={i}>
