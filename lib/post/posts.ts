@@ -35,6 +35,7 @@ export const posts = [
   "python/itertools",
   "web/react-abort-controller",
   "math/quaternion",
+  "how-git-works",
   ...Object.keys(series).flatMap((key) =>
     series[key].posts.map((post) => `${key}/${post}`)
   ),

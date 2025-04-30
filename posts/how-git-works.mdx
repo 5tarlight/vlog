@@ -1,0 +1,248 @@
+---
+title: Git은 어떻게 작동할까?
+description: 매일 편하게 사용하는 Git의 작동원리를 알아봅니다.
+cover:
+tags: git, algorithm
+date: 2025-04-30
+author: yeahx4
+series: 
+seriesIndex: -1
+coverTitle: Git 작동원리
+coverSub: 
+coverTs: 120
+coverBg: 9DA1AA
+coverColor: ffffff
+---
+
+개발자들은 매일같이 Git을 씁니다. 코드를 작성하고, commit하고, push하고, push합니다.
+Git을 쓰면 마법같이 수많은 파일 중 어디어디가 어떻게 변경되었는지 추적하고 원할때 특정
+지점으로 돌아가기도 하고 작업을 되돌리기도 합니다. 정말 빠르고 한치의 오차도 없이 이런
+일들이 벌어집니다. 모두가 Git을 능숙하게 쓰지만 (본인도 포함해서) 정확히 Git이 무엇을
+해주고 어떻게 하는지는 알지 못합니다. 이 글에서는 Git이 어떻게 작동하는지 알아보겠습니다.
+
+# Content Tracking
+
+Git은 코드(content)의 변화를 자동으로 추적해서 관리해주는 버전 관리
+시스템(version control system, VCS) 입니다.
+[Git 공식 문서](https://git-scm.com/docs/git)를 보면 Git의 정의가 나와 있습니다.
+
+> Git is a fast, scalable, distributed revision control system with
+> an unusually rich command set that provides both high-level operations
+> and full access to internals.
+
+Git의 기능은 content를 추적하는 것이 전부입니다. 그렇다면 어떻게 content를 추적할까요?
+
+Git은 거대한 key-value로 이루어진 테이블과 비슷합니다. key로 unique한 해시를 사용하고
+value로 content를 byte로 변환해서 가지고 있는 일종의 해시 테이블입니다.
+Git은 NSA에서 만든 [SHA-1](https://en.wikipedia.org/wiki/SHA-1)
+해시 알고리즘을 통해 해시를 생성합니다.
+
+Git 프로젝트를 만들면 `.git` 디렉터리가 생깁니다. 새 프로젝트를 하나 만들고 git 디렉터리의
+내부를 살펴봅시다.
+
+```bash
+❯ git init
+Initialized empty Git repository in /Users/yeahx4/coding/git-inspection/.git/
+
+❯ ls -al .git
+total 24
+drwxr-xr-x   9 yeahx4  staff  288 Apr 30 10:54 .
+drwxr-xr-x   3 yeahx4  staff   96 Apr 30 10:54 ..
+-rw-r--r--   1 yeahx4  staff   21 Apr 30 10:54 HEAD
+-rw-r--r--   1 yeahx4  staff  137 Apr 30 10:54 config
+-rw-r--r--   1 yeahx4  staff   73 Apr 30 10:54 description
+drwxr-xr-x  15 yeahx4  staff  480 Apr 30 10:54 hooks
+drwxr-xr-x   3 yeahx4  staff   96 Apr 30 10:54 info
+drwxr-xr-x   4 yeahx4  staff  128 Apr 30 10:54 objects
+drwxr-xr-x   4 yeahx4  staff  128 Apr 30 10:54 refs
+```
+
+몇몇 파일과 디렉터리가 보입니다. 그 중 `objects` 디렉터리는 git object가 담겨있는 위치입니다.
+objects 내부에는 내부적으로 사용하는 info와 pack 디렉터리가 있습니다.
+
+```bash
+❯ ls -al .git/objects
+total 0
+drwxr-xr-x  4 yeahx4  staff  128 Apr 30 10:54 .
+drwxr-xr-x  9 yeahx4  staff  288 Apr 30 10:59 ..
+drwxr-xr-x  2 yeahx4  staff   64 Apr 30 10:54 info
+drwxr-xr-x  2 yeahx4  staff   64 Apr 30 10:54 pack
+```
+
+아직 프로젝트에 아무런 파일도 없기 때문에 비어있는 것을 확인할 수 있습니다.
+그럼 파일을 하나 만들고 git add를 해 봅시다.
+
+```bash
+❯ echo "Hello, World" >> hello.txt
+```
+
+add를 하게 되면, Git은 저 파일들을 staged 상태로 만듭니다.
+
+```bash
+❯ git add .
+❯ ls -al .git/objects
+total 0
+drwxr-xr-x   5 yeahx4  staff  160 Apr 30 11:25 .
+drwxr-xr-x  10 yeahx4  staff  320 Apr 30 11:25 ..
+drwxr-xr-x   3 yeahx4  staff   96 Apr 30 11:25 3f
+drwxr-xr-x   2 yeahx4  staff   64 Apr 30 10:54 info
+drwxr-xr-x   2 yeahx4  staff   64 Apr 30 10:54 pack
+```
+
+이제 commit을 합니다.
+
+```bash
+❯ git commit -m "create hello-world.txt"
+[main (root-commit) 72c4799] create hello-world.txt
+ 1 file changed, 1 insertion(+)
+ create mode 100644 hello.txt
+
+❯ ls -al .git/objects/
+total 0
+drwxr-xr-x   7 yeahx4  staff  224 Apr 30 11:30 .
+drwxr-xr-x  12 yeahx4  staff  384 Apr 30 11:30 ..
+drwxr-xr-x   3 yeahx4  staff   96 Apr 30 11:25 3f
+drwxr-xr-x   3 yeahx4  staff   96 Apr 30 11:30 72
+drwxr-xr-x   3 yeahx4  staff   96 Apr 30 11:30 84
+drwxr-xr-x   2 yeahx4  staff   64 Apr 30 10:54 info
+drwxr-xr-x   2 yeahx4  staff   64 Apr 30 10:54 pack
+```
+
+objects에 몇 폴더들이 새로 생긴 것을 볼 수 있습니다. git log를 통해 방금 만든 커밋의
+해시를 확인할 수 있습니다.
+
+```bash
+❯ git log
+commit 72c4799e8df829bf257b679191368bbf1a3611b8 (HEAD -> main)
+Author: YEAHx4 <developerstarlight@gmail.com>
+Date:   Wed Apr 30 11:30:19 2025 +0900
+
+    create hello-world.txt
+```
+
+이 커밋의 해시는 `72c4799e8df829bf257b679191368bbf1a3611b8`네요.
+아까 objects에 있던 폴더 중에 이름이 커밋의 앞글자인 72와 같은 폴더가 있었습니다.
+폴더 안에는 어떤 파일이 하나 있습니다.
+
+```bash
+❯ ls .git/objects/72
+c4799e8df829bf257b679191368bbf1a3611b8
+```
+폴더 이름과 파일 이름을 합쳐보면 커밋의 해시와 동일한 것을 확인할 수 있습니다. 앞 두 글자를
+폴더명으로 만들고 나머지 글자로 파일을 저장하는 것은 조금 더 효율적으로 원하는 파일을 찾기
+위해서입니다. 한 폴더에 수많은 파일이 있는 것보다 앞 두 글자가 같은 파일끼리 모아두고 그
+안에서 찾는 것이 효율적이기 때문입니다.
+
+## Commit
+
+Git은 blob, tree, commit의 3가지 object types를 사용합니다. 방금 살펴본 파일은
+commit 파일입니다. 대부분 Git이 알아서 처리하게 맡겨서 자주 사용하지는 않지만
+Git은 사용자가 직접 low-level 요소에도 접근할 수 있도록 여러 명령어를 제공하고 있습니다.
+`git cat-file`을 통해 파일의 타입과 내용을 확인할 수 있습니다. cat-file을 통해
+방금 만든 72로 시작하는 커밋 파일을 살펴보겠습니다. 참고로 커밋 이름을 풀네임으로 쓰면
+너무 길어 앞 7자리로 줄여서 부릅니다.
+
+```bash
+❯ git cat-file commit 72c4799
+tree 8481e2030a0f0a0d7af594e8ec5b278989877b62
+author YEAHx4 <developerstarlight@gmail.com> 1745980219 +0900
+committer YEAHx4 <developerstarlight@gmail.com> 1745980219 +0900
+
+create hello-world.txt
+```
+
+commit 객체는 작성자, commit 한 사람, 그리고 **tree** 해시를 가지고 있는 것을 확인할 
+수 있습니다. 아까 `objects` 디렉터리에서 84로 시작하는 폴더를 본 것 같습니다.
+
+```bash
+❯ ls .git/objects/84
+81e2030a0f0a0d7af594e8ec5b278989877b62
+```
+
+tree의 해시와 일치하는 것을 확인할 수 있습니다. 저 파일이 tree의 정보를 담고 있는 파일입니다.
+
+## Tree
+
+Tree는 프로젝트에 있는 파일들의 위계구조(hierarchy)를 표현하는 객체입니다.
+커밋이 시행된 순간 파일들의 위치, 상태 등을 저장하고 있는 파일입니다.
+마찬가지로 `cat-file` 명령을 통해 내용을 살펴봅시다. `git cat-file tree ...`를 사용하면
+파일에 저장된 raw한 바이너리 콘텐츠를 보여주기 때문에 사람이 읽을 수 없습니다. 그래서
+`-p` 옵션을 통해 pretty print 모드로 출력하게 합니다.
+
+```bash
+❯ git cat-file -p 8481e2030a0f0a0d7af594e8ec5b278989877b62
+100644 blob 3fa0d4b98289a95a7cd3a45c9545e622718f8d2b	hello.txt
+```
+
+tree 객체는 각 파일 또는 디렉터리마다 한 줄의 데이터를 갖고 있습니다. 각 줄에는
+permission, object type, hash, filename 이 담겨 있습니다. 즉, git은 각 파일들을
+tree형태로 만들어 별도로 관리하는 것을 알 수 있습니다. 그럼 저 blob은 무엇일까요?
+
+## blob
+
+마찬가지로 blob의 해시와 같은 파일이 이미 있을 것이라고 예상했을 것 같습니다.
+똑같이 `cat-file -p`로 내용을 읽어봅시다.
+
+```bash
+❯ git cat-file -p 3fa0d4b98289a95a7cd3a45c9545e622718f8d2b
+Hello, World
+```
+
+파일에 저장된 내용이 그대로 읽어집니다. blob은 "binary large object"의 줄임말으로
+파일의 데이터를 저장하지만, 파일의 이름 같은 메타데이터는 저장하지 않습니다. 각 버전마다
+파일은 blob으로 표현됩니다.
+
+# 파일 변경
+
+새로운 디렉터리 안에 파일을 만들고 커밋합니다.
+
+```bash
+❯ mkdir secret
+
+❯ echo "SuperImportantPassword" >> secret/password.txt
+
+❯ git add .
+
+❯ git commit -m "add secret password"
+[main 63b88ff] add secret password
+ 1 file changed, 1 insertion(+)
+ create mode 100644 secret/password.txt
+```
+
+정말 은밀하게 비밀번호를 저장했습니다. `63b88ff` 으로 시작하는 해시로 커밋이 만들어 졌습니다.
+다시 `cat-file`을 통해 커밋의 내용을 확인해 보겠습니다.
+
+```bash
+❯ git cat-file -p 63b88ff
+tree b5a6257f87648dc8c55e9cc6fd53afc4ce1b69cb
+parent 72c4799e8df829bf257b679191368bbf1a3611b8
+author YEAHx4 <developerstarlight@gmail.com> 1745985767 +0900
+committer YEAHx4 <developerstarlight@gmail.com> 1745985767 +0900
+
+add secret password
+```
+
+아까와 비슷하지만 parent가 새로 생겨서 이전 커밋을 가리키고 있습니다. 이번에 새로 생긴
+tree의 내용도 살펴보겠습니다.
+
+```bash
+❯ git cat-file -p b5a6257f87648dc8c55e9cc6fd53afc4ce1b69cb
+100644 blob 3fa0d4b98289a95a7cd3a45c9545e622718f8d2b	hello.txt
+040000 tree 4de3da37af3cbafdcd65fc3d99ab8ebaebb7c769	secret
+```
+
+새로 만든 secret 폴더에 해당하는 새로운 tree가 생겼습니다. 저 tree의 내용을 확인하면
+password.txt의 blob이 있을 것입니다. 이렇게 tree는 재귀적으로 파일의 계층 구조를
+표현합니다. 이렇게 blob을 통해 파일을 관리하기 때문에 얻는 이점이 있습니다.
+만약 두 파일의 내용이 완벽하게 같다면 굳이 두 개의 blob을 만들지 않고 동일한 blob을
+서로 다른 tree가 참조하게 만들어 더 효율적으로 동작합니다. 이것이 파일 이름이
+blob에 저장되지 않고 tree에 저장되는 이유입니다.
+
+```bash
+❯ echo "Hello, World" | git hash-object --stdin
+3fa0d4b98289a95a7cd3a45c9545e622718f8d2b
+```
+
+`hash-object` 명령을 사용하면 텍스트가 해시로 변했을 때 어떻게 변하는지 알 수 있습니다.
+hello.txt 파일의 내용을 변환하면 blob의 해시와 완벽하게 일치합니다. 만약 파일의 내용이 변했다면
+hash도 변하게 되어 차이를 바로 알 수 있습니다.
