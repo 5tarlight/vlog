@@ -12,16 +12,23 @@ export default function Footer() {
       <div
         className={cn(
           "max-w-[1024px] w-full border-t border-gray-500",
-          "grid grid-cols-3 p-4 h-32 items-center"
+          "grid grid-cols-2 sm:grid-cols-3 p-4 h-32 items-center"
         )}
       >
-        <div className="justify-self-start">
-          &copy; 2024{`-${year}`} Kyusan (YEAHx4) Kim.
+        <div className="justify-self-start flex gap-1.5">
+          <span>&copy; 2024{`-${year}`} Kyusan</span>
+          <span className="hidden lg:block">(YEAHx4)</span>
+          <span>Kim.</span>
         </div>
-        <div className="text-3xl justify-self-center">
+        <div
+          className={cn(
+            "text-3xl justify-self-center hidden sm:block",
+            "font-sm sm:font-normal"
+          )}
+        >
           <FaCreativeCommonsBy />
         </div>
-        <div className="flex gap-8 text-3xl justify-self-end">
+        <div className="gap-8 text-3xl justify-self-end hidden sm:flex">
           <Link
             href="/rss"
             className={cn(
