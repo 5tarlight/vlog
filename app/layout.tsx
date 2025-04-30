@@ -12,7 +12,9 @@ export const metadata: Metadata = {
     template: "%s | YEAHx4 블로그",
     default: "YEAHx4 블로그",
   },
-  description: "YEAHx4 개발 블로그",
+  description:
+    "예사롭지 않은 블로그. 웹, wasm, AI를 좋아하는 개발자 김규산의 개인 블로그입니다. 예사롭지 않은 경험을 공유합니다.",
+  metadataBase: new URL("https://post.yeahx4.me"),
   openGraph: {
     url: "https://post.yeahx4.me",
     siteName: "YEAHx4 블로그",
@@ -57,8 +59,8 @@ export default function RootLayout({
       </head>
       <body
         className={cn(
-          "bg-gradient-to-br from-blue-100 to-purple-100",
-          "dark:from-gray-900 dark:to-blue-900"
+          "bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200",
+          "transition-colors duration-300 ease-in-out"
         )}
       >
         <Analytics />
@@ -67,8 +69,7 @@ export default function RootLayout({
           <Header />
           <main
             className={cn(
-              "w-full mx-auto min-h-[100vh] py-8 flex justify-center",
-              "px-4 pt-32"
+              "w-full mx-auto min-h-[100vh] py-8 flex justify-center"
             )}
           >
             <div className="w-full">{children}</div>

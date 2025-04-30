@@ -41,6 +41,12 @@ export const posts = [
   ),
 ];
 
+export const featured = [
+  "make-blog/posts-ssg",
+  "make-blog/vercel-og",
+  "make-blog/font-optimization",
+];
+
 const cache = new Map<string, string>();
 
 export const POST_BASE_PATH = "/posts";
@@ -132,6 +138,18 @@ export const getPrevNextPosts = (series: string, index: number) => {
     prev: prev || null,
     next: next || null,
   };
+};
+
+export const getFeaturedPostMeta = async () => {
+  const meta = featured.map(async (post) => {
+    const content = await readContent(post);
+    return {
+      meta: parsePost(content).meta,
+      post,
+    };
+  });
+
+  return await Promise.all(meta);
 };
 
 export const getRecentPostMeta = async (cnt: number) => {

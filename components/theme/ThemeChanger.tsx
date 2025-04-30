@@ -1,5 +1,6 @@
 "use client";
 
+import cn from "@yeahx4/cn";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { BsFillMoonFill, BsFillSunFill } from "react-icons/bs";
@@ -20,7 +21,11 @@ export default function ThemeChanger() {
 
   return (
     <div
-      className="cursor-pointer p-4 flex items-center"
+      className={cn(
+        "cursor-pointer flex items-center",
+        "p-2 hover:bg-neutral-200 transition-all rounded-full",
+        "dark:hover:bg-neutral-600"
+      )}
       onClick={() => setTheme(currentTheme === "dark" ? "light" : "dark")}
     >
       {currentTheme === "dark" ? <BsFillMoonFill /> : <BsFillSunFill />}

@@ -19,34 +19,51 @@ export default function SeriesListContent({
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="bg-blue-300 dark:bg-blue-600 p-6 rounded-md my-8">
+    <div
+      className={cn(
+        "bg-white dark:bg-neutral-900",
+        "border border-neutral-200 dark:border-neutral-700",
+        "rounded-xl p-4 my-6 shadow-sm"
+      )}
+    >
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between gap-2 w-full outline-none"
+        className={cn(
+          "flex items-center justify-between w-full",
+          "text-left text-base font-semibold tracking-wide",
+          "text-neutral-800 dark:text-neutral-100"
+        )}
       >
-        <span className="font-bold">{seriesName}</span>
-        {isOpen ? <FaChevronUp /> : <FaChevronDown />}
+        {seriesName}
+        {isOpen ? (
+          <FaChevronUp className="text-neutral-500" />
+        ) : (
+          <FaChevronDown className="text-neutral-500" />
+        )}
       </button>
 
       {isOpen && (
-        <div className="mt-4 flex flex-col gap-1">
+        <div className="mt-3 flex flex-col gap-1">
           {seriesPosts.map(({ meta, post }, index) => (
             <Link href={`/posts/${post}`} key={index}>
               <div
                 className={cn(
-                  index === current ? "font-bold" : "",
-                  "flex justify-between"
+                  "flex justify-between items-center px-2 py-1.5 rounded-md",
+                  "transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-800",
+                  index === current
+                    ? "bg-neutral-200 dark:bg-neutral-700 font-bold"
+                    : "text-neutral-800 dark:text-neutral-200"
                 )}
               >
-                {index + 1}. {meta.title}
-                <p
-                  className={cn(
-                    "text-sm text-gray-500 dark:text-gray-400 hidden",
-                    "md:block font-mono"
-                  )}
-                >
+                <div className="flex items-center gap-2 text-sm truncate">
+                  <span className="min-w-[2.5rem] font-mono text-right">
+                    {index + 1}.
+                  </span>
+                  <span className="truncate">{meta.title}</span>
+                </div>
+                <span className="hidden md:block text-xs font-mono text-neutral-500 dark:text-neutral-400">
                   {prettifyDate(meta.date)}
-                </p>
+                </span>
               </div>
             </Link>
           ))}

@@ -14,7 +14,7 @@ export default function PostHead({
   readingTime: number;
 }) {
   return (
-    <div className="mb-8 pb-8 border-b border-gray-300">
+    <div className="pb-8">
       {meta.series && (
         <Link
           href={`/series/${meta.series}`}
@@ -32,7 +32,7 @@ export default function PostHead({
             alt="YEAHx4"
             width={48}
             height={48}
-            className="rounded-full border-2 border-blue-500"
+            className="rounded-full border border-blue-500"
             priority={false}
           />
           <div className="flex flex-col ml-4">

@@ -6,35 +6,26 @@ export default function TableOfContent({ toc }: { toc: Toc[] }) {
   return (
     <div
       className={cn(
-        "hidden lg:block w-full bg-white dark:bg-gray-800",
-        "sticky top-28 h-fit p-8 rounded-md shadow-md border-l-8",
-        "border-white hover:border-gray-300 transition-all",
-        "hover:rounded-l-none dark:border-gray-800 dark:hover:border-gray-500"
+        "hidden lg:block w-full sticky top-56 h-fit",
+        "transition-all border-neutral-300 hover:border-neutral-400",
+        "border-l-2 dark:border-neutral-600 hover:dark:border-neutral-500"
       )}
     >
-      <div className="mb-8 font-bold text-center">Table of Content</div>
-      <ul className="flex flex-col gap-2">
+      <div className="mb-8 font-bold ml-4">Table of Contents</div>
+      <ul className="flex flex-col gap-1">
         {toc.map((tocItem, idx) => (
           <li
             key={idx}
             className={cn(
-              "relative pl-4 text-gray-700 hover:underline",
-              "hover:text-blue-600 transition-colors duration-300",
-              "dark:text-gray-300 dark:hover:text-blue-400"
+              "relative pl-4 text-neutral-600",
+              "hover:text-neutral-400 transition-colors duration-300",
+              "dark:text-neutral-300 dark:hover:text-neutral-400"
             )}
             style={{
               marginLeft: `${tocItem.level - 1}rem`,
             }}
           >
-            <Link
-              href={`#${tocItem.value}`}
-              className={cn(
-                "before:absolute before:left-0 before:top-1/2 before:w-2",
-                "before:h-2 before:bg-blue-300 before:rounded-full",
-                "dark:before:bg-blue-700 before:w-[0.3rem] before:h-[0.3rem]",
-                "break-all"
-              )}
-            >
+            <Link href={`#${tocItem.value}`} className={cn("break-all")}>
               {tocItem.value}
             </Link>
           </li>

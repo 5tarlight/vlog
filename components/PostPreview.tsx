@@ -2,13 +2,17 @@ import { buildCoverUrl, PostMeta } from "@/lib/post/parser";
 import { series } from "@/lib/post/posts";
 import { prettifyDate } from "@/lib/utils/date";
 import cn from "@yeahx4/cn";
+import Tag from "./post/Tag";
+import { GoPencil } from "react-icons/go";
+import { FaRegCalendar } from "react-icons/fa6";
 
 export default function PostPreview({ meta }: { meta: PostMeta }) {
   return (
     <div
       className={cn(
-        "bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden",
-        "transition-shadow duration-300 hover:shadow-lg h-[420px]"
+        "bg-white dark:bg-neutral-800 rounded-lg shadow-md overflow-hidden",
+        "transition-shadow duration-300 hover:shadow-lg ring-2 ring-neutral-200",
+        "dark:ring-neutral-600 h-[370px]"
       )}
     >
       <img
@@ -19,51 +23,67 @@ export default function PostPreview({ meta }: { meta: PostMeta }) {
               buildCoverUrl(meta)
         }
         alt={meta.title}
-        className="w-full h-48 object-cover"
+        className="w-full h-36 object-cover"
       />
 
-      <div className="p-6 h-full">
+      <div className="px-6 py-4 h-full">
         <div>
+          <div
+            className={cn(
+              "text-neutral-500 dark:text-neutral-400 text-sm",
+              "pb-2"
+            )}
+          >
+            {meta.series ? (
+              <span>
+                Part {meta.seriesIndex + 1} of{" "}
+                <strong>{series[meta.series].name}</strong>
+              </span>
+            ) : (
+              <span className="italic">No Series</span>
+            )}
+          </div>
+
+          <div className="flex gap-1">
+            {meta.tags.slice(0, 3).map((tag, i) => (
+              <Tag key={i}>{tag}</Tag>
+            ))}
+          </div>
+
           <h2
             className={cn(
-              "font-bold text-xl text-gray-800 dark:text-gray-200 mb-2",
-              "h-12 overflow-ellipsis"
+              "font-bold text-xl text-neutral-800 dark:text-neutral-200 my-2",
+              "line-clamp-2 h-14"
             )}
           >
             {meta.title}
           </h2>
+
           <p
             className={cn(
-              "text-gray-600 dark:text-gray-400 mb-4 h-16",
-              "overflow-ellipsis"
+              "text-neutral-600 dark:text-neutral-400 line-clamp-2",
+              "overflow-ellipsis h-12"
             )}
           >
             {meta.description}
           </p>
+
           <div
             className={cn(
-              "flex justify-between items-center text-sm text-gray-500",
-              "dark:text-gray-400 mb-4"
+              "flex justify-start items-center text-sm text-neutral-500",
+              "dark:text-neutral-400 gap-4 mt-2"
             )}
           >
-            <span>By {meta.author}</span>
-            <span>{prettifyDate(meta.date, "/")}</span>
+            <div className="flex gap-2 items-center">
+              <FaRegCalendar className="-mt-0.5" />
+              <span>{prettifyDate(meta.date, "/")}</span>
+            </div>
+            <div className="flex gap-2 items-center">
+              <GoPencil />
+              <span>{meta.author}</span>
+            </div>
           </div>
         </div>
-
-        {meta.series && (
-          <div
-            className={cn(
-              "text-gray-500 dark:text-gray-400 text-sm",
-              "mt-4 pb-2"
-            )}
-          >
-            <span>
-              Part {meta.seriesIndex + 1} of{" "}
-              <strong>{series[meta.series].name}</strong>
-            </span>
-          </div>
-        )}
       </div>
     </div>
   );

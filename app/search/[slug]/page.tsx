@@ -5,17 +5,12 @@ import { searchPosts } from "@/lib/post/posts";
 import cn from "@yeahx4/cn";
 import Link from "next/link";
 
-export async function generateMetadata(
-  props: {
-    params: Promise<{ slug: string }>;
-  }
-) {
-  const params = await props.params;
-
-  const {
-    slug
-  } = params;
-
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
   const query = decodeURIComponent(atob(decodeURIComponent(slug)));
 
   return {
@@ -24,64 +19,58 @@ export async function generateMetadata(
   };
 }
 
-export default async function Search(
-  props: {
-    params: Promise<{ slug: string }>;
-  }
-) {
-  const params = await props.params;
-
-  const {
-    slug
-  } = params;
-
+export default async function Search({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
   const query = decodeURIComponent(atob(decodeURIComponent(slug)));
   const posts = await searchPosts(query);
-
   const scoreSum = posts.reduce((acc, p) => acc + p.score, 0);
 
   return (
-    <Content className="mt-16">
-      <div className="text-center mb-16">
-        <h1 className="font-bold text-2xl text-gray-800 dark:text-gray-100 mb-4">
+    <Content className="mt-32">
+      <div className="text-center mb-20">
+        <h1 className="text-4xl font-extrabold tracking-tight text-neutral-900 dark:text-neutral-100 mb-4">
           검색 결과
         </h1>
-        <p className="font-extrabold md:text-4xl text-3xl text-indigo-600 dark:text-indigo-300">
-          {query}
+        <p className="text-2xl md:text-3xl font-medium text-neutral-600 dark:text-neutral-400">
+          “
+          <span className="font-semibold text-black dark:text-white">
+            {query}
+          </span>
+          ”에 대한 결과입니다
         </p>
       </div>
-
       {posts.length === 0 ? (
-        <div className="text-center">
-          <p className="text-lg text-gray-500 dark:text-gray-400">
+        <div className="text-center py-20">
+          <p className="text-lg text-neutral-500 dark:text-neutral-400">
             검색 결과가 없습니다.
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
-          {posts.slice(0, 6).map((p, i) => {
-            const {
-              post: { meta, id },
-              score,
-            } = p;
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 justify-items-center">
+          {posts.slice(0, 6).map(({ post: { meta, id }, score }, i) => {
+            const opacityFactor = 0.85 + (0.15 * score) / scoreSum;
+
             return (
               <div
                 key={i}
                 className={cn(
-                  "w-full max-w-xs transition-transform transform",
-                  "hover:scale-105"
+                  "w-full max-w-sm p-2 rounded-xl transition-transform",
+                  "hover:scale-[1.025]"
                 )}
-                style={{
-                  opacity: 0.3 + 0.7 * (score / scoreSum) * (score / scoreSum),
-                }}
+                style={{ opacity: opacityFactor }}
               >
                 <div
                   className={cn(
-                    "text-center mb-4 w-full font-bold text-indigo-700",
-                    "dark:text-indigo-300"
+                    "mb-2 inline-block text-xs font-mono px-2 py-1 rounded-md",
+                    "bg-neutral-100 text-neutral-600 dark:bg-neutral-800",
+                    "dark:text-neutral-400"
                   )}
                 >
-                  {Math.floor((score / scoreSum) * 10000) / 100} %
+                  {Math.floor((score / scoreSum) * 10000) / 100}%
                 </div>
                 <Link href={`/posts/${id}`}>
                   <PostPreview meta={meta} />
@@ -91,9 +80,10 @@ export default async function Search(
           })}
         </div>
       )}
-
-      <div className="flex justify-center mt-32 w-full">
-        <SearchInput value={query} />
+      <div className="flex justify-center my-28 w-full">
+        <div className="w-full max-w-xl">
+          <SearchInput value={query} />
+        </div>
       </div>
     </Content>
   );

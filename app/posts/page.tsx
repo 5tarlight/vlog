@@ -1,4 +1,6 @@
+import Content from "@/components/Content";
 import PostPageNavigation from "@/components/post-whole/PostPageNavigation";
+import PostSeparator from "@/components/post-whole/PostSeparator";
 import PostSummary from "@/components/post-whole/PostSummary";
 import { getMaxPage, getPostsByPage, series } from "@/lib/post/posts";
 import { isNumeric } from "@/lib/utils/isNumeric";
@@ -25,10 +27,12 @@ export default async function Posts({
   }
 
   return (
-    <div className="max-w-5xl w-full mx-auto">
-      <h1 className="text-center text-4xl mt-8 font-extrabold">전체 글</h1>
+    <Content className="mt-24" small>
+      <h1 className="text-4xl mt-8 font-extrabold">Posts</h1>
 
-      <div className="flex gap-6 flex-col my-16">
+      <PostSeparator className="mt-4 mb-16" bold />
+
+      <div className="flex gap-8 flex-col mb-16">
         {meta.map(async (m, i) => (
           <PostSummary
             key={i}
@@ -41,7 +45,9 @@ export default async function Posts({
         ))}
       </div>
 
+      <PostSeparator bold className="mb-8" />
+
       <PostPageNavigation page={page} maxPage={maxPage} />
-    </div>
+    </Content>
   );
 }
