@@ -31,8 +31,6 @@ export default async function Search({
 
   return (
     <Content className="mt-32">
-      {" "}
-      {/* 상단 여백 더 띄움 */}
       <div className="text-center mb-20">
         <h1 className="text-4xl font-extrabold tracking-tight text-neutral-900 dark:text-neutral-100 mb-4">
           검색 결과
@@ -82,7 +80,7 @@ export default async function Search({
           })}
         </div>
       )}
-      <div className="flex justify-center mt-28 w-full">
+      <div className="flex justify-center my-28 w-full">
         <div className="w-full max-w-xl">
           <SearchInput value={query} />
         </div>
