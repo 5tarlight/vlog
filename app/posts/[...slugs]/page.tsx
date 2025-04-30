@@ -81,7 +81,7 @@ export default async function Post(props: {
   const { body, meta } = parsePost(content);
 
   return (
-    <div className="flex justify-center mt-24">
+    <div className="flex justify-center mt-24 gap-8">
       <div className="max-w-64 w-full hidden 2xl:block" />
       <div className="max-w-3xl w-full px-4">
         <PostBody
