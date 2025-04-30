@@ -14,7 +14,7 @@ export default function PostHead({
   readingTime: number;
 }) {
   return (
-    <div className="mb-8 pb-8 border-b border-gray-300">
+    <div className="pb-8">
       {meta.series && (
         <Link
           href={`/series/${meta.series}`}

@@ -47,14 +47,14 @@ export default function Header() {
             Posts
           </Link>
           <Link
-            href="/projects"
+            href="https://ps-guide.yeahx4.me"
             className={cn(
               "relative after:absolute after:left-0 after:bottom-0 after:w-0",
               "after:h-[1px] after:bg-current after:transition-all after:duration-300",
               "hover:after:w-full text-neutral-800/90 dark:text-white/80"
             )}
           >
-            Projects
+            PS-Guide
           </Link>
           <Link
             href="https://yeahx4.me"

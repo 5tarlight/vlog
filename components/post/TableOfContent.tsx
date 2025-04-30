@@ -6,8 +6,8 @@ export default function TableOfContent({ toc }: { toc: Toc[] }) {
   return (
     <div
       className={cn(
-        "hidden lg:block w-full bg-white dark:bg-gray-800",
-        "sticky top-28 h-fit p-8 rounded-md shadow-md border-l-8",
+        "hidden lg:block w-full",
+        "sticky top-28 h-fit",
         "border-white hover:border-gray-300 transition-all",
         "hover:rounded-l-none dark:border-gray-800 dark:hover:border-gray-500"
       )}
