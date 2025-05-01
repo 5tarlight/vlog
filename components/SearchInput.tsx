@@ -8,9 +8,11 @@ import { FaSearch } from "react-icons/fa";
 export default function SearchInput({
   value: initialValue = "",
   header = false,
+  autoFocus = false,
 }: {
   value?: string;
   header?: boolean;
+  autoFocus?: boolean;
 }) {
   const [value, setValue] = useState(initialValue);
   const [isFocused, setIsFocused] = useState(false);
@@ -45,6 +47,11 @@ export default function SearchInput({
           onBlur={() => setIsFocused(false)}
           onKeyDown={(e) => e.key === "Enter" && search()}
           placeholder={header ? "검색" : "글 제목, 태그, 내용을 검색해보세요"}
+          autoFocus={autoFocus}
+          autoComplete="off"
+          autoCorrect="off"
+          spellCheck="false"
+          autoCapitalize="none"
         />
         <button
           onClick={search}

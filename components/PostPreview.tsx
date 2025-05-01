@@ -3,7 +3,6 @@ import { series } from "@/lib/post/posts";
 import { prettifyDate } from "@/lib/utils/date";
 import cn from "@yeahx4/cn";
 import Tag from "./post/Tag";
-import { GoPencil } from "react-icons/go";
 import { FaRegCalendar } from "react-icons/fa6";
 import { MdOutlineWatchLater } from "react-icons/md";
 import { getReadingTime } from "@/lib/post/readingTime";
@@ -81,10 +80,6 @@ export default function PostPreview({ meta }: { meta: PostMeta }) {
             <div className="flex gap-2 items-center">
               <FaRegCalendar className="-mt-0.5" />
               <span>{prettifyDate(meta.date, "/")}</span>
-            </div>
-            <div className="flex gap-2 items-center">
-              <GoPencil />
-              <span>{meta.author}</span>
             </div>
             <div className="items-center flex gap-2">
               <MdOutlineWatchLater className="text-lg -mt-0.5" />

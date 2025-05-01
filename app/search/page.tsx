@@ -11,7 +11,7 @@ export default function Search() {
           궁금한 주제를 입력하거나 키워드, 태그, 글 내용을 검색해보세요.
         </p>
         <div className="w-full max-w-xl">
-          <SearchInput />
+          <SearchInput autoFocus />
         </div>
       </div>
     </div>

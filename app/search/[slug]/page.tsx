@@ -82,7 +82,7 @@ export default async function Search({
       )}
       <div className="flex justify-center my-28 w-full">
         <div className="w-full max-w-xl">
-          <SearchInput value={query} />
+          <SearchInput value={query} autoFocus={posts.length === 0} />
         </div>
       </div>
     </Content>
