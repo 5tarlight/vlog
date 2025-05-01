@@ -1,6 +1,5 @@
 import { readFile } from "fs/promises";
 import path from "path";
-import { isDev } from "../utils/isDev";
 import { parsePost } from "./parser";
 
 export const series: {
