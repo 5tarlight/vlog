@@ -3,6 +3,7 @@ import TableOfContent from "@/components/post/TableOfContent";
 import PostBody from "@/components/post/PostBody";
 import { posts, readContent } from "@/lib/post/posts";
 import { notFound } from "next/navigation";
+import { getReadingTime } from "@/lib/post/readingTime";
 
 export async function generateStaticParams() {
   return posts.map((post) => ({
@@ -84,7 +85,7 @@ export default async function Post(props: {
         <PostBody
           body={toHtml(body)}
           meta={meta}
-          readingTime={Math.round(body.join("\n").length / 600)}
+          readingTime={getReadingTime(meta.bodyLength)}
         />
       </div>
       <div className="max-w-64 w-full hidden lg:block">

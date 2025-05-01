@@ -40,7 +40,7 @@ export default function PostHead({
             <div className="flex gap-2 items-center justify-center">
               <FaRegCalendarAlt />
               <span>{prettifyDate(meta.date)}</span>
-              <div className="items-center hidden sm:flex gap-2 ml-4">
+              <div className="items-center flex gap-2 ml-4">
                 <MdOutlineWatchLater className="text-lg" />
                 <span>
                   {readingTime} {readingTime > 1 ? "mins" : "min"}

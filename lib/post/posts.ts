@@ -47,8 +47,6 @@ export const featured = [
   "make-blog/vercel-og",
 ];
 
-const cache = new Map<string, string>();
-
 export const POST_BASE_PATH = "/posts";
 export const POST_PATH = path.join(process.cwd(), POST_BASE_PATH);
 
@@ -59,19 +57,7 @@ export const postExists = (slug: string) => {
 };
 
 export const readContent = async (slug: string) => {
-  if (!isDev && cache.has(slug)) {
-    return cache.get(slug) || "Unabled to read content";
-  }
-
-  console.log(
-    "Reading file:",
-    getPostUrl(slug),
-    "Current cache length:",
-    cache.size
-  );
   const content = await readFile(getPostUrl(slug), "utf-8");
-  cache.set(slug, content);
-
   return content;
 };
 

@@ -44,6 +44,7 @@ export interface PostMeta {
   coverBg?: string;
   coverTs?: number;
   coverSs?: number;
+  bodyLength: number;
 }
 
 export const parsePost = (
@@ -60,6 +61,7 @@ export const parsePost = (
     tags: [],
     series: "",
     seriesIndex: -1,
+    bodyLength: 0,
   };
 
   let body: string[] = [];
@@ -95,6 +97,8 @@ export const parsePost = (
 
     if (!meta.update) meta.update = meta.date;
   }
+
+  meta.bodyLength = body.join("\n").length;
 
   return { meta, body };
 };
