@@ -37,7 +37,7 @@ export default async function Search({
         </h1>
         <p className="text-2xl md:text-3xl font-medium text-neutral-600 dark:text-neutral-400">
           “
-          <span className="font-semibold text-black dark:text-white">
+          <span className="font-semibold text-black dark:text-white break-all">
             {query}
           </span>
           ”에 대한 결과입니다
