@@ -7,12 +7,12 @@ async function getRss() {
     posts.map(async (post) => {
       const meta = parsePost(await readContent(post)).meta;
 
-      return `<item>
-  <title><![CDATA[${meta.title}]]></title>
-  <link>https://post.yeahx4.me/posts/${post}</link>
-  <pubDate>${new Date(meta.update).toUTCString()}</pubDate>
-  <description><![CDATA[${meta.description}]]></description>
-</item>`;
+      return `\n      <item>
+        <title><![CDATA[${meta.title}]]></title>
+        <link>https://post.yeahx4.me/posts/${post}</link>
+        <pubDate>${new Date(meta.update).toUTCString()}</pubDate>
+        <description><![CDATA[${meta.description}]]></description>
+      </item>\n\n`;
     })
   );
 
@@ -23,8 +23,7 @@ async function getRss() {
       <link>https://post.yeahx4.me</link>
       <description>YEAHx4 Blog RSS</description>
       <language>ko</language>
-      ${items.join("")}
-    </channel>
+${items.join("")}     </channel>
   </rss>`;
 }
 
