@@ -1,0 +1,115 @@
+---
+title: Date의 미래 Temporal
+description: Date에는 많은 문제점이 있습니다. Temporal은 이러한 문제를 해결하기 위해 만들어졌습니다.
+cover:
+tags: temporal, date, javascript
+date: 2025-05-02
+author: yeahx4
+series:
+seriesIndex:
+coverTitle: Temporal
+coverSub:
+coverTs: 120
+coverBg: 9DA1AA
+coverColor: ffffff
+---
+
+자바스크립트에서 날짜와 시간을 표현하기 위해 사용하는 `Date` 객체는 많은 문제점이 있습니다.
+Date의 원래 구현은 Java의 `java.util.Date`를 기반으로 하고 있습니다.
+Java에서는 진작에 문제점을 인지하고 `java.time` 패키지를 만들었습니다.
+하지만, Javascript에서는 여전히 불편하고 문제많은 Date를 1995년 부터 사용하고 있습니다.
+그래서 항상 `moment.js`와 같은 라이브러리를 사용해야 했습니다.
+이런 문제를 해결하기 위해 [Temporal](https://tc39.es/proposal-temporal/)이 만들어졌습니다.
+
+# Date의 문제점
+
+Date는 기본적으로 로컬 시간대를 기준으로 하며 특정 시간대를 명시할 수 없습니다.
+
+```js
+const d = new Date('2025-05-02T00:00:00');
+console.log(d.toString());    // 로컬 시간
+console.log(d.toUTCString()); // UTC 기준
+```
+
+서버와 클라이언트의 시간대가 다른 경우 서버에서 UTC로 변환하고 다시 로컬 시간대로 변환해야 합니다.
+중간에 UTC가 아닌 Date를 UTC처럼 사용하거나 로컬 시간대처럼 사용하면 예기치 못한 결과가 나올 수 있습니다.
+Date는 1970년 1월 1일 00:00:00 UTC를 기준으로 밀리초 단위로 표현합니다.
+밀리초보다 작은 단위는 표현할 수 없습니다.
+
+Date객체는 mutable합니다. 즉, Date는 불변성이 없습니다.
+
+```js
+const d1 = new Date();
+const d2 = d1;
+d2.setMonth(0); // d1도 바뀜!
+```
+
+실수에 의해 지금 사용하는 Date가 언제든지 바뀔 수 있으며 정확한 시간을
+나타내는지도 알 수 없습니다.
+
+Date의 생성자나 `Date.parse()`는 파싱 결과에 일관성이 없습니다.
+같은 코드더라도 브라우저나 환경에 따라 다르게 동작할 수 있습니다.
+
+```js
+new Date('02/05/2025')
+```
+
+위 코드는 브라우저와 거주 지역에 따라 다르게 동작합니다.
+2025년 2월 5일로 해석될 수도 있고 5월 2일로 해석될 수도 있습니다.
+
+Date의 연산은 부정확합니다. 예를 들어, 특정 시점에서 1개월 후의 날짜를 알고 싶으면
+다음과 같은 코드를 작성할 수 있습니다.
+
+```js
+const d = new Date('2025-01-31');
+d.setMonth(d.getMonth() + 1);
+```
+
+이 코드는 2025년 2월 28일이 아닌 3월 3일을 반환하거나 Invalid Date를 반환합니다.
+30일 뒤의 날짜를 알고 싶은 경우 Date에 $30 \times 24 \times 60 \times 60 \times 1000$을
+더해야 합니다. 또, 날짜 간의 차이를 구하는 경우도 직접 유틸리티를 만들거나 외부 라이브러리에
+의존해야 했습니다.
+
+# Temporal
+
+Temporal은 아직 실험적이며 현재 ECMAScript Stage 3에 있습니다.
+현재로는 Firefox 브라우저에서만 사용할 수 있습니다.
+
+Temporal에서 현재 시간을 얻고 싶으면 다음과 같이 작성합니다.
+
+```js
+const now = Temporal.Now.instant();
+console.log(now.toString()); // 2025-05-02T03:39:19.121Z
+```
+
+저는 저 코드를 5월 2일 12시에 실행했습니다. 자동으로 UTC로 변환되어 03시로 출력되는 것을
+볼 수 있습니다. Temporal에서 특정 시간대를 기준으로 표현하고 싶으면 `ZonedDateTime`을 사용합니다.
+또한, 날짜를 나타내는 문자열의 형식을 표준화 하기 위해 RFC 3339를 확장한
+[RFC 9557](https://datatracker.ietf.org/doc/rfc9557/) 형식을 사용합니다.
+이 방식은 크게 3 부분을 갖습니다.
+
+```txt
+2025-05-02T12:50:30+09:00[Asia/Tokyo][u-ca=japanese]
+```
+
+RFC 3339 형식으로 시간을 나타내고 다음 대괄호안에 지역과 시간대 정보를 넣습니다.
+마지막 대괄호에는 선택적으로 달력 정보를 넣습니다. 위 예시에서는 일본력을 사용하고 있습니다.
+
+Temporal에서는 날짜 사이의 차이를 구하기 위해 `Duration`을 사용합니다.
+Duration객체는 다음과 같이 얻을 수 있습니다.
+
+```js
+const d1 = Temporal.PlainDateTime.from('2025-05-02T12:50:30+09:00[Asia/Seoul]');
+const d2 = Temporal.PlainDateTime.from('2025-06-02T12:50:30+09:00[Asia/Seoul]');
+const duration = d1.since(d2);
+console.log(duration.toString()); // -P31D
+```
+
+P는 Period, D는 Day를 의미합니다. 즉, 31일 이전을 의미합니다.
+`.days`, `.months`, `.years`와 같은 필드를 사용해서 추출할 수도 있습니다.
+
+# 마치며
+
+Temporal을 사용하면 내장된 API로 날짜와 시간을 완벽하게 처리할 수 있습니다.
+아직 실험적인 단계이고 브라우저 호환성도 좋지 않지만, 언젠가는 Date를 대체할 것입니다.
+하루빨리 모든 브라우저와 Node.js에서 Temporal이 지원되기를 바랍니다.
