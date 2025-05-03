@@ -36,7 +36,7 @@ export default function NotFoundJoke() {
   useEffect(() => {
     const idx = Math.floor(Math.random() * funnyMessages.length);
     setMessage(funnyMessages[idx]);
-  }, [funnyMessages]);
+  }, []);
 
   return <p className="text-xs text-neutral-400 italic mt-2 h-3">{message}</p>;
 }

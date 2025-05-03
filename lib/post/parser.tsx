@@ -519,7 +519,7 @@ export const toHtml = (content: string[]) => {
       const params =
         tokens.length > 1 ? tokens[1].split(",").map((x) => x.trim()) : [];
 
-      let body: string[] = [];
+      const body: string[] = [];
       while (i + 1 < content.length) {
         const nextLine = content[i + 1];
         if (nextLine.startsWith("%end")) {
