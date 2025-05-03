@@ -1,5 +1,6 @@
 import CodeBlock from "@/components/post/CodeBlock";
 import Equation from "@/components/post/Equation";
+import MultiCodeBlock from "@/components/post/MultiCodeBlock";
 import PostImage from "@/components/post/PostImage";
 import React, { ReactNode } from "react";
 
@@ -357,6 +358,52 @@ const renderTable = (markdown: string): ReactNode => {
   return table;
 };
 
+const renderCustomBlock = (
+  command: string,
+  params: string[],
+  body: string[]
+): ReactNode => {
+  if (command === "multilang") {
+    const name = params;
+    const code = [];
+    const lang = [];
+
+    let isInCodeBlock = false;
+    let tmp = "";
+    for (let i = 0; i < body.length; i++) {
+      if (isInCodeBlock) {
+        if (body[i].startsWith("```")) {
+          isInCodeBlock = false;
+          code.push(tmp);
+          tmp = "";
+          continue;
+        }
+
+        tmp += body[i] + "\n";
+      } else if (body[i].startsWith("```")) {
+        isInCodeBlock = true;
+        const langMatch = body[i].match(/```(\w+)/);
+        if (langMatch) {
+          lang.push(langMatch[1]);
+        }
+      }
+    }
+
+    console.assert(
+      name.length === code.length && name.length === lang.length,
+      "Multilang block: name, code, and lang lengths do not match"
+    );
+
+    return <MultiCodeBlock code={code} lang={lang} name={name} />;
+  }
+
+  return (
+    <div style={{ color: "red", fontSize: "3rem" }}>
+      Error: unknown custom block {command}
+    </div>
+  );
+};
+
 const IMAGE_REGEX = /!\[([^\]]+)\]\(([^)]+)\)/;
 const TABLE_ROW_REGEX = /^\|(.+)\|$/;
 
@@ -463,6 +510,33 @@ export const toHtml = (content: string[]) => {
 
       const table = renderTable(tableRows.join("\n"));
       html.push(<div key={i}>{table}</div>);
+    } else if (content[i].startsWith("%") && !content[i].startsWith("%end")) {
+      // %multilang:js,py
+      // %endmultilang
+      const rawCommand = content[i].slice(1).trim();
+      const tokens = rawCommand.split(":");
+      const command = tokens[0].trim();
+      const params =
+        tokens.length > 1 ? tokens[1].split(",").map((x) => x.trim()) : [];
+
+      let body: string[] = [];
+      while (i + 1 < content.length) {
+        const nextLine = content[i + 1];
+        if (nextLine.startsWith("%end")) {
+          i++;
+          break;
+        }
+        body.push(nextLine);
+        i++;
+      }
+      i++;
+
+      const rendered = renderCustomBlock(command, params, body);
+      html.push(
+        <div key={i} className="custom-block">
+          {rendered}
+        </div>
+      );
     } else {
       let paragraph = content[i];
 
