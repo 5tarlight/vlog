@@ -48,6 +48,8 @@ export const featured = [
   "make-blog/vercel-og",
 ];
 
+export const psGuide = ["ps-test"].map((post) => `ps/${post}`);
+
 export const POST_BASE_PATH = "/posts";
 export const POST_PATH = path.join(process.cwd(), POST_BASE_PATH);
 
@@ -62,13 +64,22 @@ export const readContent = async (slug: string) => {
   return content;
 };
 
-export const readlAllPosts = async () => {
+export const readAllPosts = async () => {
   console.warn("Reading all posts");
   return await Promise.all(posts.map(readContent));
 };
 
+export const readAllPsGuide = async () => {
+  console.warn("Reading all ps-guide");
+  return await Promise.all(psGuide.map(readContent));
+};
+
 export const getAllMeta = async () => {
-  return (await readlAllPosts()).map((content) => parsePost(content).meta);
+  return (await readAllPosts()).map((content) => parsePost(content).meta);
+};
+
+export const getAllPsGuideMeta = async () => {
+  return (await readAllPsGuide()).map((content) => parsePost(content).meta);
 };
 
 export const getContentPreview = async (slug: string) => {
@@ -96,7 +107,7 @@ export const getContentPreview = async (slug: string) => {
 };
 
 export const getAllMetaWithId = async () => {
-  return (await readlAllPosts()).map((content, i) => ({
+  return (await readAllPosts()).map((content, i) => ({
     meta: parsePost(content).meta,
     id: posts[i],
   }));
@@ -107,7 +118,7 @@ export const getPostsBySeries = (seriesName: string) => {
 };
 
 export const getPostsByTag = async (tag: string) => {
-  return (await readlAllPosts()).filter((post) =>
+  return (await readAllPosts()).filter((post) =>
     parsePost(post).meta.tags.includes(tag)
   );
 };
