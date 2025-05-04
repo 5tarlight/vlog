@@ -48,6 +48,27 @@ export const featured = [
   "make-blog/vercel-og",
 ];
 
+export const psGuide = [
+  // "ps-test",
+  "get-started",
+  "time-complexity",
+  "fastio",
+  "array-vector",
+  "brute-force",
+  "modular-arithmetic",
+  "sieve-of-eratosthenes",
+  "euclidean-algorithm",
+  "map-set",
+  "sort",
+  "stack-queue-deque",
+  "recursion-backtracking",
+  "dynamic-programming",
+  "prefix-sum",
+  "binary-search-parametric-search",
+  "bitmasking",
+  "graph-theory",
+].map((post) => `ps/${post}`);
+
 export const POST_BASE_PATH = "/posts";
 export const POST_PATH = path.join(process.cwd(), POST_BASE_PATH);
 
@@ -62,13 +83,22 @@ export const readContent = async (slug: string) => {
   return content;
 };
 
-export const readlAllPosts = async () => {
+export const readAllPosts = async () => {
   console.warn("Reading all posts");
   return await Promise.all(posts.map(readContent));
 };
 
+export const readAllPsGuide = async () => {
+  console.warn("Reading all ps-guide");
+  return await Promise.all(psGuide.map(readContent));
+};
+
 export const getAllMeta = async () => {
-  return (await readlAllPosts()).map((content) => parsePost(content).meta);
+  return (await readAllPosts()).map((content) => parsePost(content).meta);
+};
+
+export const getAllPsGuideMeta = async () => {
+  return (await readAllPsGuide()).map((content) => parsePost(content).meta);
 };
 
 export const getContentPreview = async (slug: string) => {
@@ -96,9 +126,16 @@ export const getContentPreview = async (slug: string) => {
 };
 
 export const getAllMetaWithId = async () => {
-  return (await readlAllPosts()).map((content, i) => ({
+  return (await readAllPosts()).map((content, i) => ({
     meta: parsePost(content).meta,
     id: posts[i],
+  }));
+};
+
+export const getAllPsGuideMetaWithId = async () => {
+  return (await readAllPsGuide()).map((content, i) => ({
+    meta: parsePost(content).meta,
+    id: psGuide[i],
   }));
 };
 
@@ -107,7 +144,7 @@ export const getPostsBySeries = (seriesName: string) => {
 };
 
 export const getPostsByTag = async (tag: string) => {
-  return (await readlAllPosts()).filter((post) =>
+  return (await readAllPosts()).filter((post) =>
     parsePost(post).meta.tags.includes(tag)
   );
 };
@@ -162,7 +199,7 @@ export const searchPosts = async (query: string, limit = 6) => {
   const start = Date.now();
 
   const scores = await Promise.all(
-    posts.map(async (post) => {
+    [...posts, ...psGuide].map(async (post) => {
       const content = await readContent(post);
       const { meta, body } = parsePost(content);
 

@@ -1,5 +1,5 @@
 import { parsePost } from "@/lib/post/parser";
-import { posts, readContent, series } from "@/lib/post/posts";
+import { posts, psGuide, readContent, series } from "@/lib/post/posts";
 import type { MetadataRoute } from "next";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -9,7 +9,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     { url: baseUrl, lastModified: new Date() },
     ...(await Promise.all(
-      posts
+      [...posts, ...psGuide]
         .map(async (post) => ({
           post,
           meta: parsePost(await readContent(post)).meta,

@@ -1,0 +1,60 @@
+---
+title: FastIO
+description: 빠른 입출력
+cover:
+tags: algorithm, ps, boj
+date: 2025-04-13
+update: 2025-04-17
+author: yeahx4
+series: 
+seriesIndex: -1
+coverTitle: FastIO
+coverSub: 
+coverTs: 120
+coverBg: 9DA1AA
+coverColor: ffffff
+---
+
+# FastIO
+
+기본 입출력은 생각보다 느립니다. 출력과의 동기화나 여러가지 처리가 있기 때문입니다. 그래서 입력 속도를 증가시키는 코드 몇 줄을 넣어서 FastIO를 진행하고는 합니다. 저는 코드 스니펫에 넣어두고 거의 모든 문제에서 사용하는 편입니다. 입출력에 사용되는 시간이 꽤 깁니다. 입력이 엄청나게 많다면 입력 만으로도 시간 초과를 받을 수 있습니다. 이와 관련해서 [baekjoon님의 벤치마크](https://www.acmicpc.net/blog/view/56)가 있습니다.
+
+FastIO는 Python에서는
+
+```python
+import sys
+
+input = sys.stdin.readline()
+```
+
+이렇게 쓸 수 있습니다. 대신 주의할 점으로 readline의 특성상 마지막 개행문자(\n)까지 읽어오기 때문에 숫자로 파싱하지 않고 문자열 그대로가 필요하다면 strip() 등을 통해 정리해 주어야 합니다.
+
+C++에서는
+
+```cpp
+#include <iostream>
+
+using namespace std;
+
+int main() {
+    cin.tie(nullptr);
+    cout.tie(nullptr);
+    ios::sync_with_stdio(false)
+}
+```
+
+저 3줄의 코드를 추가해주면 됩니다. 다만 주의할 점은 마지막 줄에서 stdio와의 sync를 해제했는데, C++스타일 입출력(cout, cin)과 C스타일 입출력(printf, scanf)를 섞어쓰면 안됩니다. 입출력 순서가 꼬이거나 같은 문자를 읽거나 하는 문제가 생길 수 있습니다.
+
+참고로 C++에서는 헤더를 필요할 때마다 include하지 않고 한번에 모두 가져올 수 있습니다. GCC계열 컴파일러에서만 가능합니다.
+
+```cpp
+#include <bits/stdc++.h>
+```
+
+저는 맥이라 Clang 컴파일러를 쓰기 때문에 저 헤더가 없는데, 임의로 CMake 설정을 수정해서 만들어 주었습니다. stdc++.h 헤더의 소스코드는 [여기](https://gist.github.com/Einstrasse/ac0fe7d7450621a39364ed3b05cacd11)에서 찾을 수 있으니 참고하세요.
+
+
+
+# 연습문제
+
+- [https://www.acmicpc.net/problem/15552](https://www.acmicpc.net/problem/15552)

@@ -1,0 +1,66 @@
+---
+title: Prefix Sum
+description: 누적 합
+cover:
+tags: prefix sum, algorithm, ps, boj
+date: 2025-04-23
+author: yeahx4
+series: 
+seriesIndex: -1
+coverTitle: Prefix Sum
+coverSub: 
+coverTs: 90
+coverBg: 9DA1AA
+coverColor: ffffff
+---
+
+# Prefix Sum
+
+누적 합은 이름처럼 점점 누적해서 더하는 방식입니다. 어떤 수열 $a$가 있을 때, $a_1$부터 $a_n$ 까지의 합을 $S_n$이라고 해 봅시다. 여기서 알고 싶은 것은 $a_j$부터 $a_k$ $(j \leq k)$ 까지의 합을 구하고 싶습니다. 가장 간단한 방법은 $j$부터 $k$까지 반복하면서 더하는 것이지만 1번부터 $n$번 까지의 합 $S_n$을 알고 있기 때문에 그렇게 하지 않아도 됩니다. 고등학교에서 배운 내용처럼 $S_k - S_{j - 1}$을 통해 $O(1)$시간에 구할 수 있습니다. 이게 누적합입니다. 좀 더 엄밀하게 수식으로 표현하면 다음과 같습니다.
+
+```math
+\sum_{i=j}^k a_i = \sum_{i=1}^k a_i - \sum_{i=1}^{j - 1} a_i
+```
+
+컴퓨터는 0-based 인덱스를 쓰지만 위에서는 일부러 1-based 인덱스를 썼습니다. 실제로도 코드를 1-index로 짜고 0번에 0을 넣어두는 것을 추천합니다. 왜냐하면 1부터 $n$번째 까지 합을 구할 때 정답은 $S_n$이 되어야 하는데, 매번 if로 분기해서 $S_{j-1}$을 뺄지 아니면 빼지 않을지 검사해야 하기 때문입니다. 여기서 0번째에 0을 넣어두게 되면 $S_n - S_0$이 $S_n$이 되어 한 코드로 계속 사용할 수 있어 편합니다. 이제 누적 합을 코드로 만들어 봅시다.
+
+%multilang:C++,Python
+```cpp
+int main() {
+    int n; cin >> n;
+    int a[n];
+    for (int i = 0; i < n; i++)
+        cin >> a[i];
+
+    int sum[n + 1];
+    sum[0] = 0;
+    for (int i = 1; i <= n; i++)
+        sum[i] = sum[i - 1] + a[i - 1];
+
+    int i, j;
+    cin >> i >> j;
+    cout << sum[j] - sum[i - 1];
+}
+```
+
+```python
+n = int(input())
+a = list(map(int, input().split()))
+
+# 누적 합 계산
+sum_ = [0] * (n + 1)
+for i in range(1, n + 1):
+    sum_[i] = sum_[i - 1] + a[i - 1]
+
+i, j = map(int, input().split())
+print(sum_[j] - sum_[i - 1])
+```
+%endmultilang
+
+이렇게 한 번 계산해두고 나면 다음부터 $O(1)$에 부분의 합을 구할 수 있습니다.
+
+## 연습문제
+
+- [https://www.acmicpc.net/problem/11659](https://www.acmicpc.net/problem/11659)
+- [https://www.acmicpc.net/problem/16139](https://www.acmicpc.net/problem/16139)
+- [https://www.acmicpc.net/problem/11660](https://www.acmicpc.net/problem/11660)

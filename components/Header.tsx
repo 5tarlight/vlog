@@ -29,9 +29,8 @@ export default function Header() {
               height={40}
               className="inline-block rounded-full align-middle -mt-2"
             />
-            <span className="text-center leading-none align-middle">
-              YEAHx4
-            </span>
+            {/* <HeaderTitle /> */}
+            <span>YEAHx4</span>
           </Link>
         </div>
         <div className="gap-4 items-center hidden sm:flex">
@@ -47,7 +46,8 @@ export default function Header() {
             Posts
           </Link>
           <Link
-            href="https://ps-guide.yeahx4.me"
+            // href="https://ps-guide.yeahx4.me"
+            href="/ps-guide"
             className={cn(
               "relative after:absolute after:left-0 after:bottom-0 after:w-0",
               "after:h-[1px] after:bg-current after:transition-all after:duration-300",

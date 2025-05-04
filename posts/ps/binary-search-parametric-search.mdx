@@ -1,0 +1,256 @@
+---
+title: Binary Search, Parametric Search
+description: 이분 탐색, 매개변수 탐색
+cover:
+tags: binary search, parametric search, algorithm, ps, boj
+date: 2025-04-29
+author: yeahx4
+series: 
+seriesIndex: -1
+coverTitle: Binary & Parametric Search
+coverSub: 
+coverTs: 90
+coverBg: 9DA1AA
+coverColor: ffffff
+---
+
+# Binary Search
+
+이분 탐색은 **정렬된** 배열에서 특정 값의 존재 여부나 위치를 로그 시간에 찾아내는 알고리즘입니다. 만약 배열이 정렬되어 있지 않다면 어떤 값이 있는지 하나하나 찾아서 $O(N)$의 알고리즘을 사용할 수 밖에 없습니다. 하지만, 배열이 정렬되어 있다면 굳이 모든 값을 탐색할 필요가 없습니다. 이분 탐색은 업-다운 게임이랑 완벽하게 동일하게 작동합니다. 예를 들어, 1부터 100사이의 어떤 수를 맞춰야 하는 업-다운 게임을 생각해 봅시다. 어떤 숫자를 말하면 정답이 큰지, 작은지, 또는 정답인지 알려줍니다. 1부터 시작해서 100까지 100개의 숫자를 모두 말하는 방법보다 효율적인 방법이 존재합니다. 처음 50에서 시작해서 만약 정답이 작았다면, `1~49` 범위에 정답이 있음을 확신할 수 있으므로 범위를 절반씩 줄여 나갈 수 있습니다. 즉, `51~100` 범위의 수는 탐색할 필요도 없이 스킵할 수 있습니다. 다음으로 `1~49`의 중간인 25를 불러서 또 절반으로 줄이고, 또 절반으로 줄이고, 계속 반복하다보면 한 수만 남게 됩니다. 그 수가 정답이 되겠죠. 따라서 최소 $\left\lceil \lg N \right\rceil$안에 항상 정답을 찾을 수 있습니다! 시간복잡도는 $O(\log N)$이 되겠네요. 이것이 이분 탐색의 원리입니다. 코드로 구현해 봅시다.
+
+%multilang:C++,Python
+```cpp
+int main() {
+    int n; cin >> n;
+    vector<int> a(n);
+    for (int i = 0; i < n; ++i) cin >> a[i];
+    sort(a.begin(), a.end());
+
+    int m; cin >> m;
+    int l = 0, r = n - 1;
+
+    while (l < r) {
+        int mid = (l + r) / 2;
+        if (a[mid] < m)
+            l = mid + 1;
+        else
+            r = mid;
+    }
+
+    cout << l << "th : " << a[l] << endl;
+}
+```
+
+```python
+n = int(input())
+a = list(map(int, input().split()))
+a.sort()
+
+m = int(input())
+l, r = 0, n - 1
+
+while l < r:
+    mid = (l + r) // 2
+    if a[mid] < m:
+        l = mid + 1
+    else:
+        r = mid
+
+print(f"{l}th : {a[l]}")
+```
+%endmultilang
+
+길이가 $n$인 배열에서 특정 값 $m$이 있는지 확인하는 코드입니다. 정확히는 `a[l] == m` 일 때 존재한다고 말할 수 있습니다. $l, r$의 평균으로 중앙값을 구하고, 그 값이 찾으려는 값보다 큰지 작은지에 따라서 업데이트합니다. 이분 탐색은 정렬되어 있는 배열에만 쓸 수 있습니다. 그래서 배열 자체가 정렬되어 있지 않아서 직접 정렬까지 해야 하는 경우, 완전 탐색보다 느려질 수 있습니다. 위 코드도 하나의 수를 찾는데, 정렬하는데 $O(N \log N)$이 걸리기 때문에 탐색에 $O(\log N)$이 걸려도 $O(N)$완전 탐색보다 더 큰 시간복잡도를 갖습니다.
+
+이분 탐색은 두 가지 구현이 있습니다. 크게 다르진 않지만 while안의 조건에 `<` 을 사용하는지, `<=` 을 사용하는지 차이가 있습니다. 위 코드는 `<` 을 쓰는 형태이고, l과 r을 갱신할 때 어떤 값으로 갱신하는지가 중요합니다. 이런 디테일이 이분 탐색의 구현을 어렵게 만들고 삽질의 원인이 됩니다. 위 코드의 조건 `a[mid] < m` 이 true였다면, l부터 mid까지 원소는 쓸모가 없으므로 l = mid + 1로 갱신해야 합니다. 만약 false였다면, mid + 1부터 r까지 원소가 정답이 아니므로 r = mid로 갱신해야 합니다. 만약 조건이 `a[mid] <= m` 이었다면, 약간 다르게 동작하게 됩니다. 이 부분에 대해서는 아래에서 자세히 얘기해 보도록 하겠습니다.
+
+while에 `<=` 을 사용하는 이분 탐색은 구현이 살짝 달라집니다.
+
+%multilang:C++,Python
+```cpp
+int main() {
+    int n; cin >> n;
+    vector<int> a(n);
+    for (int i = 0; i < n; ++i) cin >> a[i];
+    sort(a.begin(), a.end());
+
+    int m; cin >> m;
+    int l = 0, r = n - 1;
+
+    while (l <= r) {
+        int mid = (l + r) / 2;
+        if (a[mid] < m)
+            l = mid + 1;
+        else
+            r = mid - 1;
+    }
+
+    cout << l << "th : " << a[l] << endl;
+}
+```
+
+```python
+n = int(input())
+a = list(map(int, input().split()))
+a.sort()
+
+m = int(input())
+l, r = 0, n - 1
+
+while l <= r:
+    mid = (l + r) // 2
+    if a[mid] < m:
+        l = mid + 1
+    else:
+        r = mid - 1
+
+print(f"{l}th : {a[l]}")
+```
+%endmultilang
+
+크게 다르진 않지만 r을 mid - 1로 갱신해 주어야 합니다. 기존처럼 mid로만 갱신을 하게 되면 무한 루프를 돌아서 종료되지 않습니다. 결과는 똑같지만 어떤 구현을 사용할지는 취향차이입니다. 저는 `<=` 을 사용하는 코드가 어떤 mid에 1을 더하고 빼야할지 고민하지 않아도 되서 주로 사용하는 편입니다.
+
+사실 단순히 존재를 확인하기 위한 이분 탐색은 언어 차원에서 이미 구현해서 제공하고 있습니다. C++에서는 algorithm헤더의 `binary_search` 함수가 있고, 파이썬에서는 bisect 모듈의 함수를 활용해야 합니다. 사실 파이썬에는 `binary_search`와 같은 기능을 하는 함수는 존재하지 않습니다. 뒤에서 살펴볼 C++의 `lower_bound` 와 `upper_bound` 랑 같은 `bisect_left` 와 `bisect_right` 가 있습니다. 우선 여기서는 `binary_search`만 알아보도록 하겠습니다. `lower_bound`와 `upper_bound`를 사용해도 동일한 효과를 얻을 수 있지만 두 함수에 대해서는 뒷부분에서 얘기해 봅겠습니다. `binary_search`는 정렬된 배열에서 특정 값이 존재하는지를 true/false로 리턴합니다.
+
+```cpp
+int main() {
+    int n; cin >> n;
+    vector<int> a(n);
+    for (int i = 0; i < n; ++i) cin >> a[i];
+    sort(a.begin(), a.end());
+
+    int m; cin >> m;
+    bool found = binary_search(a.begin(), a.end(), m);
+    cout << (found ? "YES" : "NO") << endl;
+}
+```
+
+정확히 위에서 했던 코드와 동일한 결과를 얻을 수 있습니다.
+
+
+
+## lower_bound, upper_bound
+
+`binary_search`는 단순히 어떤 값의 존재 여부만을 확인했다면, `lower_bound`와 `upper_bound`는 더 많은 정보를 제공합니다. 예를 들어, 다음과 같은 어떤 정렬된 배열이 있다고 생각해 봅시다.
+
+```math
+a = [1, 2, 4, 4, 5, 6]
+```
+
+여기서 4를 이분 탐색을 진행한다고 했을 때 `lower_bound`는 배열의 왼쪽부터 처음으로 4 이상이 되는 값을 찾습니다. 여기선 3번째 인덱스에서 처음으로 4 이상이 됩니다. 따라서 첫 번째 4를 가리키는 포인터를 반환합니다. `upper_bound`는 처음으로 4 보다 커지는 값을 찾습니다. 따라서 인덱스가 4인 5가 처음으로 4보다 커지는 값이므로 5를 가리키는 포인터를 반환하게 됩니다. 그래서 `upper_bound`의 결과는 항상 찾으려는 값보다 큰 값을 가리키게 됩니다. 만약 7을 찾으려고 했다면, 배열에 없고 모든 값보다 크므로 `arr.end()` 를 리턴하게 됩니다. end는 마지막 원소가 아니라, 마지막 원소 다음의 존재하지 않는 위치를 가리키게 됩니다. 파이썬의 `bisect_left`와 `bisect_right`는 포인터 대신 인덱스를 반환합니다. 만약 위 배열에서 7을 찾으려고 했다면 6을 반환합니다. 배열의 길이는 6이므로 6번 인덱스는 존재하지 않는 값입니다. 따라서 end()와 동일한 효과를 냅니다.
+
+`upper_bound`와 `lower_bound`를 사용해서 정렬된 배열에서 특정 값의 개수를 세는 프로그램을 만들어 봅시다.
+
+%multilang:C++,C++(equal_range),Python
+```cpp
+int main() {
+    int n; cin >> n;
+    vector<int> a(n);
+    for (int i = 0; i < n; ++i) cin >> a[i];
+    sort(a.begin(), a.end());
+
+    int m; cin >> m;
+    auto l = lower_bound(a.begin(), a.end(), m);
+    auto r = upper_bound(a.begin(), a.end(), m);
+
+    cout << r - l << endl;
+}
+```
+
+```cpp
+int main() {
+    int n; cin >> n;
+    vector<int> a(n);
+    for (int i = 0; i < n; ++i) cin >> a[i];
+    sort(a.begin(), a.end());
+
+    int m; cin >> m;
+    auto [l, r] = equal_range(a.begin(), a.end(), m);
+
+    cout << r - l << endl;
+}
+```
+
+```python
+import bisect
+
+n = int(input())
+a = list(map(int, input().split()))
+a.sort()
+
+m = int(input())
+l = bisect.bisect_left(a, m)
+r = bisect.bisect_right(a, m)
+
+print(r - l)
+```
+%endmultilang
+
+참고로 C++에서 `lower_bound`와 `upper_bound`를 동시에 사용해야 하는 경우 `equal_range()`를 통해 한 줄로 처리할 수도 있습니다. 리턴 타입이 `std::iterator<int*>` 이기 때문에 auto를 사용해서 편하게 처리해 주었습니다. 만약 l과 r을 인덱스로 가져오고 싶었다면 `lower_bound`에서 a.begin()을 빼 주면 인덱스를 얻을 수 있습니다.
+
+## Parametric Search
+
+매개변수 탐색(parametric search)는 이분 탐색을 이용해 최적화 문제를 푸는 알고리즘입니다. 위에서 살펴본 이분 탐색은 전부 내장된 라이브러리로 편하게 처리할 수 있었지만, 매개변수 탐색은 직접 내부 구현을 수정해야 하기 때문에 이분 탐색 코드를 직접 작성해야 합니다. 그래서 일부러 위에서 이분 탐색 코드에 대해서 자세히 설명했습니다.
+
+[2805번: 나무 자르기](https://www.acmicpc.net/problem/2805) 문제를 봅시다. 어떤 높이를 정해서 나무를 특정 양 이상 잘라서 가져가야 하는데 최대한 높게 설정해서 필요한 만큼만 가져가는 것이 목표입니다. 이런 문제를 최적화 문제라고 합니다. 가장 단순하게 생각하면 높이를 1부터 $10^9$까지 하나하나 살펴보면 되지만 시간 초과를 받습니다. 그렇다고 그리디하게 다른 방법을 생각해봐도 나무 높이에 아무 규칙도 없고 딱히 좋은 방법이 떠오르지가 않습니다. 이런 경우 매개변수 탐색이 효율적으로 작동합니다.
+
+위 문제에서 톱의 높이는 $[1, 10^9]$ 사이 어딘가입니다. 정확히는 나무 높이의 최댓값이지만 나무 높이의 최댓값을 찾는 과정도 $O(N)$의 시간이 걸리니 패스하도록 하겠습니다. 매개변수 탐색은 저 가능한 범위를 반씩 줄여 나가는 이분 탐색입니다. 즉, l, r의 평균 mid로 톱을 설치해 보고, 범위의 절반을 제거하는 방식으로 반복하면 로그 시간에 처리할 수 있게 됩니다. 파라메트릭 서치는 생각보다 코드 짜기가 어렵습니다. 구조는 비슷비슷하지만 작은 디테일 하나로 AC와 WA가 갈리게 됩니다. 한번 먼저 코드를 만들어 보세요! C++은 숫자 범위도 조심해야 합니다.
+
+%multilang:C++,Python
+```cpp
+int main() {
+    fio();
+
+    int n, m;
+    cin >> n >> m;
+    vector<int> a(n);
+    for (int i = 0; i < n; ++i)
+        cin >> a[i];
+
+    int l = 1, r = 1e9;
+    while (l <= r) {
+        int mid = (l + r) / 2;
+        long long sum = 0;
+        for (int v : a)
+            sum += max(0, v - mid);
+
+        if (sum >= m) {
+            l = mid + 1;
+        } else {
+            r = mid - 1;
+        }
+    }
+
+    cout << r << endl;
+}
+```
+
+```python
+n, m = map(int, input().split())
+a = list(map(int, input().split()))
+
+l, r = 1, int(1e9)
+while l <= r:
+    mid = (l + r) // 2
+    sum_ = 0
+    for v in a:
+        sum_ += max(0, v - mid)
+
+    if sum_ >= m:
+        l = mid + 1
+    else:
+        r = mid - 1
+
+print(r)
+```
+%endmultilang
+
+l과 r중 어떤 것이 정답이 될 지 잘 생각해야 합니다. 최대를 찾는 경우, 최소를 찾는 경우, 어떤 방식으로 구현되었는지까지 고려해서 정해야 합니다. 또는, ans변수를 하나 만들어 가능할 때마다 max값을 저장하고 출력하는 방식도 고려해볼 수 있습니다.
+
+# 연습문제
+
+- [https://www.acmicpc.net/problem/1920](https://www.acmicpc.net/problem/1920)
+- [https://www.acmicpc.net/problem/1072](https://www.acmicpc.net/problem/1072)
+- [https://www.acmicpc.net/problem/1166](https://www.acmicpc.net/problem/1166)
+- [https://www.acmicpc.net/problem/1654](https://www.acmicpc.net/problem/1654)
+- [https://www.acmicpc.net/problem/2110](https://www.acmicpc.net/problem/2110)
