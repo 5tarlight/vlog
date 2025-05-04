@@ -5,12 +5,24 @@ import { NextResponse } from "next/server";
 async function getRss() {
   const items = [
     ...(await Promise.all(
-      [...posts, ...psGuide].map(async (post) => {
+      posts.map(async (post) => {
         const meta = parsePost(await readContent(post)).meta;
 
         return `\n      <item>
         <title><![CDATA[${meta.title}]]></title>
         <link>https://post.yeahx4.me/posts/${post}</link>
+        <pubDate>${new Date(meta.update).toUTCString()}</pubDate>
+        <description><![CDATA[${meta.description}]]></description>
+      </item>\n\n`;
+      })
+    )),
+    ...(await Promise.all(
+      psGuide.map(async (post) => {
+        const meta = parsePost(await readContent(post)).meta;
+
+        return `\n      <item>
+        <title><![CDATA[${meta.title}]]></title>
+        <link>https://post.yeahx4.me/ps-guide/${post.split("/")[1]}</link>
         <pubDate>${new Date(meta.update).toUTCString()}</pubDate>
         <description><![CDATA[${meta.description}]]></description>
       </item>\n\n`;
