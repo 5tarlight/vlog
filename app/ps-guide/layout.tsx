@@ -2,7 +2,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | 알고리즘 가이드",
+    template: "%s | 알고리즘 가이드 | YEAHx4",
     default: "알고리즘 가이드",
   },
 };
