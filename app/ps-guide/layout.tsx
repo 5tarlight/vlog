@@ -13,10 +13,5 @@ export default function PsGuideLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <div className="flex mt-16">
-      <PsSidebar />
-      <div>{children}</div>
-    </div>
-  );
+  return children;
 }

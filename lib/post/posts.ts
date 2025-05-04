@@ -49,7 +49,7 @@ export const featured = [
 ];
 
 export const psGuide = [
-  "ps-test",
+  // "ps-test",
   "get-started",
   "time-complexity",
   "fastio",
