@@ -6,6 +6,12 @@ import { psGuide, readContent } from "@/lib/post/posts";
 import { getReadingTime } from "@/lib/post/readingTime";
 import { notFound } from "next/navigation";
 
+export async function generateStaticParams() {
+  return psGuide.map((post) => ({
+    slug: post.split("/").slice(-1)[0],
+  }));
+}
+
 export default async function PsGuide({
   params,
 }: {
