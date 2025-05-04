@@ -199,7 +199,7 @@ export const searchPosts = async (query: string, limit = 6) => {
   const start = Date.now();
 
   const scores = await Promise.all(
-    posts.map(async (post) => {
+    [...posts, ...psGuide].map(async (post) => {
       const content = await readContent(post);
       const { meta, body } = parsePost(content);
 

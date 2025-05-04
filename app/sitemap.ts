@@ -9,21 +9,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     { url: baseUrl, lastModified: new Date() },
     ...(await Promise.all(
-      posts
-        .map(async (post) => ({
-          post,
-          meta: parsePost(await readContent(post)).meta,
-        }))
-        .map(async (p) => {
-          const { post, meta } = await p;
-          return {
-            url: makeUrl(`posts/${post}`),
-            lastModified: new Date(meta.update),
-          };
-        })
-    )),
-    ...(await Promise.all(
-      psGuide
+      [...posts, ...psGuide]
         .map(async (post) => ({
           post,
           meta: parsePost(await readContent(post)).meta,
