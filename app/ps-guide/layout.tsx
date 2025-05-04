@@ -1,4 +1,3 @@
-import PsSidebar from "@/components/ps-guide/PsSidebar";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
