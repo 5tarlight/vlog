@@ -48,7 +48,26 @@ export const featured = [
   "make-blog/vercel-og",
 ];
 
-export const psGuide = ["ps-test"].map((post) => `ps/${post}`);
+export const psGuide = [
+  "ps-test",
+  "get-started",
+  "time-complexity",
+  "fastio",
+  "array-vector",
+  "brute-force",
+  "modular-arithmetic",
+  "sieve-of-eratosthenes",
+  "euclidean-algorithm",
+  "map-set",
+  "sort",
+  "stack-queue-deque",
+  "recursion-backtracking",
+  "dynamic-programming",
+  "prefix-sum",
+  "binary-search-parametric-search",
+  "bitmasking",
+  "graph-theory",
+].map((post) => `ps/${post}`);
 
 export const POST_BASE_PATH = "/posts";
 export const POST_PATH = path.join(process.cwd(), POST_BASE_PATH);
@@ -110,6 +129,13 @@ export const getAllMetaWithId = async () => {
   return (await readAllPosts()).map((content, i) => ({
     meta: parsePost(content).meta,
     id: posts[i],
+  }));
+};
+
+export const getAllPsGuideMetaWithId = async () => {
+  return (await readAllPsGuide()).map((content, i) => ({
+    meta: parsePost(content).meta,
+    id: psGuide[i],
   }));
 };
 

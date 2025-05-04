@@ -1,3 +1,4 @@
+import PsSidebar from "@/components/ps-guide/PsSidebar";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -14,7 +15,7 @@ export default function PsGuideLayout({
 }) {
   return (
     <div className="flex mt-16">
-      <div>TODO : List</div>
+      <PsSidebar />
       <div>{children}</div>
     </div>
   );

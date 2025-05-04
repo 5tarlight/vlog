@@ -1,0 +1,168 @@
+---
+description: 재귀, 백트래킹
+---
+
+# Recursion, Backtracking
+
+## 재귀
+
+재귀 함수는 자기 자신을 다시 호출하는 함수를 말합니다. 예를 들어, [27433번: 팩토리얼 2](https://www.acmicpc.net/problem/27433) 문제를 봅시다. 팩토리얼은 단순히 for 문을 통해서 처리하는게 더 편하고 효율적이지만 공부 목적으로 재귀로 작성해 봅시다. $$n$$번째 팩토리얼 수가 $$F_n$$이라면 다음과 같은 관계식이 성립합니다.
+
+$$
+F_n = nF_{n-1}
+$$
+
+여기서 $$F$$를 $$n$$번째 팩토리얼 수를 구하는 함수라고 생각하면 $$F(n)$$이 $$F(n - 1)$$을 호출하고 있는 모습처럼 볼 수 있습니다. 이렇게 자기 자신을 다시 호출하는 함수를 재귀 함수라고 합니다. 여기서 중요한 것은 항상 재귀에는 종료 조건(exit condition)이 있어야 한다는 것입니다. 무한 루프는 작동이 멈추지 않고 계속 진행되지만 재귀 함수는 재귀가 너무 깊게 들어가면 StackOverflow가 생기며 프로그램이 죽습니다. 팩토리얼에서는 $$F_1 = 1$$으로 알려져 있으니 종료 조건이 됩니다. 코드로 만들어 봅시다.
+
+{% tabs %}
+{% tab title="C++" %}
+```cpp
+long long factorial(int n) {
+    if (n <= 1) return 1;
+    return n * factorial(n - 1);
+}
+
+int main() {
+    int n; cin >> n;
+    cout << factorial(n);
+}
+```
+{% endtab %}
+
+{% tab title="Python" %}
+```python
+import sys
+sys.setrecursionlimit(10 ** 9)
+
+def factorial(n):
+    if n <= 1:
+        return 1
+    return n * factorial(n - 1)
+
+n = int(input())
+print(factorial(n))
+```
+{% endtab %}
+{% endtabs %}
+
+팩토리얼은 값이 금방 커지기 때문에 long long 범위를 금방 벗어납니다. 앞서 배웠던 모듈러 연산을 통해 MOD로 나눈 값을 구하면 범위를 벗어나지 않고도 구할 수 있습니다. 파이썬 코드를 보면 setrecursionlimit이라는 함수를 썼습니다. 파이썬에서 기본 재귀 함수 깊이의 제한은 1000이어서 $$n$$이 1000보다 커지면 RecursionError를 냅니다. 그래서 필요에 따라 sys.setrecursionlimit을 통해 최대 어느 깊이까지 들어갈 수 있는지 설정해 주어야 합니다.
+
+
+
+### 피보나치 수열
+
+[10870번: 피보나치 수 5](https://www.acmicpc.net/problem/10870)입니다. 이 문제도 재귀를 통해 풀어 봅시다. 우선 위에서 했던 것처럼 자기 자신으로 표현되는 점화식을 구해야 합니다. $$n$$번째 피보나치 수를 $$F_n$$이라고 하면, 피보나치 수열은 이전 두 원소를 더해서 구해지는 수열이므로
+
+$$
+F_n = F_{n-1} + F_{n - 2}
+$$
+
+가 됩니다. 여기서 종료 조건은 $$F_0 = 0,\,\, F_1 = 1$$이 되겠네요. 이걸 코드로 옮겨 봅시다.
+
+{% tabs %}
+{% tab title="C++" %}
+```cpp
+long long fibo(int n) {
+    if (n == 0) return 0;
+    if (n == 1) return 1;
+
+    return fibo(n - 1) + fibo(n - 2);
+}
+
+int main() {
+    int n; cin >> n;
+    cout << fibo(n);
+}
+```
+{% endtab %}
+
+{% tab title="Python" %}
+```python
+def fibo(n):
+    if n == 0:
+        return 0
+    if n == 1:
+        return 1
+    return fibo(n - 1) + fibo(n - 2)
+
+n = int(input())
+print(fibo(n))
+```
+{% endtab %}
+{% endtabs %}
+
+정상적으로 작동하지만 한 가지 문제가 있습니다. $$n$$에 50 정도만 넣어도 실행이 끝나지 않습니다. 이 코드는 매 함수 호출마다 2번의 추가적인 호출을 일으킵니다. 따라서 $$O(2^n)$$의 어마어마한 시간복잡도를 갖습니다. $$2^{50}$$은 1,125,899,906,842,624(1경) 이기 때문에 약 130일 정도 계속 코드를 돌려야 종료됩니다. 이 코드의 문제는 중복되는 연산이 굉장히 많습니다. $$0$$부터 $$n$$까지 피보나치 수만 구하면 되기 때문에 이론상 $$O(n)$$에 처리할 수 있는데, 이미 구한 수를 계속 다시 요청하면서 $$O(2^n)$$의 시간복잡도를 갖습니다. 이것을 해결하는 방법에는 여러 가지가 있는데, 첫번째는 애초에 재귀를 쓰지 않는 것이고, 다른 방법으로 이미 구한 피보나치 수를 어딘가에 저장해놓고 저장된 값이 없을 때만 새로 구해서 저장해두는 방식이 있습니다. 두번째 방법을 메모이제이션(memoization)이라고 합니다. 이와 관련해서는 나중에 dp를 다루는 글에서 자세히 얘기해 보도록 하겠습니다. 참고로 피보나치 수는 특별한 성질이 있기 때문에 $$O(\log n)$$에 구할 수도 있습니다.
+
+
+
+## 백트래킹
+
+백트래킹은 재귀를 기반으로 모든 경우의 수를 탐색하는 알고리즘입니다. 예를 들어 $$n$$개의 수가 주어질 때 그 중 $$m$$개를 선택할 때 나올 수 있는 배열을 모두 출력하는 것을 생각해 봅시다. 단, 동일한 수를 여러 번 쓸 수 있고 순서가 다르면 다른 경우입니다. 이 문제는 for나 다른 반복문으로 풀기 굉장히 어려운데, $$m$$이 정해져 있지 않아서 $$m$$중 반복문을 어떻게 만들어야 할지 확정지을 수 없기 때문입니다. 이런 경우 백트래킹이 강력하게 사용됩니다. 백트래킹은 코드가 거의 비슷비슷하기 때문에 코드에 한 번 익숙해지면 딱히 어려울 것이 없습니다.
+
+{% tabs %}
+{% tab title="C++" %}
+```cpp
+vector<int> a;
+vector<int> ans;
+int n, m;
+
+void backtrack(int d) {
+    if (d == m) {
+        for (int v : ans)
+            cout << v << ' ';
+        cout << '\n';
+        return;
+    }
+
+    for (int i = 0; i < n; i++) {
+        ans[d] = a[i];
+        backtrack(d + 1);
+    }
+}
+
+int main() {
+    cin >> n >> m;
+    a.resize(n);
+    ans.resize(m);
+    for (int i = 0; i < n; i++)
+        cin >> a[i];
+
+    backtrack(0);
+}
+```
+{% endtab %}
+
+{% tab title="Python" %}
+```python
+def backtrack(d):
+    if d == m:
+        print(*ans)
+        return
+
+    for i in range(n):
+        ans[d] = a[i]
+        backtrack(d + 1)
+
+n, m = map(int, input().split())
+a = list(map(int, input().split()))
+ans = [0] * m
+
+backtrack(0)
+```
+{% endtab %}
+{% endtabs %}
+
+최대 깊이가 $$m$$인 재귀 함수로 백트래킹을 해서 모든 경우를 살펴보았습니다. 이 경우 시간복잡도는 $$O(m^n)$$으로 굉장히 무서운 모습이 됩니다. 백트래킹 특성상 시간복잡도가 지수꼴로 나와서 개수나 범위가 굉장히 작게 주어집니다. 따라서 문제에서 범위가 굉장히 작게 주어진다면 백트래킹을 굉장히 유력하게 의심할 수 있는 단서가 됩니다. 반대로 범위가 크다면 백트래킹을 고려조차 하지 않아도 됩니다. 그래서 다른 알고리즘에 비해서 언제 사용해야 할 지 알아채기 굉장히 쉽습니다.
+
+
+
+## 연습문제
+
+* [https://www.acmicpc.net/problem/15649](https://www.acmicpc.net/problem/15649)
+* [https://www.acmicpc.net/problem/15651](https://www.acmicpc.net/problem/15651)
+* [https://www.acmicpc.net/problem/15654](https://www.acmicpc.net/problem/15654)
+* [https://www.acmicpc.net/problem/15656](https://www.acmicpc.net/problem/15656)
+* [https://www.acmicpc.net/problem/15666](https://www.acmicpc.net/problem/15666)
+* [https://www.acmicpc.net/problem/16922](https://www.acmicpc.net/problem/16922)
+* [https://www.acmicpc.net/problem/1759](https://www.acmicpc.net/problem/1759)
+* [https://www.acmicpc.net/problem/1062](https://www.acmicpc.net/problem/1062)
