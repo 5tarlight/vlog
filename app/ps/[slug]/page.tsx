@@ -1,9 +1,9 @@
 import { redirect } from "next/navigation";
 
-export default function PsPostRedirection({
+export default async function PsPostRedirection({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  redirect("/ps-guide/" + params.slug);
+  redirect("/ps-guide/" + (await params).slug);
 }
