@@ -67,6 +67,7 @@ export const psGuide = [
   "binary-search-parametric-search",
   "bitmasking",
   "graph-theory",
+  "bfs",
 ].map((post) => `ps/${post}`);
 
 export const POST_BASE_PATH = "/posts";
