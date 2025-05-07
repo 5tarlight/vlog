@@ -3,7 +3,7 @@ title: C로 HTTP 서버 만들기
 description: C로 HTTP의 원리를 이해하며 HTTP 서버를 만듭니다.
 cover:
 tags: web, c, http, server
-date: 2025-05-07 16:53:00
+date: 2025-05-08 04:35:00
 author: yeahx4
 series:
 seriesIndex:
@@ -55,3 +55,222 @@ HTTP 서버/클라이언트를 만든다는 것은 저 메시지를 주고받는
 HTTP 메시지를 적절하게 생성해 전송하고, 수신한 메시지를 적절하게 파싱해 처리하는 것이
 HTTP 애플리케이션의 전부입니다. 저 메시지 자체가 TCP 계층에서 어떻게 전송되는지는
 관심이 없고 HTTP 메시지를 수신/전송하는 것이 저희의 목표입니다.
+
+참고로 이 포스트에서 사용할 C 라이브러리는 Unix/Linux 계열에서만 사용할 수 있습니다.
+C 자체가 굉장히 운영체제에 종속적이기 때문에 Windows에서 사용하려면 다른 라이브러리를
+사용해서 완전히 다른 코드를 작성해야 합니다. 대신 개념은 비슷하니 Windows용 코드로
+작성하는 것은 그리 어렵지 않을 것입니다.
+
+# Hello World 서버 만들기
+
+이제 본격적으로 HTTP 서버를 만들어 보겠습니다. 처음 만들 서버는 어떤 응답에 대해서도
+항상 Hello World를 반환하는 서버입니다. 우선 TCP 소켓 통신을 위해 소켓을 생성해야 합니다.
+`arpa/inet.h` 헤더를 include해서 `socket` 함수를 통해 소켓을 생성할 수 있습니다.
+
+```c
+int socket_fd = socket(AF_INET, SOCK_STREAM, 0);
+```
+
+첫 번쨰 파라미터인 `AF_INET`은 IPv4를 사용하겠다는 의미입니다. IPv6를 사용하려면
+`AF_INET6`을 사용하면 됩니다. 두 번째 파라미터인 `SOCK_STREAM`은 TCP 소켓을 사용하겠다는
+의미입니다. UDP 소켓을 사용하려면 `SOCK_DGRAM`을 사용합니다. 마지막 인자로는
+사용할 프로토콜을 지정합니다. 0을 사용하면 알아서 프로토콜을 선택해줍니다. 지금은 TCP를 사용합니다.
+socket 함수는 int값을 리턴합니다. 리턴값은 소켓의 파일 디스크립터입니다. 일종의 id라고
+생각하면 됩니다. 이 파일 디스크립터를 사용하여 소켓에 접근할 수 있습니다. 만약 소켓 생성에
+실패했다면 -1을 리턴합니다.
+
+> 리눅스/유닉스에서는 모든 것을 파일로 취급합니다. 즉, 소켓도 파일의 일종입니다.
+> 파일 디스크립터는 열린 파일을 식별하는 정수입니다. 0은 표준 입력(stdin), 1은 표준 출력(stdout),
+> 2는 표준 에러(stderr)를 의미합니다. 그 외의 숫자는 사용자가 열어놓은 파일을 의미합니다.
+> 파일 디스크립터는 프로세스마다 다릅니다. 즉, 프로세스가 종료되면 파일 디스크립터도 사라집니다.
+
+이제 소켓을 만들었으니 소켓을 bind해야 합니다. bind는 소켓에 IP 주소와 포트를
+할당하는 작업입니다. bind 함수는 다음과 같이 생겼습니다.
+
+```c
+int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
+```
+
+sockaddr이라는 구조체가 보입니다. sockaddr은 IP 주소와 포트를 저장하는 구조체입니다.
+
+```c
+struct sockaddr {
+    sa_family_t sa_family;
+    char        sa_data[14];
+};
+
+struct sockaddr_in {
+    sa_family_t     sin_family;  // same as sa_family
+    uint16_t        sin_port;
+    struct in_addr  sin_addr;
+    char            sin_zero[8]; // fills up the rest
+};
+```
+
+`sockaddr_in` 구조체도 함께 소개했는데, 이 구조체는 사람이 이해하기 편하게
+IPv4 주소를 저장하기 위한 구조체입니다. 두 구조체의 구조를 자세히 살펴보면
+`sockaddr_in` 구조체를 `sockaddr` 구조체로 변환할 수 있다는 것을 알 수 있습니다.
+그래서 `sockaddr_in`의 인스턴스를 만든 후 `sockaddr`로 변환하여 bind에 넘겨주면 됩니다.
+bind의 마지막 인자는 sockaddr 구조체의 크기입니다.
+
+```c
+struct sockaddr_in addr;
+addr.sin_family = AF_INET;
+addr.sin_addr.s_addr = INADDR_ANY;
+addr.sin_port = htons(PORT);
+
+bind(socket_fd, (struct sockaddr *)&addr, sizeof(addr));
+```
+
+`INADDR_ANY`는 모든 IP 주소를 의미합니다. 즉, 모든 IP 주소에서 접속을 허용하겠다는
+의미입니다. htons는 host to network short의 약자로 호스트의 바이트 순서를
+네트워크의 바이트 순서로 변환하는 함수입니다. 대부분 PC는 리틀 엔디안(낮은 바이트가 앞) 방식을
+사용하지만 네트워크에서는 빅 엔디안(높은 바이트가 앞) 방식을 사용합니다. 따라서 htons를
+사용하여 바이트 순서를 변환해야 합니다.
+
+bind가 성공적으로 끝났다면 이제 listen을 통해 클라이언트의 요청을 기다립니다.
+
+```c
+listen(socket_fd, 10);
+```
+
+여기서 두 번째 인자 10은 대기열의 크기를 의미합니다. 10으로 설정하면 최대
+10개의 요청을 대기시킬 수 있습니다. 즉, 아직 처리하지 않은 요청이 들어오면
+큐에 넣어두고 다음에 처리하게 됩니다. 만약 대기열이 가득 차면 클라이언트는
+연결을 거부당합니다.
+
+이제 accept를 통해 클라이언트의 요청을 받습니다. accept는 클라이언트의 요청을
+받고 새로운 소켓을 생성합니다. accept는 다음과 같이 생겼습니다.
+
+```c
+int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
+```
+
+이제 클라이언트의 요청을 수신할 준비가 되었습니다. accept를 통해 얻은 소켓을 통해
+read와 write를 사용하여 데이터를 주고받을 수 있습니다.
+
+```c
+#include <unistd.h>
+
+// ... 생략
+int main() {
+    // ... 생략
+   while (1) {
+        socklen_t addrlen = sizeof(addr);
+        int client_fd = accept(socket_fd, (struct sockaddr *)&addr, &addrlen);
+
+        char buffer[3000] = { 0 };
+        ssize_t n = read(client_fd, buffer, sizeof(buffer) - 1);
+        if (n > 0) {
+            buffer[n] = '\0';
+            for (int i = 0; i < n; i++) {
+                if (buffer[i] == '\r') printf("\\r");
+                else if (buffer[i] == '\n') printf("\\n\n");
+                else putchar(buffer[i]);
+            }
+        } else {
+            printf("No data received or read failed.\n");
+        }
+    }
+}
+
+```
+
+요청을 수신했으니 write를 통해 응답을 보내야 합니다. 저희는 일단 Hello World를 반환하는
+서버를 만들 것이기 때문에 Hello World를 응답으로 보내면 됩니다. 요청을 완료한 후에는
+소켓을 닫아 연결을 종료합니다.
+
+```c
+#include <string.h>
+
+const char *response = "HTTP/1.1 200 OK\r\nContent-Length: 14\r\n\r\nHello, World!\n";
+write(client_fd, response, strlen(response));
+close(client_fd);
+```
+
+지금까지 작성한 모든 코드를 합치면 다음과 같습니다.
+
+```c
+#include <stdio.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <string.h>
+
+#define PORT 8080
+
+int main() {
+    int socket_fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (socket_fd < 0) {
+        perror("Socket creation failed");
+        return 1;
+    }
+
+    struct sockaddr_in addr;
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = INADDR_ANY;
+    addr.sin_port = htons(PORT);
+
+    bind(socket_fd, (struct sockaddr *)&addr, sizeof(addr));
+    listen(socket_fd, 10);
+
+
+    while (1) {
+        socklen_t addrlen = sizeof(addr);
+        int client_fd = accept(socket_fd, (struct sockaddr *)&addr, &addrlen);
+
+        char buffer[3000] = { 0 };
+        ssize_t n = read(client_fd, buffer, sizeof(buffer) - 1);
+        if (n > 0) {
+            buffer[n] = '\0';
+            for (int i = 0; i < n; i++) {
+                if (buffer[i] == '\r') printf("\\r");
+                else if (buffer[i] == '\n') printf("\\n\n");
+                else putchar(buffer[i]);
+            }
+        } else {
+            printf("No data received or read failed.\n");
+        }
+
+        const char *response = "HTTP/1.1 200 OK\r\nContent-Length: 14\r\n\r\nHello, World!\n";
+        write(client_fd, response, strlen(response));
+        close(client_fd);
+    }
+}
+```
+
+드디어 HTTP 요청을 받고 응답하는 정말 간단한 서버가 완성되었습니다.
+이제 이 서버를 실행하고 웹 브라우저에서 `http://localhost:8080`에 접속하면
+Hello World를 볼 수 있습니다. curl을 사용하여 요청을 보내면
+
+```bash
+❯ curl -v localhost:8080
+* Host localhost:8080 was resolved.
+* IPv6: ::1
+* IPv4: 127.0.0.1
+*   Trying [::1]:8080...
+* connect to ::1 port 8080 from ::1 port 56092 failed: Connection refused
+*   Trying 127.0.0.1:8080...
+* Connected to localhost (127.0.0.1) port 8080
+> GET / HTTP/1.1
+> Host: localhost:8080
+> User-Agent: curl/8.7.1
+> Accept: */*
+> 
+* Request completely sent off
+< HTTP/1.1 200 OK
+< Content-Length: 14
+< 
+Hello, World!
+* Connection #0 to host localhost left intact
+```
+
+처럼 완벽한 요청과 응답을 볼 수 있습니다. 사실 이 서버는 부끄러울 정도로 기능이 많이 없습니다.
+이제 받은 저 문자열을 파싱하여 올바른 HTTP 응답을 만들어 내는 서버를 만들면 온전한 HTTP 서버가
+됩니다. 실제 HTTP 서버는 저렇게 간단하지 않습니다. 수많은 클라이언트의 요청을 멀티스레딩을 통해
+동시에 처리해야 하고, 요청에 따라 DB에 접근하면서, 캐싱, 세션, keep-alive 등 다양한
+기능을 제공해야 합니다. 오늘날 편하게 사용하는 수많은 라이브러리가 사랑받는 이유기도 합니다.
+
+저희는 HTTP의 작동 방식을 이해하기 위해 간단한 서버를 native C로 만들어 보았습니다.
+네트워크의 각 계층을 분리해 둔 덕분에 TCP/IP가 정확히 어떻게 동작하는지 알 필요 없이,
+함수 사용법만 알면 HTTP 서버를 만들 수 있었습니다. 더 나아가서 Java 처럼 여러 처리가
+편한 언어로 더 많은 기능을 가진 HTTP 서버를 직접 만들어 보면 좋은 공부가 될 것입니다.

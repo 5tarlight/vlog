@@ -37,16 +37,16 @@ export const posts = [
   "math/quaternion",
   "how-git-works",
   "web/temporal",
-  // "web/build-http-with-c",
+  "web/build-http-with-c",
   ...Object.keys(series).flatMap((key) =>
     series[key].posts.map((post) => `${key}/${post}`)
   ),
 ];
 
 export const featured = [
-  // "web/build-http-with-c",
+  "web/build-http-with-c",
   "how-git-works",
-  "make-blog/posts-ssg",
+  // "make-blog/posts-ssg",
   "make-blog/vercel-og",
 ];
 
