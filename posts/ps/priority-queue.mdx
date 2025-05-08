@@ -22,7 +22,7 @@ FIFO(First In First Out) 방식으로 동작하지만, 우선순위 큐는 우�
 힙에 대해서 지금 자세히 설명하진 않겠지만,
 2개의 자식으로 갈라지는 트리 형태를 가지고 있어서, 데이터의 삽입, 삭제가 $O(\log n)$의 시간 복잡도로
 가능합니다. C++에서는 `priority_queue`가 지원되고 파이썬에서는 `heapq` 모듈이나
-`queue.PriorityQueue` 클래스를 통해 사용할 수 있습니다. 다만, `queue.PriorityQueue`는
+`queue.PriorityQueue` 클래스를 통해 사용할 수 있습니다. 하지만, `queue.PriorityQueue`는
 멀티스레딩을 대비해서 thread-safe하게 구현되어 있어 싱글스레드 환경에서는 성능이 떨어지고,
 무엇보다 BOJ의 python3 채점 환경에서는 PriorityQueue를 import조차 할 수 없으므로
 heapq 사용을 추천합니다([참고](https://www.acmicpc.net/board/view/51521)). 그래서
