@@ -49,6 +49,10 @@ export default function RootLayout({
   return (
     <html lang="ko" suppressHydrationWarning>
       <head>
+        <meta
+          name="naver-site-verification"
+          content="5a98f5e315384ad942fec6dc412f4b5781af54dc"
+        />
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
         <link
           rel="alternate"

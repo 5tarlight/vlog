@@ -71,6 +71,7 @@ export const psGuide = [
   "graph-theory",
   "bfs",
   "dfs",
+  // "priority-queue",
 ].map((post) => `ps/${post}`);
 
 export const POST_BASE_PATH = "/posts";

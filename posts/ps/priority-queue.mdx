@@ -1,0 +1,134 @@
+---
+title: Priority Queue
+description: 우선순위 큐
+cover:
+tags: priority queue, data structure, ps, boj
+date: 2025-05-08
+author: yeahx4
+series: 
+seriesIndex: -1
+coverTitle: Priority Queue
+coverSub: 
+coverTs: 90
+coverBg: 9DA1AA
+coverColor: ffffff
+---
+
+# 우선순위 큐
+
+우선순위 큐는 **우선순위**가 가장 높은 원소가 먼저 나오는 큐입니다. 일반적인 큐는
+FIFO(First In First Out) 방식으로 동작하지만, 우선순위 큐는 우선순위가 높은 원소가 먼저 나옵니다.
+우선순위 큐는 보통 힙(heap)이라는 자료구조를 통해 구현됩니다. 아직 트리에 대해서 자세히 살펴보진
+않았지만, 힙은 완전 이진 트리의 일종입니다. 힙에 대해서 지금 자세히 설명하진 않겠지만,
+2개의 자식으로 갈라지는 트리 형태를 가지고 있어서, 데이터의 삽입, 삭제가 $O(\log n)$의 시간 복잡도로
+가능합니다. C++에서는 `priority_queue`가 지원되고 파이썬에서는 `heapq` 모듈이나
+`queue.PriorityQueue` 클래스를 통해 사용할 수 있습니다. 다만, `queue.PriorityQueue`는
+멀티스레딩을 대비해서 thread-safe하게 구현되어 있어 싱글스레드 환경에서는 성능이 떨어지고,
+무엇보다 BOJ의 python3 채점 환경에서는 PriorityQueue를 import조차 할 수 없으므로
+heapq 사용을 추천합니다([참고](https://www.acmicpc.net/board/view/51521)). 그래서
+이 글에서도 `priority_queue`와 `heapq`를 설명합니다.
+
+Priority Queue의 필수적인 기능은 삽입과 삭제 두가지입니다. C++은 queue와 거의 비슷하게
+사용할 수 있고 파이썬은 별도의 함수를 사용합니다.
+
+%multilang:C++,Python
+```cpp
+int main() {
+    int a[] = { 8, 2, 3, 4, 5, 6, 7, 8 };
+    priority_queue<int> pq;
+
+    for (int i = 0; i < 8; i++)
+        pq.push(a[i]);
+
+    while (!pq.empty()) {
+        cout << pq.top() << " ";
+        pq.pop();
+    }
+}
+```
+
+```python
+import heapq
+
+a = [8, 2, 3, 4, 5, 6, 7, 8]
+pq = []
+
+for x in a:
+    heapq.heappush(pq, -x)
+
+while pq:
+    print(-heapq.heappop(pq), end=' ')
+```
+%endmultilang
+
+여기서 파이썬 코드를 보면 데이터를 넣을 때 `-x`로 넣고 꺼낸 값에 다시 `-`를 붙여서
+출력하력 했습니다. 파이썬의 `heapq`는 최소 힙(min heap)으로 구현되어 있어서
+가장 작은 값이 먼저 나오는 반면, C++의 `priority_queue`는 최대 힙(max heap)으로 구현되어
+가장 큰 값이 먼저 나옵니다. 그래서 파이썬에서는 `-`를 붙여서 최대 힙처럼 동작하게
+만들었습니다.
+
+# Custom Comparator
+
+우선순위 큐를 사용할 때 가장 중요한 것은 '우선순위를 어떻게 정할 것인가'입니다.
+예를 들면, C++의 우선순위 큐는 큰 수가 먼저 나오는 최대 힙으로 구현되어 있습니다.
+그런데 만약 작은 수가 먼저 나오는 최소 힙으로 구현하고 싶다면 어떻게 해야 할까요?
+이 섹션에서는 C++, Python의 우선순위 큐를 커스터마이징하는 방법을 설명합니다.
+언어별로 굉장히 다르기 때문에 각각 나누어 설명하겠습니다.
+[11286번: 절댓값 힙](https://www.acmicpc.net/problem/11286) 문제를 예시로
+절댓값이 작은 수가 먼저 나오는 우선순위 큐를 만들어 보겠습니다.
+
+## C++
+
+C++에서는 `priority_queue`의 template 인자에 비교 함수를 넣어주면 됩니다.
+`priority_queue`는 기본적으로 `std::less<T>`를 사용하여 최대 힙으로 구현되어 있습니다.
+위의 예시에서는 `priority_queue<int>`를 사용했는데, 실제로는 다음과 같이 생겼습니다.
+
+```cpp
+priority_queue<int, vector<int>, less<int>> pq;
+```
+
+살짝 복잡하기는 합니다. 여기서 주의할 점은 sort에는 `less<T>`를 전달하면 분명 작은 수가
+앞에 왔었습니다. 하지만 `priority_queue`는 `less<T>`를 전달하면 큰 수가 먼저 나옵니다.
+기본적으로 정렬과 순서가 반대라고 생각하면 됩니다. 그러면 이걸 고려해서 절댓값이 작은 수가
+먼저 나오도록 만들어 봅시다.
+
+```cpp
+struct AbsCmp {
+    bool operator()(int a, int b) {
+        if (abs(a) == abs(b)) return a > b;
+        return abs(a) > abs(b);
+    }
+};
+
+int main() {
+    int a[] = { 1, -2, 3, -4, 5, -6, 7, -8 };
+    priority_queue<int, vector<int>, AbsCmp> pq;
+
+    for (int i = 0; i < 8; i++)
+        pq.push(a[i]);
+
+    while (!pq.empty()) {
+        cout << pq.top() << " ";
+        pq.pop();
+    }
+}
+```
+
+이렇게 하면 절댓값이 작은 수가 먼저 나옵니다. 참고로 `priority_queue`는
+callable한 객체를 전달해야 합니다. sort에서는 함수 포인터도 가능했지만,
+`priority_queue`는 함수 포인터를 전달할 수 없습니다. 그래서 `struct`를 만들어서
+`operator()`를 오버로딩하여 사용했습니다. sort에서도 이런 방식을 사용할 수 있습니다.
+
+나중에 다익스트라같은 알고리즘을 배우게 되면 우선순위 큐에 int보다 복잡한 데이터를 넣기도 합니다.
+그러면 타입이 굉장히 길어지고 코드가 복잡해지니 미리 익숙해지는 것을 추천합니다.
+
+```cpp
+priority_queue<
+    pair<int, int>,
+    vector<pair<int, int>>,
+    greater<pair<int, int>>
+> pq;
+```
+
+## Python
+
