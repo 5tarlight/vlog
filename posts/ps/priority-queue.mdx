@@ -132,3 +132,29 @@ priority_queue<
 
 ## Python
 
+파이썬의 `heap`는 C++처럼 비교 함수를 넣어줄 수 없습니다. 항상
+작은 수가 먼저 나오는 최소 힙으로 구현되어 있습니다. 그래서 데이터를 적절히 조절하여
+우선순위를 조절해야 합니다. 예를 들어, 절댓값이 작은 수가 먼저 나오는 우선순위 큐를 만드려면
+튜플을 만들어서 `(abs(x), x)` 형태로 넣어줘야 합니다. 그러면 절댓값이 작은 수가 먼저 나오고,
+절댓값이 같다면 원래 수가 작은 수가 먼저 나옵니다.
+
+```python
+import heapq
+
+a = [1, -2, 3, -4, 5, -6, 7, -8]
+pq = []
+
+for x in a:
+    heapq.heappush(pq, (abs(x), x))
+
+while pq:
+    _, x = heapq.heappop(pq)
+    print(x, end=' ')
+```
+
+# 연습문제
+
+- [https://www.acmicpc.net/problem/11279](https://www.acmicpc.net/problem/11279)
+- [https://www.acmicpc.net/problem/1927](https://www.acmicpc.net/problem/1927)
+- [https://www.acmicpc.net/problem/11286](https://www.acmicpc.net/problem/11286)
+- [https://www.acmicpc.net/problem/2696](https://www.acmicpc.net/problem/2696)
