@@ -2,6 +2,7 @@ import CodeBlock from "@/components/post/CodeBlock";
 import Equation from "@/components/post/Equation";
 import MultiCodeBlock from "@/components/post/MultiCodeBlock";
 import PostImage from "@/components/post/PostImage";
+import PostLink from "@/components/post/PostLink";
 import React, { ReactNode } from "react";
 
 export interface Toc {
@@ -152,9 +153,7 @@ export const renderLine = (line: string): ReactNode => {
       {
         regex: linkRegex,
         render: (key: string, match: string, href?: string) => (
-          <a key={key} href={href}>
-            {match}
-          </a>
+          <PostLink key={key} href={href!} text={match} />
         ),
       },
       {
