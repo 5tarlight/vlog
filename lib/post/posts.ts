@@ -1,6 +1,11 @@
 import { readFile } from "fs/promises";
 import path from "path";
 import { parsePost } from "./parser";
+import { isDev } from "../utils/isDev";
+
+const draft = (post: string[]) => {
+  return isDev ? post : [];
+};
 
 export const series: {
   [key: string]: {
@@ -11,7 +16,7 @@ export const series: {
 } = {
   "make-blog": {
     name: "Next.js 블로그 만들기",
-    description: "Next.js 14로 블로그를 만듭니다.",
+    description: "Next.js 15로 블로그를 만듭니다.",
     posts: [
       "blog-structure",
       "theme",
@@ -41,6 +46,7 @@ export const posts = [
   ...Object.keys(series).flatMap((key) =>
     series[key].posts.map((post) => `${key}/${post}`)
   ),
+  ...draft([]),
 ];
 
 export const featured = [
@@ -72,6 +78,7 @@ export const psGuide = [
   "bfs",
   "dfs",
   "priority-queue",
+  ...draft([]),
 ].map((post) => `ps/${post}`);
 
 export const POST_BASE_PATH = "/posts";
