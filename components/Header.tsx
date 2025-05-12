@@ -68,7 +68,16 @@ export default function Header() {
           </Link>
         </div>
         <div className="flex gap-1 items-center text-lg">
-          {/* <Link href="/posts">글 목록</Link> */}
+          <Link
+            href="/ps-guide"
+            className={cn(
+              "px-1 mt-1 hover:bg-neutral-200",
+              "dark:hover:bg-neutral-600 transition-all rounded-full",
+              "flex sm:hidden items-center justify-center"
+            )}
+          >
+            <span className="font-bold text-base sm:text-lg">PS</span>
+          </Link>
           <Link
             href="/search"
             className={cn(
