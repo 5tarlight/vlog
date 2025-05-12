@@ -29,6 +29,8 @@ export const series: {
       "font-optimization",
       "posts-infinite-scroll",
       "posts-ssg",
+      "mobile-optimization",
+      ...draft([]),
     ],
   },
 };
