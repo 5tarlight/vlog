@@ -81,7 +81,7 @@ export const psGuide = [
   "dfs",
   "priority-queue",
   "exponentiation-by-squaring",
-  ...draft([]),
+  ...draft(["divide-and-conquer"]),
 ].map((post) => `ps/${post}`);
 
 export const POST_BASE_PATH = "/posts";
