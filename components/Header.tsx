@@ -71,7 +71,7 @@ export default function Header() {
           <Link
             href="/ps-guide"
             className={cn(
-              "px-1 mt-1 hover:bg-neutral-200",
+              "px-2 py-1 hover:bg-neutral-200",
               "dark:hover:bg-neutral-600 transition-all rounded-full",
               "flex sm:hidden items-center justify-center"
             )}

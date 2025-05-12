@@ -35,7 +35,12 @@ export default async function PsGuide() {
                   {post.meta.description}
                 </span>
               </div>
-              <span className="ml-4 shrink-0 text-xs text-neutral-400 font-mono dark:text-neutral-500">
+              <span
+                className={cn(
+                  "ml-4 shrink-0 text-xs text-neutral-400 font-mono",
+                  "dark:text-neutral-500 sm:block hidden"
+                )}
+              >
                 {prettifyDate(post.meta.date)}
               </span>
             </Link>
