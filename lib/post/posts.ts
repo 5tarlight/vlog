@@ -80,6 +80,7 @@ export const psGuide = [
   "bfs",
   "dfs",
   "priority-queue",
+  "exponentiation-by-squaring",
   ...draft([]),
 ].map((post) => `ps/${post}`);
 
