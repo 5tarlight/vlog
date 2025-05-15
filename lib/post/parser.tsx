@@ -410,41 +410,35 @@ export const toHtml = (content: string[]) => {
   const html: ReactNode[] = [];
 
   for (let i = 0; i < content.length; i++) {
-    if (content[i].startsWith("######"))
+    if (content[i].startsWith("#####"))
       html.push(
-        <h6 id={content[i].replace("######", "").trim()} key={i}>
-          {content[i].replace("######", "").trim()}
-        </h6>
-      );
-    else if (content[i].startsWith("#####"))
-      html.push(
-        <h5 id={content[i].replace("#####", "").trim()} key={i}>
+        <h6 id={content[i].replace("#####", "").trim()} key={i}>
           {content[i].replace("#####", "").trim()}
-        </h5>
+        </h6>
       );
     else if (content[i].startsWith("####"))
       html.push(
-        <h4 id={content[i].replace("####", "").trim()} key={i}>
+        <h5 id={content[i].replace("####", "").trim()} key={i}>
           {content[i].replace("####", "").trim()}
-        </h4>
+        </h5>
       );
     else if (content[i].startsWith("###"))
       html.push(
-        <h3 id={content[i].replace("###", "").trim()} key={i}>
+        <h4 id={content[i].replace("###", "").trim()} key={i}>
           {content[i].replace("###", "").trim()}
-        </h3>
+        </h4>
       );
     else if (content[i].startsWith("##"))
       html.push(
-        <h2 id={content[i].replace("##", "").trim()} key={i}>
+        <h3 id={content[i].replace("##", "").trim()} key={i}>
           {content[i].replace("##", "").trim()}
-        </h2>
+        </h3>
       );
     else if (content[i].startsWith("#"))
       html.push(
-        <h1 id={content[i].replace("#", "").trim()} key={i}>
+        <h2 id={content[i].replace("#", "").trim()} key={i}>
           {content[i].replace("#", "").trim()}
-        </h1>
+        </h2>
       );
     else if (content[i].startsWith("---")) html.push(<hr key={i} />);
     else if (content[i].startsWith("-")) {
