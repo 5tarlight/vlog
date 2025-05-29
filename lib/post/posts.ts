@@ -84,6 +84,7 @@ export const psGuide = [
   "exponentiation-by-squaring",
   "divide-and-conquer",
   "tree",
+  "floyd-warshall",
   ...draft([]),
 ].map((post) => `ps/${post}`);
 
