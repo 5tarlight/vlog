@@ -72,7 +72,13 @@ export default async function Search({
                 >
                   {Math.floor((score / scoreSum) * 10000) / 100}%
                 </div>
-                <Link href={`/posts/${id}`}>
+                <Link
+                  href={
+                    id.startsWith("ps")
+                      ? `/ps-guide/${id.split("/")[1]}`
+                      : `/posts/${id}`
+                  }
+                >
                   <PostPreview meta={meta} />
                 </Link>
               </div>
