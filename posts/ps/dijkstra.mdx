@@ -1,0 +1,383 @@
+---
+title: Dijkstra
+description: 다익스트라
+cover:
+tags: dijkstra, shortest-path, ps, boj
+date: 2025-06-24
+author: yeahx4
+series: 
+seriesIndex: -1
+coverTitle: Dijkstra
+coverSub: 
+coverTs: 90
+coverBg: 9DA1AA
+coverColor: ffffff
+---
+
+# Dijkstra
+
+다익스트라 알고리즘은 굉장히 유명한 최단 경로 알고리즘의 한 종류로, 일반적인 그래프에서
+시작 노드에서 다른 노드로 가는 최단 경로를 찾는 알고리즘입니다. 종종 데이크스트라라고도 불립니다.
+앞서 살펴본 플로이드-워셜 알고리즘은 모든 정점에서 모든 정점으로 가는 최단 경로를 찾는 알고리즘이었습니다.
+다익스트라 알고리즘은 한 정점에서 시작해서 다른 정점으로 가는 최단 경로를 찾는 알고리즘입니다.
+간선 수를 $E$, 정점 수를 $V$라고 할 때, 다익스트라 알고리즘의 시간 복잡도는
+$O(E \log V)$입니다.
+
+일반적인 경우는 아니지만, 음수 가중치를 가지는 간선이 있는 그래프에서는
+다익스트라 알고리즘을 사용할 수 없습니다. 음수 가중치를 가지는 간선이 있는 그래프에서는
+벨만-포드 알고리즘을 대신 사용할 수 있습니다. 벨만-포드에 대해서는 다음 챕터에서 얘기해 보겠습니다.
+
+## 작동 방식
+
+다음과 같은 그래프가 있다고 가정해 봅시다.
+
+![dijkstra-graph](/img/ps/dijkstra/graph.png)
+
+우리의 목적은 1번 노드에서 다른 노드로 가는 최단 경로를 찾는 것입니다. 컴퓨터는 아직 아무런
+탐색을 진행하지 않았으니 다른 지점까지의 거리를 모릅니다. 그래서 모르는 지점까지의 거리를
+무한(INF)으로 초기화합니다. 1번 노드에서 1번 노드로 가는 거리는 0으로 초기화합니다.
+따라서 아래와 같은 배열이 만들어지게 됩니다.
+
+| 노드 | 1 | 2 | 3 | 4 |
+|------|---|---|---|---|
+| 거리 | 0 | INF | INF | INF |
+
+이제 2, 3, 4번 노드로 직접 연결되는 간선의 가중치를 처리합니다. 예를 들어, 1번에서 4번 노드로 가는
+간선을 탐색해서 7이라는 가중치를 발견했습니다. 지금 알고 있는 4번 노드로의 최단 경로는 INF입니다.
+따라서 7이 더 작으니 4번 노드로 가는 최단 경로를 7로 업데이트합니다.
+
+| 노드 | 1 | 2 | 3 | 4 |
+|------|---|---|---|---|
+| 거리 | 0 | 3 | 2 | 7 |
+
+이제 3번에서 2번을 잇는 간선을 처리합니다. 1번에서 3번을 거쳐 4번으로 가면 경로가 1 + 2 = 3이 되는데
+현재 알고 있는 4번 노드로의 최단 경로는 7입니다. 따라서 3이 더 작으니 4번 노드로 가는
+최단 경로를 3으로 업데이트합니다. 3번에서 2번으로 가는 경로는 마찬가지로 3이 되지만 최단경로보다
+작지 않으니 업데이트하지 않습니다.
+
+| 노드 | 1 | 2 | 3 | 4 |
+|------|---|---|---|---|
+| 거리 | 0 | 3 | 2 | 3 |
+
+이렇게 최단 경로를 얻었습니다. 어떻게 보면 BFS와 비슷하게 동작하는 것 같습니다.
+대신, BFS는 모든 노드를 보이는 순서대로 탐색하는 반면, 다익스트라는 방문하지 않은 노드 중에서
+가장 가까운 노드를 선택해서 탐색합니다. 이 과정을 반복해서 모든 노드를 방문하게 됩니다.
+과정을 정리해 보면 다음과 같습니다.
+
+1. 최단 거리 배열을 초기화합니다. 시작 노드에서 시작 노드로 가는 거리는 0, 나머지는 INF로 초기화합니다.
+2. 방문하지 않은 노드 중에서 최단 거리가 가장 짧은 노드를 선택합니다.
+3. 선택한 노드와 연결된 노드를 모두 탐색합니다. 이때, 현재 알고 있는 최단 거리보다
+   더 짧은 거리가 발견되면 최단 거리 배열을 업데이트합니다.
+4. 모든 노드를 방문할 때까지 2번부터 3번을 반복합니다.
+
+## 구현 1
+
+다익스트라 본인이 최초로 고안한 방식은 $O(V^2)$의 시간 복잡도를 가집니다. 대표적인
+다익스트라 연습문제 [1753번: 최단경로](https://www.acmicpc.net/problem/1753)를 예시로
+구현해 보겠습니다(이 시간복잡도로는 시간 초과를 받습니다!).
+
+우선 최단 거리 배열, 방문 여부 배열을 초기화합니다.
+
+%multilang:C++,Python
+```cpp
+int v, e, k;
+cin >> v >> e >> k;
+int graph[v + 1][v + 1];
+int dist[v + 1];
+bool visited[v + 1];
+
+for (int i = 1; i <= v; i++)
+    fill(graph[i], graph[i] + v + 1, 1e9);
+fill(dist, dist + v + 1, 1e9);
+fill(visited, visited + v + 1, false);
+```
+
+```python
+v, e = map(int, input().split())
+k = int(input())
+graph = [[int(1e9)] * (v + 1) for _ in range(v + 1)]
+dist = [int(1e9)] * (v + 1)
+visited = [False] * (v + 1)
+```
+%endmultilang
+
+그래프 정보를 입력받아서 graph 배열에 저장합니다. 위 문제는
+같은 두 노드를 잇는 간선이 여러 개 있을 수 있으니 주의해서 입력받습니다.
+또, 간선이 단방향입니다! 양방향 그래프로 오해하지 않도록 주의하세요.
+
+%multilang:C++,Python
+```cpp
+while (e--) {
+    int u, v, w;
+    cin >> u >> v >> w;
+    graph[u][v] = min(graph[u][v], w);
+}
+
+dist[k] = 0;  
+```
+
+```python
+for _ in range(e):
+    u, vv, w = map(int, input().split())
+    graph[u][vv] = min(graph[u][v], w)
+
+dist[k] = 0
+```
+%endmultilang
+
+이제 방문하지 않은 노드 중에서 최단 거리가 가장 짧은 노드를 선택합니다.
+
+%multilang:C++,Python
+```cpp
+for (int i = 1; i <= v; i++) {
+    int minIdx = -1;
+    for (int j = 1; j <= v; j++)
+        if (!visited[j] && (minIdx == -1 || dist[j] < dist[minIdx]))
+            minIdx = j;
+
+    if (minIdx == -1) break;
+    visited[minIdx] = true;
+```
+
+```python
+for _ in range(1, v + 1):
+    minIdx = -1
+    for j in range(1, v + 1):
+        if not visited[j] and (minIdx == -1 or dist[j] < dist[minIdx]):
+            minIdx = j 
+    
+    if minIdx == -1:
+        break
+    visited[minIdx] = True
+```
+%endmultilang
+
+이제 선택한 노드와 연결된 노드를 모두 탐색합니다. 이때, 현재 알고 있는 최단 거리보다
+더 짧은 거리가 발견되면 최단 거리 배열을 업데이트합니다.
+
+%multilang:C++,Python
+```cpp
+for (int j = 1; j <= v; j++)
+    if (!visited[j] && graph[minIdx][j] != 1e9)
+        dist[j] = min(dist[j], dist[minIdx] + graph[minIdx][j]);
+```
+
+```python
+for j in range(1, v + 1):
+    if not visited[j] and graph[minIdx][j] != int(1e9):
+        dist[j] = min(dist[j], dist[minIdx] + graph[minIdx][j])
+```
+%endmultilang
+
+전체 코드는 다음과 같습니다.
+
+%multilang:C++,Python
+```cpp
+#include <bits/stdc++.h>
+
+using namespace std;
+void fio() { cin.tie(nullptr); cout.tie(nullptr); ios::sync_with_stdio(false); }
+
+int main() {
+    fio();
+
+    int v, e, k;
+    cin >> v >> e >> k;
+    int graph[v + 1][v + 1];
+    int dist[v + 1];
+    bool visited[v + 1];
+
+    for (int i = 1; i <= v; i++)
+        fill(graph[i], graph[i] + v + 1, 1e9);
+    fill(dist, dist + v + 1, 1e9);
+    fill(visited, visited + v + 1, false);
+
+    while (e--) {
+        int u, v, w;
+        cin >> u >> v >> w;
+        graph[u][v] = min(graph[u][v], w);
+    }
+
+    dist[k] = 0;
+    for (int i = 1; i <= v; i++) {
+        int minIdx = -1;
+        for (int j = 1; j <= v; j++)
+            if (!visited[j] && (minIdx == -1 || dist[j] < dist[minIdx]))
+                minIdx = j;
+
+        if (minIdx == -1) break;
+        visited[minIdx] = true;
+
+        for (int j = 1; j <= v; j++)
+            if (!visited[j] && graph[minIdx][j] != 1e9)
+                dist[j] = min(dist[j], dist[minIdx] + graph[minIdx][j]);
+    }
+
+    for (int i = 1; i <= v; i++) {
+        if (dist[i] == 1e9)
+            cout << "INF\n";
+        else
+            cout << dist[i] << "\n";
+    }
+}
+```
+
+```python
+import sys
+input = sys.stdin.readline
+
+v, e = map(int, input().split())
+k = int(input())
+graph = [[int(1e9)] * (v + 1) for _ in range(v + 1)]
+dist = [int(1e9)] * (v + 1)
+visited = [False] * (v + 1)
+
+for _ in range(e):
+    u, vv, w = map(int, input().split())
+    graph[u][vv] = min(graph[u][v], w)
+
+dist[k] = 0
+for _ in range(1, v + 1):
+    minIdx = -1
+    for j in range(1, v + 1):
+        if not visited[j] and (minIdx == -1 or dist[j] < dist[minIdx]):
+            minIdx = j
+
+    if minIdx == -1:
+        break
+    visited[minIdx] = True
+
+    for j in range(1, v + 1):
+        if not visited[j] and graph[minIdx][j] != int(1e9):
+            dist[j] = min(dist[j], dist[minIdx] + graph[minIdx][j])
+
+for i in range(1, v + 1):
+    if dist[i] == int(1e9):
+        print("INF")
+    else:
+        print(dist[i])
+```
+%endmultilang
+
+좋습니다. 예제를 넣어보면 정확하게 작동합니다. 하지만, 이 코드에는 두가지 문제가 있습니다.
+정답이 멀쩡하게 나오긴 하지만, 시간복잡도가 $O(V^2)$이기 때문에 $V$가 최대 2만이 되면
+시간 초과를 받게 됩니다. 또, 인접 행렬로 구현했기 때문에 메모리 사용량이 많습니다.
+
+```math
+20,000^2 \times 4 = 16 \times 10^8 \, \text{bytes} = 1.6 \, \text{GB}
+```
+
+메모리 제한이 256MB이기 때문에 이 코드로는 통과할 수 없습니다.
+
+## 구현 2
+
+아까 문제에서 시간복잡도를 개선한 다익스트라 알고리즘을 구현해 보겠습니다.
+위 구현에서 시간복잡도가 커지는 요인은 방문하지 않은 노드 중에서 최단 거리가 가장 짧은 노드를
+순차 탐색을 하며 $O(V)$에 찾는 부분입니다. 이 부분을 개선하기 위해
+우선순위 큐를 사용해서 방문하지 않은 노드 중에서 최단 거리가 가장 짧은 노드를
+$O(\log V)$에 찾도록 만듭니다. 이제 시간복잡도는 $O(E \log V)$가 됩니다.
+그리고 우선순위 큐 덕분에 순차 탐색을 할 필요가 없어져 인접 리스트로 구현할 수 있습니다.
+
+우선순위 큐에는 (거리, 노드) 쌍을 넣습니다. 거리가 짧은 노드가 먼저 나오도록
+우선순위 큐를 설정해야 합니다. 파이썬에서는 거리에 `-`를 붙여서 처리하면 되고 C++에서는
+아래와 같이 설정하면 됩니다. 좀 길긴한데 어쩌겠어요. 아니면 파이썬처럼 부호를 바꿔서 처리해도
+괜찮습니다.
+
+```cpp
+priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq;
+```
+
+이제 우선순위 큐에서 노드를 꺼내서 인접한 노드를 탐색합니다. 이때, 현재 알고 있는 최단 거리보다
+더 짧은 거리가 발견되면 최단 거리 배열을 업데이트하고, 우선순위 큐에 다시 집어넣습니다.
+덕분에 visited 배열이 필요 없어집니다. 이제 구현을 살펴보겠습니다.
+
+%multilang:C++,Python
+```cpp
+#include <bits/stdc++.h>
+
+using namespace std;
+void fio() { cin.tie(nullptr); cout.tie(nullptr); ios::sync_with_stdio(false); }
+
+int main() {
+    fio();
+
+    int n, m, k;
+    cin >> n >> m >> k;
+
+    vector<pair<int, int>> adj[n + 1]; // { cost, nxt }
+    while (m--) {
+        int u, v, w;
+        cin >> u >> v >> w;
+        adj[u].push_back({ w, v });
+    }
+
+    int d[n + 1];
+    fill(d, d + n + 1, 1e9);
+    d[k] = 0;
+
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq;
+    pq.push({ d[k], k });
+
+    while (!pq.empty()) {
+        auto [cost, cur] = pq.top();
+        pq.pop();
+
+        if (cost > d[cur]) continue;
+
+        for (auto &[nxtCost, nxt]: adj[cur]) {
+            if (cost + nxtCost < d[nxt]) {
+                d[nxt] = cost + nxtCost;
+                pq.push({ d[nxt], nxt });
+            }
+        }
+    }
+
+    for (int i = 1; i <= n; i++) {
+        if (d[i] == 1e9)
+            cout << "INF\n";
+        else
+            cout << d[i] << '\n';
+    }
+}
+```
+
+```python
+import sys
+import heapq
+input = sys.stdin.readline
+
+n, m, k = map(int, input().split())
+adj = [[] for _ in range(n + 1)]  # { cost, nxt }
+for _ in range(m):
+    u, v, w = map(int, input().split())
+    adj[u].append((w, v))
+d = [int(1e9)] * (n + 1)
+d[k] = 0
+pq = []
+heapq.heappush(pq, (d[k], k))
+
+while pq:
+    cost, cur = heapq.heappop(pq)
+
+    if cost > d[cur]:
+        continue
+
+    for nxtCost, nxt in adj[cur]:
+        if cost + nxtCost < d[nxt]:
+            d[nxt] = cost + nxtCost
+            heapq.heappush(pq, (d[nxt], nxt))
+
+for i in range(1, n + 1):
+    if d[i] == int(1e9):
+        print("INF")
+    else:
+        print(d[i])
+```
+%endmultilang
+
+# 연습문제
+
+- [https://www.acmicpc.net/problem/1916](https://www.acmicpc.net/problem/1916)
+- [https://www.acmicpc.net/problem/1238](https://www.acmicpc.net/problem/1238)
+- [https://www.acmicpc.net/problem/4485](https://www.acmicpc.net/problem/4485)
+- [https://www.acmicpc.net/problem/11779](https://www.acmicpc.net/problem/11779)

@@ -85,6 +85,7 @@ export const psGuide = [
   "divide-and-conquer",
   "tree",
   "floyd-warshall",
+  "dijkstra",
   ...draft([]),
 ].map((post) => `ps/${post}`);
 
