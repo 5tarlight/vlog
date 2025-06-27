@@ -36,7 +36,7 @@ export const series: {
 };
 
 export const posts = [
-  // "test",
+  ...draft(["test"]),
   "math/vector-function",
   // "dev-blog-guideline", -> Low Quality
   "python/itertools",

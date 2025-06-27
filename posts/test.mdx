@@ -354,3 +354,21 @@ print("Hello, World!")
 ```
 %end
 %endmultilang
+
+```graph
+node start [label=Start, color=blue, shape=roundrectangle]
+node end [label=End, color=green]
+
+start -> middle
+middle -> end
+```
+
+```graph
+A -> B 3
+A <-> C 1
+B - D 4
+C -> D
+D -> E 2
+
+node E [color=lightgray]
+```

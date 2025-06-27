@@ -1,5 +1,6 @@
 import CodeBlock from "@/components/post/CodeBlock";
 import Equation from "@/components/post/Equation";
+import GraphRenderer from "@/components/post/GraphRenderer";
 import MultiCodeBlock from "@/components/post/MultiCodeBlock";
 import PostImage from "@/components/post/PostImage";
 import PostLink from "@/components/post/PostLink";
@@ -469,6 +470,8 @@ export const toHtml = (content: string[]) => {
 
       if (lang === "math") {
         html.push(<Equation key={i} eq={code.join("\n")} />);
+      } else if (lang === "graph") {
+        html.push(<GraphRenderer key={i} code={code.join("\n")} />);
       } else {
         html.push(<CodeBlock lang={lang} content={code.join("\n")} key={i} />);
       }
