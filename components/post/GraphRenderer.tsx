@@ -1,6 +1,6 @@
 "use client";
 
-import cytoscape from "cytoscape";
+import cytoscape, { ElementDefinition } from "cytoscape";
 import { useEffect, useRef } from "react";
 
 export default function GraphRenderer({ code }: { code: string }) {
@@ -10,8 +10,8 @@ export default function GraphRenderer({ code }: { code: string }) {
     if (!containerRef.current) return;
 
     const lines = code.trim().split("\n");
-    const edges: any[] = [];
-    const nodesMap = new Map<string, any>();
+    const edges: ElementDefinition[] = [];
+    const nodesMap = new Map<string, ElementDefinition>();
     const allowedLayouts = [
       "cose",
       "grid",
