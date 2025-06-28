@@ -40,7 +40,7 @@ export default function GraphRenderer({ code }: { code: string }) {
 
       const nodeMatch = line.match(/^node\s+(\w+)(?:\s*\[(.+)\])?$/);
       const edgeMatch = line.match(
-        /^(\w+)\s*(<->|->|<-|-)?\s*(\w+)(?:\s+(\d+))?$/
+        /^(\w+)\s*(<->|->|<-|-)?\s*(\w+)(?:\s+(-?\d+))?$/
       );
 
       if (edgeMatch) {
