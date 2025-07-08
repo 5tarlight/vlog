@@ -46,6 +46,7 @@ export const posts = [
   "web/temporal",
   "web/build-http-with-c",
   "future-of-developers",
+  "ideal-univ-life",
   ...Object.keys(series).flatMap((key) =>
     series[key].posts.map((post) => `${key}/${post}`)
   ),
