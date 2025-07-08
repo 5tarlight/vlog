@@ -33,6 +33,11 @@ export const series: {
       ...draft([]),
     ],
   },
+  "special-lectures": {
+    name: "특강 시리즈",
+    description: "특강을 듣고 정리한 포스트입니다.",
+    posts: ["future-of-developers", "ideal-univ-life"],
+  },
 };
 
 export const posts = [
@@ -45,8 +50,6 @@ export const posts = [
   "how-git-works",
   "web/temporal",
   "web/build-http-with-c",
-  "future-of-developers",
-  "ideal-univ-life",
   ...Object.keys(series).flatMap((key) =>
     series[key].posts.map((post) => `${key}/${post}`)
   ),
@@ -54,9 +57,8 @@ export const posts = [
 ];
 
 export const featured = [
-  "web/build-http-with-c",
-  "how-git-works",
-  // "make-blog/posts-ssg",
+  "special-lectures/ideal-univ-life",
+  "special-lectures/future-of-developers",
   "make-blog/vercel-og",
 ];
 
