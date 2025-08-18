@@ -53,7 +53,7 @@ export const posts = [
   ...Object.keys(series).flatMap((key) =>
     series[key].posts.map((post) => `${key}/${post}`)
   ),
-  ...draft([]),
+  ...draft(["math/pca"]),
 ];
 
 export const featured = [
