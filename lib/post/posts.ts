@@ -50,10 +50,11 @@ export const posts = [
   "how-git-works",
   "web/temporal",
   "web/build-http-with-c",
+  "math/pca",
   ...Object.keys(series).flatMap((key) =>
     series[key].posts.map((post) => `${key}/${post}`)
   ),
-  ...draft(["math/pca"]),
+  ...draft([]),
 ];
 
 export const featured = [
