@@ -32,7 +32,7 @@ export default function PostImage({
     };
   }, [popup]);
 
-  let width;
+  let width = "max-w-md";
   if (option === "full") {
     width = "max-w-full";
   } else if (option === "2xl") {
