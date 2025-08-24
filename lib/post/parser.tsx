@@ -405,6 +405,8 @@ const renderCustomBlock = (
 };
 
 const IMAGE_REGEX = /!\[([^\]]+)\]\(([^)]+)\)/;
+const CUSTOM_IMAGE_REGEX =
+  /!\[((?:\\.|[^\]\\])*)\]\[((?:\\.|[^\]\\])*)\]\(\s*(<[^>]*>|[^)\s]+)\s*\)/;
 const TABLE_ROW_REGEX = /^\|(.+)\|$/;
 
 export const toHtml = (content: string[]) => {
@@ -477,6 +479,11 @@ export const toHtml = (content: string[]) => {
       }
 
       i = j;
+    } else if (CUSTOM_IMAGE_REGEX.test(content[i])) {
+      const match = content[i].match(CUSTOM_IMAGE_REGEX);
+      const [, alt, option, src] = match!;
+
+      html.push(<PostImage key={i} src={src} alt={alt} option={option} />);
     } else if (IMAGE_REGEX.test(content[i])) {
       const match = content[i].match(IMAGE_REGEX);
       const alt = match![1];
