@@ -1,0 +1,184 @@
+---
+title: 블루프린트 같은 노드 그래프 만들기
+description: React에서 블루프린트 같은 높은 자유도를 가지는 노드 그래프를 만듭니다.
+cover:
+tags: graph, react, blueprint
+date: 2025-08-24
+author: yeahx4
+series: think-block
+seriesIndex: 0
+coverTitle: 노드 그래프
+coverSub:
+coverTs: 90
+coverBg: ED760E
+coverColor: ffffff
+---
+
+# Think Block
+
+Think Block은 프로그래밍을 할 줄 몰라도, 간단하게 AI 모델을 만들 수 있도록 하는 서비스입니다.
+데이터를 업로드하고, 노드를 배치해 서로 연결하면 모델이 만들어집니다. 이 서비스의 가장 핵심은
+아래 그림처럼 노드들을 배치하고 서로 연결하는 그래프입니다.
+
+![Graph](/img/think-block/graph/graph.png)
+
+오른쪽 클릭으로 context menu를 열어서 노드를 추가할 수 있습니다. 각 노드는 드래그해서
+위치를 옮길 수 있고, 한 노드의 output 포트를 다른 노드의 input 포트에 드래그해서
+연결할 수 있습니다. 카메라는 상하좌우 움직일 수 있고, 확대/축소도 가능합니다.
+
+# 구성 요소
+
+맨 뒤에 배경으로 그리드가 있습니다. 이 그리드는 화면을 확대하면 칸이 커집니다.
+계속 움직이고 칸의 크기를 바꿔야 하기 때문에 `canvas`를 사용해서 구현했습니다.
+각 노드들은 `div`로 구현되었습니다. 각자 2차원 좌표를 가지고 있고 카메라의 위치와 확대를
+고려해서 실제 화면에 표시되는 방식입니다. 각 노드들을 연결하는 선들은 `svg`로 구현되었습니다.
+SVG의 path를 사용해서 부드러운 곡선을 그리도록 해 주었습니다.
+
+# Grid
+
+그리드는 한 변의 길이가 24px인 정사각형으로 구성되어 있습니다. 우선 `drawGrid()`를 통해
+기본 그리드를 그립니다.
+
+```ts
+const drawGrid = useCallback(() => {
+  const canvas = gridRef.current;
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+  const { width, height } = canvas;
+  // Clear
+  ctx.clearRect(0, 0, width, height);
+
+  // Background
+  ctx.fillStyle = "#0a0a0a";
+  ctx.fillRect(0, 0, width, height);
+
+  // Grid spacing scales with zoom, clamp to reasonable pixel size
+  const base = 24; // world units
+  const step = base * camera.scale;
+  const bigEvery = 5;
+
+  const origin = worldToScreen({ x: 0, y: 0 }, camera);
+
+  ctx.beginPath();
+  for (let x = origin.x % step; x < width; x += step) {
+    ctx.moveTo(x + 0.5, 0);
+    ctx.lineTo(x + 0.5, height);
+  }
+  for (let y = origin.y % step; y < height; y += step) {
+    ctx.moveTo(0, y + 0.5);
+    ctx.lineTo(width, y + 0.5);
+  }
+  ctx.strokeStyle = "#1f2937"; // neutral-800-ish
+  ctx.lineWidth = 1;
+  ctx.stroke();
+}, [camera]);
+```
+
+카메라의 `scale`을 통해 확대되었을 때의 그리드 크기를 계산했습니다. 이 캔버스는 데이터상에서는
+굉장히 큰 크기를 가지고 있습니다. 화면에 보여질 부분은 카메라의 위치와 스케일을 고려하여
+`worldToScreen` 함수를 통해 계산됩니다.
+
+```ts
+export function worldToScreen(p: Vec2, camera: Camera): Vec2 {
+  return {
+    x: p.x * camera.scale + camera.tx,
+    y: p.y * camera.scale + camera.ty,
+  };
+}
+```
+
+# 노드
+
+노드는 absolute가 적용된 div로 구현되었습니다. 각 노드는 2차원 좌표를 가지고 있으며
+마찬가지로 카메라의 위치에 맞게 화면에 표시됩니다.
+
+```tsx
+<div
+  className={cn(
+    "absolute rounded-sm border border-neutral-700",
+    "bg-neutral-900 text-neutral-200 shadow-lg"
+  )}
+  style={{
+    left: node.pos.x,
+    top: node.pos.y,
+    width: size.w,
+    height: size.h,
+  }}
+  // 생략
+```
+
+노드 위치를 옮길 때는 3개의 마우스 이벤트가 발생합니다. 먼저 옮길 노드를 클릭합니다.
+그 다음 마우스를 움직이며 `mousemove` 이벤트가 발생합니다. 마지막으로 마우스를 때며
+`mouseup` 이벤트가 발생합니다. `mousedown` 이벤트가 발생했을 때 클릭된 노드를
+state에 저장하고 마우스가 움직이는 동안 그 노드의 위치를 업데이트합니다. 마지막으로
+마우스가 떨어졌을 때 state에 저장된 노드를 초기화합니다.
+
+# Vertex
+
+이 파트에서 가장 까다로운 부분은 노드 간 간선을 연결하는 부분입니다. 간선을 연결할 때는
+노드를 옮길때와 비슷하게 3가지 이벤트가 발생합니다. 먼저 output 포트를 클릭합니다.
+그 다음 마우스를 옮겨 연결할 input 포트에서 마우스를 놓습니다. 연결되는 선은 SVG의
+path로 구성되었습니다. 시작점과 끝점의 좌표를 알고 있다면 매끄러운 곡선을 그릴 수 있습니다.
+시작점은 항상 output 포트입니다. vertex를 연결하는 중에는 마우스 커서의 위치가 도착
+위치입니다. 이 동안에는 점선으로 된 선을 그려줍니다. 그러다 다른 input 포트 위에서
+마우스를 떼면 도착점이 그 포트로 고정되며 실선으로 선을 그립니다.
+
+시작점과 끝점이 있을 때 매끄러운 곡선을 그리기 위해서는 Bezier 곡선을 사용합니다.
+
+```ts
+export function cubicPath(a: Vec2, b: Vec2): string {
+  const dx = Math.max(40, Math.abs(b.x - a.x) * 0.5);
+  const c1 = { x: a.x + dx, y: a.y };
+  const c2 = { x: b.x - dx, y: b.y };
+  return `M ${a.x} ${a.y} C ${c1.x} ${c1.y}, ${c2.x} ${c2.y}, ${b.x} ${b.y}`;
+}
+```
+
+dx는 시작점과 끝점 사이의 $x$좌표의 차이입니다. 다만 너무 가까울 경우에는 최소 40px만큼
+부드럽게 곡선을 그리도록 여유를 두었습니다. 두 점 $c_1, c_2$는 각각 시작점과 끝점에서
+오른쪽, 왼쪽으로 $dx$만큼 이동한 거리입니다. 이 두 점은 큐빅 베지어 곡선의
+제어점(control point) 역할을 합니다. SVG의 path에서는 다음과 같은 명령어로
+베지어 곡선을 그릴 수 있습니다.
+
+```
+M x y
+C x1 y1, x2 y2, x y
+```
+
+여기서 M은 시작점을 이동한다는 의미입니다. C는 $(x_1, y_1), (x_2, y_2)$를 제어점으로 해서
+$(x', y')$로 이어지는 큐빅 베지어 곡선을 그린다는 의미입니다. 이제 각 포트의 좌표를 계산할 수
+있다면 베지어 곡선을 그릴 수 있습니다.
+
+## 포트 좌표 계산
+
+포트 좌표를 정확하게 계산하기 위해서 각 노드의 패딩과 gap까지 고려해야 합니다. 데이터상으로는
+노드 왼쪽 위의 좌표와 포트 리스트를 알고 있습니다. 각 노드는 40px의 헤더를 가지고 있고
+위아래 8px의 패딩을 가지고 있습니다. 각 포트는 세로 28px의 공간에 표현되고 4px의 gap이
+있습니다. 따라서 $i$번째 포트의 $y$좌표는 다음과 같이 계산할 수 있습니다.
+
+```math
+y_\text{port} = y_\text{node} + 48 + 32i + 14
+```
+
+가로 위치는 양 옆에서 10px만큼 떨어져 있습니다. input 포트는 노드의 왼쪽, output 포트는
+노드의 오른쪽에 위치하고 있습니다. 즉, 다음과 같이 계산할 수 있습니다.
+
+```math
+\begin{aligned}
+x_\text{input}  &= x_\text{node} + 10 \\
+x_\text{output} &= x_\text{node} + \text{width} - 10
+\end{aligned}
+```
+
+```ts
+let anchor: Vec2;
+if (idxIn >= 0) {
+  anchor = { x: node.pos.x + 10, y: node.pos.y + 48 + 32 * idxIn + 15 };
+} else if (idxOut >= 0) {
+  anchor = {
+    x: node.pos.x + nodeSize.w - 10,
+    y: node.pos.y + 48 + 32 * idxOut + 15,
+  };
+}
+```

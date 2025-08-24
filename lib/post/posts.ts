@@ -38,6 +38,11 @@ export const series: {
     description: "특강을 듣고 정리한 포스트입니다.",
     posts: ["future-of-developers", "ideal-univ-life"],
   },
+  "think-block": {
+    name: "Think Block 프로젝트",
+    description: "설치 없이 AI 모델을 만드는 서비스 ThinkBlock",
+    posts: ["node-graph"],
+  },
 };
 
 export const posts = [
