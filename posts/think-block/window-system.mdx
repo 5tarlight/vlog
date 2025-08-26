@@ -1,0 +1,203 @@
+---
+title: 윈도우 시스템 개발하기
+description: React에서 상호작용이 가능한 윈도우 시스템을 만듭니다.
+cover:
+tags: window, react
+date: 2025-08-26
+author: yeahx4
+series: think-block
+seriesIndex: 1
+cover: think-block/window/window.png
+coverTitle: 노드 
+coverSub:
+coverTs: 90
+coverBg: ED760E
+coverColor: ffffff
+---
+
+# 윈도우 시스템
+
+Think Block은 언리얼의 블루프린트처럼 노드끼리 연결된 형태를 가지고 있습니다.
+화면의 단순함을 위해서 각 노드는 최소한의 정보만을 가지고 있습니다. 또, 나중에 데이터의 시각화나
+여러 큰 데이터를 표현하기 위해서 화면에 윈도우를 띄우기로 결정했습니다.
+
+![Window][2xl](/img/think-block/window/window.png)
+
+윈도우는 업로드된 파일의 정보, 노드의 파라미터 등 다양한 정보를 보여줍니다. 상단 바를 드래그해
+위치를 옮길 수 있습니다. 화면에는 여러 윈도우가 표시될 수 있기 때문에 서로 겹칠 수 있습니다.
+겹칠 경우에는 나중에 클릭한 윈도우가 위로 올라오도록 구현했습니다.
+
+윈도우는 다음과 같은 데이터로 구성되었습니다.
+
+```ts
+export interface Win {
+  id: string;
+  title: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  z: number;
+}
+```
+
+이 프로젝트에서는 전역 상태 관리 라이브러리로 Zustand를 사용하고 있습니다.
+
+```ts
+export interface WinState {
+  windows: Win[];
+  contents: Record<string, ReactNode>;
+  addWindow: (
+    win: { title: string },
+    content?: ReactNode,
+    width?: number,
+    height?: number
+  ) => string;
+  removeWindow: (id: string) => void;
+  bringToFront: (id: string) => void;
+  moveWindow: (id: string, x: number, y: number) => void;
+}
+```
+
+`windows`는 현재 열려있는 윈도우들의 정보를 가지고 있습니다. `contents`는 각 윈도우의 id를
+키로 사용해서 윈도우 안에 표시될 내용을 담고 있습니다. `addWindow()`를 사용하면 새로운 윈도우를
+추가하고 id를 리턴합니다. 간단하게 이 상태를 보고 화면에 표시하면 기본적인 윈도우 시스템이
+완성됩니다.
+
+```tsx
+export default function WindowContainer() {
+  const { windows, contents } = useWinStore();
+
+  return windows.map((win) => (
+    <WindowView key={win.id} window={win}>
+      {contents[win.id]}
+    </WindowView>
+  ));
+}
+```
+
+## 드래그
+
+윈도우의 상단 바를 드래그해서 위치를 옮길 수 있습니다. ref를 만들어 드래그 중일 때의 상태를
+저장하도록 했습니다.
+
+```ts
+const draggingRef = useRef(false);
+const offsetRef = useRef<{ dx: number; dy: number }>({ dx: 0, dy: 0 });
+```
+
+드래그가 시작되면 커서를 grabbing으로 바꾸고 dx, dy를 업데이트합니다. 드래그가 종료되면
+state를 업데이트합니다.
+
+```ts
+const onDragStart: React.MouseEventHandler<HTMLDivElement> = (e) => {
+  bringToFront(win.id);
+  draggingRef.current = true;
+  offsetRef.current = {
+    dx: e.clientX - win.x,
+    dy: e.clientY - win.y,
+  };
+  document.body.style.cursor = "grabbing";
+};
+
+function onMove(e: MouseEvent) {
+  if (!draggingRef.current) return;
+  const x = e.clientX - offsetRef.current.dx;
+  const y = e.clientY - offsetRef.current.dy;
+  moveWindow(win.id, x, y);
+}
+```
+
+## z-index
+
+윈도우는 노드랑 노드를 연결하는 간선보다 위에 있어야 하기 때문에 z-index가 10 이상이어야
+합니다. 최근에 생성된 윈도우일수록 더 큰 z-index를 가지고, 클릭했을 경우에도 높은
+z-index를 가집니다. 여기서는 깔끔한 서술을 위해 z-index를 z라고 부르겠습니다.
+새로운 윈도우가 생성되면 현재 윈도우들의 z보다 큰 z값이 필요합니다. 클릭하면 위로 오는
+시스템 때문에 단순히 `개수 + 1`로 계산할 수 없습니다. 어쩔 수 없이 모든 윈도우를 순회하며
+최댓값을 찾아 주었습니다. 대부분 열려 있는 윈도우는 3개 미만일 것이기 때문에 성능에 큰 영향은
+없습니다.
+
+```ts
+function nextTopZ(windows: Win[]) {
+  if (windows.length === 0) return BASE_Z;
+  const maxZ = Math.max(...windows.map((w) => w.z));
+  return Math.max(maxZ + 1, BASE_Z);
+}
+```
+
+윈도우가 클릭된 경우에도 `nextTopZ`를 다시 호출해 z값을 업데이트합니다. 이렇게 만들면
+z값이 계속 커지기만 합니다. 커지기만 하는 것을 방지하기 위해 다시 줄여놓을 수 있긴 하지만
+z-index의 최댓값은 $2^{31} - 1$이어서 오버플로우가 생길 확률은 매우 낮습니다.
+그래서 z값을 줄이며 발생하는 리렌더링보다 얻는 이득이 크지 않다고 생각해 구현하지 않았습니다.
+
+## 윈도우 배치
+
+윈도우가 처음 생성될 때 최대한 겹치지 않도록 배치하는 것이 좋습니다. 매 윈도우가 생성될 때
+화면에 표시된 윈도우에 개수에 따라 일정한 간격을 두고 생성되도록 구현했습니다.
+
+```ts
+const BASE_OFFSET_X = 48;
+const BASE_OFFSET_Y = 48;
+const STEP = 28;
+const WRAP = 10;
+
+function cascadeOffset(index: number) {
+  // index: number of windows opened
+  const k = index % WRAP; // wrapping
+  const dx = BASE_OFFSET_X + STEP * k;
+  const dy = BASE_OFFSET_Y + STEP * k;
+  return { dx, dy };
+}
+```
+
+# 파일 윈도우 표시하기
+
+이제 윈도우 시스템이 개발되었으니 업로드된 파일을 클릭했을 때 해당 파일의 정보를 표시하는
+윈도우를 생성합니다.
+
+```ts
+const [isPopupOpen, setIsPopupOpen] = useState(false);
+const [popupId, setPopupId] = useState<string | null>(null);
+```
+
+내부적으로 state를 관리해서 한 파일에 대해 2개 이상의 윈도우가 열리지 않도록 관리합니다.
+파일 리스트를 한번 더 누르면 윈도우가 닫히도록 했습니다. 다만, 윈도우를 닫는 방법은
+한번 더 누르는 것 외에 윈도우에서 X 버튼을 누르는 방법도 있습니다. 그래서 외부에서
+state가 변경되었을 때 내부 상태도 같이 변경해 주어야 합니다.
+
+```ts
+useEffect(() => {
+  if (isPopupOpen && popupId && !windows.find((w) => w.id === popupId)) {
+    setIsPopupOpen(false);
+    setPopupId(null);
+  }
+}, [windows, popupId, isPopupOpen]);
+```
+
+이제 파일 이름을 클릭했을 때 `addWindow()`를 호출하면 간단히 새로운 윈도우가 열립니다.
+
+```tsx
+const handleOpenPopup = () => {
+  if (isPopupOpen) {
+    if (popupId) removeWindow(popupId);
+  } else {
+    const id = addWindow(
+      { title: name },
+      <FileWindowContent file={file} />,
+      500,
+      300
+    );
+    setPopupId(id);
+  }
+
+  setIsPopupOpen(!isPopupOpen);
+};
+```
+
+# 마치며
+
+이 글에서는 노드 그래프 시스템과 Think Block의 핵심 시스템이 될 윈도우 시스템을 구현했습니다.
+프로젝트의 근본이 되는 시스템이니만큼 성능과 사용성을 모두 고려해 설계했습니다. 앞으로는
+이 시스템을 기반으로 다양한 기능을 추가해 나갈 예정입니다. 안정적인 프로젝트를 위해 단단한 기반
+시스템의 중요성을 다시 한번 느낄 수 있었습니다.

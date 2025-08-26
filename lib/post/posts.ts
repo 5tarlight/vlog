@@ -41,7 +41,7 @@ export const series: {
   "think-block": {
     name: "Think Block 프로젝트",
     description: "설치 없이 AI 모델을 만드는 서비스 ThinkBlock",
-    posts: ["node-graph"],
+    posts: ["node-graph", "window-system"],
   },
 };
 
