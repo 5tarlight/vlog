@@ -6,6 +6,7 @@ import DarkTheme from "@/components/theme/ThemeProvider";
 import cn from "@yeahx4/cn";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import ProgressBar from "@/components/ProgressBar";
 
 export const metadata: Metadata = {
   title: {
@@ -70,15 +71,17 @@ export default function RootLayout({
         <Analytics />
         <SpeedInsights />
         <DarkTheme>
-          <Header />
-          <main
-            className={cn(
-              "w-full mx-auto min-h-[100vh] py-8 flex justify-center"
-            )}
-          >
-            <div className="w-full">{children}</div>
-          </main>
-          <Footer />
+          <ProgressBar>
+            <Header />
+            <main
+              className={cn(
+                "w-full mx-auto min-h-[100vh] py-8 flex justify-center"
+              )}
+            >
+              <div className="w-full">{children}</div>
+            </main>
+            <Footer />
+          </ProgressBar>
         </DarkTheme>
       </body>
     </html>
