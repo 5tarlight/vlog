@@ -96,7 +96,8 @@ export const psGuide = [
   "tree",
   "floyd-warshall",
   "dijkstra",
-  ...draft(["bellman-ford"]),
+  "bellman-ford",
+  ...draft([]),
 ].map((post) => `ps/${post}`);
 
 export const POST_BASE_PATH = "/posts";
