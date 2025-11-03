@@ -1,10 +1,27 @@
 "use client";
 
 import cytoscape, { ElementDefinition } from "cytoscape";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function GraphRenderer({ code }: { code: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    const checkDarkMode = () => {
+      setIsDarkMode(document.documentElement.classList.contains("dark"));
+    };
+
+    const observer = new MutationObserver(() => checkDarkMode());
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    checkDarkMode();
+
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -108,11 +125,11 @@ export default function GraphRenderer({ code }: { code: string }) {
           style: {
             width: 20,
             height: 20,
-            "background-color": "#ffffff",
-            "border-color": "#000000",
+            "background-color": isDarkMode ? "#242424" : "#ffffff",
+            "border-color": isDarkMode ? "#ffffff" : "#000000",
             "border-width": 1,
             label: "data(id)",
-            color: "#000000",
+            color: isDarkMode ? "#ffffff" : "#000000",
             "text-valign": "center",
             "text-halign": "center",
             shape: "ellipse",
@@ -124,17 +141,17 @@ export default function GraphRenderer({ code }: { code: string }) {
           selector: "edge",
           style: {
             width: 1,
-            "line-color": "#000000",
-            "target-arrow-color": "#000000",
+            "line-color": isDarkMode ? "#ffffff" : "#000000",
+            "target-arrow-color": isDarkMode ? "#ffffff" : "#000000",
             "target-arrow-shape": "triangle",
             "curve-style": "bezier",
             label: "data(label)",
-            color: "#000000",
+            color: isDarkMode ? "#ffffff" : "#000000",
             "font-size": 4,
             "text-rotation": "autorotate",
             "text-margin-y": -6,
             "text-background-opacity": 1,
-            "text-background-color": "#ffffff",
+            "text-background-color": isDarkMode ? "#242424" : "#ffffff",
           },
         },
         {
@@ -149,7 +166,7 @@ export default function GraphRenderer({ code }: { code: string }) {
     return () => {
       cy.destroy();
     };
-  }, [code]);
+  }, [code, isDarkMode]);
 
   return (
     <div
