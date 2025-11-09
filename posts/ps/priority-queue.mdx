@@ -4,6 +4,7 @@ description: 우선순위 큐
 cover:
 tags: priority queue, data structure, ps, boj
 date: 2025-05-09 00:19:27
+update: 2025-11-09
 author: yeahx4
 series: 
 seriesIndex: -1
@@ -18,13 +19,14 @@ coverColor: ffffff
 
 우선순위 큐는 **우선순위**가 가장 높은 원소가 먼저 나오는 큐입니다. 일반적인 큐는
 FIFO(First In First Out) 방식으로 동작하지만, 우선순위 큐는 우선순위가 높은 원소가 먼저 나옵니다.
-우선순위 큐는 보통 힙(heap)이라는 자료구조를 통해 구현됩니다. 힙은 완전 이진 트리의 일종입니다.
-힙에 대해서 지금 자세히 설명하진 않겠지만,
-2개의 자식으로 갈라지는 트리 형태를 가지고 있어서, 데이터의 삽입, 삭제가 $O(\log n)$의 시간 복잡도로
-가능합니다. C++에서는 `priority_queue`가 지원되고 파이썬에서는 `heapq` 모듈이나
+우선순위 큐는 힙(heap)이라는 자료구조를 통해 구현됩니다. 힙은 완전 이진 트리(Complete Binary
+Tree)의 일종입니다. 트리를 설명하지 않아서 힙에 대해서 지금 자세히 설명하진 않겠지만,
+2개의 자식으로 갈라지는 트리 형태를 가지고 있습니다. 힙에서는 데이터의 삽입, 삭제가
+$O(\log n)$의 시간 복잡도로 가능합니다.
+
+C++에서는 `priority_queue`가 지원되고 파이썬에서는 `heapq` 모듈이나
 `queue.PriorityQueue` 클래스를 통해 사용할 수 있습니다. 하지만, `queue.PriorityQueue`는
-멀티스레딩을 대비해서 thread-safe하게 구현되어 있어 싱글스레드 환경에서는 성능이 떨어지고,
-무엇보다 BOJ의 python3 채점 환경에서는 PriorityQueue를 import조차 할 수 없으므로
+BOJ의 python3 채점 환경에서는 PriorityQueue를 import조차 할 수 없으므로
 heapq 사용을 추천합니다([참고](https://www.acmicpc.net/board/view/51521)). 그래서
 이 글에서도 `priority_queue`와 `heapq`를 설명합니다.
 
@@ -74,6 +76,7 @@ while pq:
 그런데 만약 작은 수가 먼저 나오는 최소 힙으로 구현하고 싶다면 어떻게 해야 할까요?
 이 섹션에서는 C++, Python의 우선순위 큐를 커스터마이징하는 방법을 설명합니다.
 언어별로 굉장히 다르기 때문에 각각 나누어 설명하겠습니다.
+
 [11286번: 절댓값 힙](https://www.acmicpc.net/problem/11286) 문제를 예시로
 절댓값이 작은 수가 먼저 나오는 우선순위 큐를 만들어 보겠습니다.
 
@@ -118,17 +121,6 @@ int main() {
 callable한 객체를 전달해야 합니다. sort에서는 함수 포인터도 가능했지만,
 `priority_queue`는 함수 포인터를 전달할 수 없습니다. 그래서 `struct`를 만들어서
 `operator()`를 오버로딩하여 사용했습니다. sort에서도 이런 방식을 사용할 수 있습니다.
-
-나중에 다익스트라같은 알고리즘을 배우게 되면 우선순위 큐에 int보다 복잡한 데이터를 넣기도 합니다.
-그러면 타입이 굉장히 길어지고 코드가 복잡해지니 미리 익숙해지는 것을 추천합니다.
-
-```cpp
-priority_queue<
-    pair<int, int>,
-    vector<pair<int, int>>,
-    greater<pair<int, int>>
-> pq;
-```
 
 ## Python
 
