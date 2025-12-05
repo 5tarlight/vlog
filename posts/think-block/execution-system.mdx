@@ -1,0 +1,230 @@
+---
+title: 위상 정렬을 이용해 그래프 실행 시스템 만들기
+description: 위상 정렬을 통해 Think Block의 그래프 실행 시스템을 구현합니다.
+tags: topological sort, execution, graph, algorithm
+date: 2025-12-05
+author: yeahx4
+series: think-block
+seriesIndex: 2
+cover: think-block/exe/graph.png
+coverTitle: 그래프 실행 시스템
+coverSub:
+coverTs: 90
+coverBg: ED760E
+coverColor: ffffff
+---
+
+# 실행 시스템
+
+Think Block의 핵심은 노드 그래프입니다. 사용자가 노드를 배치하고 서로 연결하면 그래프가 만들어지고
+이 그래프를 실행해서 AI 모델을 만듭니다. 각 노드들은 0개 이상의 입력 포트와 출력 포트를 가지고
+각 포트들은 데이터를 주고받습니다. 이전 포스트에서 노드 그래프를 만드는 방법에 대해 다뤘습니다.
+이번 포스트에서는 이렇게 만들어진 그래프를 실행하는 시스템에 대해 설명합니다.
+
+![graph][full](/img/think-block/exe/graph.png)
+
+각 노드들은 출력 포트에서 데이터를 내보내고, 다른 노드의 입력 포트로 데이터를 받습니다. 각 노드는
+다음과 같은 코드로 이루어져 있습니다. CSV나 number 같은 노드들은 입력 포트를 가지지 않지만,
+사용자로부터 직접 데이터를 입력받아서 출력해주는 역할을 합니다. 노드들의 상태를 관리하는 store가
+있어서, 노드를 실행하면 각 노드가 store에서 필요한 데이터를 가져온 후, 자신의 로직을 수행하고,
+결과를 다시 store에 반영합니다. 그러면 다음 노드가 이 데이터를 가지고 다시 실행되는 방식입니다.
+
+```ts
+export interface NodeDataState {
+  data: Record<string, any>;
+  setNodeData: (nodeId: string, data: Record<string, any>) => void;
+  getNodeData: (nodeId: string) => Record<string, any> | undefined;
+}
+```
+
+각 노드들은 크게 두 함수를 가지고 있습니다.
+
+```ts
+export default abstract class NodeImpl {
+  public nodeId: string;
+  public nodeType: NodeType;
+  public inputs: Port[];
+  public outputs: Port[]
+
+  // 생략
+
+  abstract process(inputs: Record<string, any>): Promise<Record<string, any>>;
+  abstract render(): ReactNode;
+}
+```
+
+`process()` 함수는 입력 포트로 들어온 데이터를 처리하는 함수입니다. 입력 포트로 들어온 데이터를
+실행 시스템으로부터 inject받아서, 자신의 로직을 수행한 후, 출력 포트로 내보낼 데이터를 반환합니다.
+`render()` 함수는 노드를 더블클릭했을 때 나타나는 팝업 창의 컴포넌트를 반환하는 함수입니다.
+CSV 노드 같은 경우에는 왼쪽의 사이드바를 통해 업로드한 CSV 파일 중 하나를 선택하는 UI가 나타납니다.
+
+![node-popup][md](/img/think-block/exe/csv-ui.png)
+
+여기서 선택한 CSV 파일이 `CsvWindow` 컴포넌트에 의해 store에 반영되고, 이후 그래프가 실행될 때
+이 데이터를 `CsvNode`의 `process()` 함수에서 사용하게 됩니다.
+
+```tsx
+import type { ReactNode } from "react";
+import NodeImpl from "../NodeImpl";
+import CsvWindow from "../../../components/node-window/csv-window";
+import { useNodeDataState } from "../../../store/nodeDataStore";
+
+export default class CsvNode extends NodeImpl {
+  constructor(nodeId: string) {
+    super(nodeId, "csv", [], [{ name: "csv" }]);
+    this.winWidth = 700;
+    this.winHeight = 500;
+  }
+
+  async process(): Promise<Record<string, any>> {
+    const { getNodeData } = useNodeDataState.getState();
+    return {
+      fileKey: getNodeData(this.nodeId)?.fileKey || null,
+      csv: getNodeData(this.nodeId)?.csv || null,
+    };
+  }
+
+  render(): ReactNode {
+    return <CsvWindow id={this.nodeId} />;
+  }
+}
+```
+
+## 그래프 표현 방법
+
+그래프는 내부적으로 노드와 간선(엣지)의 집합으로 표현됩니다.
+
+```ts
+export interface NodeState {
+  nodes: Node[];
+  selectedNodes: string[];
+  errorNode: string | null;
+  setNodes: (f: (nodes: Node[]) => Node[]) => void;
+  setSelectedNodes: (f: (selected: string[]) => string[]) => void;
+  addSelectedNodes: (id: string) => void;
+  removeSelectedNodes: (id: string) => void;
+  clearSelectedNodes: () => void;
+  setErrorNode: (id: string | null) => void;
+}
+```
+
+```ts
+export interface EdgeState {
+  edges: Edge[];
+  setEdges: (f: (edges: Edge[]) => Edge[]) => void;
+  removeEdge: (id: string) => void;
+  removeEdgesConnectedToNode: (nodeId: string) => void;
+}
+```
+
+그래프를 실행하기 위해서는 노드들이 어떤 순서로 실행되어야 할지 알아야 합니다. 이 그래프는 출력 포트에서
+입력 포트로 데이터가 흐르는 방향 비순환 그래프(DAG, Directed Acyclic Graph)이기 때문에
+위상 정렬(Topological Sort)을 통해 노드들의 실행 순서를 결정할 수 있습니다.
+
+## 위상 정렬
+
+위상 정렬은 방향 그래프에서 노드들을 선형 순서로 정렬하는 알고리즘입니다. 여기서는 어떤 노드가 실행되기
+전에 그 노드의 모든 입력 노드들이 먼저 실행되어야 하기 때문에 위상 정렬이 필요합니다. 위상 정렬을
+수행해서 구한 순서대로 노드를 실행하면 각 노드가 필요한 입력 데이터를 모두 받을 수 있습니다.
+
+하지만, 앞서 설명한 대로 위상 정렬은 그래프를 _선형_ 순서로 정렬합니다. 즉, 그래프에 분기가 있을 때
+각 분기점에서 노드들이 병렬로 실행될 수 없습니다. Think Block은 수많은 노드들을 병렬로 실행할 수
+있기를 원하기 때문에, 위상 정렬을 살짝 변형한 알고리즘을 구현했습니다.
+
+```ts
+export function buildLayers(nodes: Node[], edges: Edge[]): string[][] {
+  const indeg = new Map<string, number>();
+  const adj = new Map<string, string[]>();
+
+  for (const n of nodes) {
+    indeg.set(n.id, 0);
+    adj.set(n.id, []);
+  }
+
+  for (const e of edges) {
+    adj.get(e.from.node)?.push(e.to.node);
+    indeg.set(e.to.node, (indeg.get(e.to.node) ?? 0) + 1);
+  }
+
+  const layers: string[][] = [];
+  let cur: string[] = nodes
+    .filter((n) => (indeg.get(n.id) ?? 0) === 0)
+    .map((n) => n.id);
+
+  while (cur.length > 0) {
+    layers.push(cur);
+    const next: string[] = [];
+    for (const u of cur) {
+      for (const v of adj.get(u) ?? []) {
+        indeg.set(v, (indeg.get(v) ?? 0) - 1);
+        if (indeg.get(v) === 0) next.push(v);
+      }
+    }
+    cur = next;
+  }
+
+  // Check for cycles
+  const allNodes = layers.flat();
+  if (allNodes.length < nodes.length) {
+    throw new Error("Cycle detected in node graph");
+  }
+
+  return layers;
+}
+```
+
+이 함수는 그래프의 노드들과 엣지들을 입력으로 받아서 노드 ID들의 2차원 배열을 반환합니다.
+예를 들어, 리턴값이 `[["A", "B"], ["C"], ["D", "E"]]`라면, 첫 번째 레이어에는 노드 A와 B가
+있으니 A와 B를 병렬로 실행할 수 있다는 의미입니다.
+
+일반적인 위상정렬과 같이 각 노드들의 진입 차수를 계산하는 것으로 시작합니다. 진입 차수는 각 노드로
+들어오는 입력 엣지의 개수입니다. 만약 진입 차수가 0인 노드가 있다면 이 노드는 입력이 없으므로 제일
+처음으로 실행될 수 있다는 의미입니다. 이 노드들을 첫 번째 레이어로 추가합니다. 이후에는 첫 번째 레이어에
+추가된 노드들의 출력 엣지를 따라가면서 연결된 노드들의 진입 차수를 1씩 감소시킵니다. 만약 여기서 어떤
+노드의 진입 차수가 0이 된다면 이 노드는 다음 레이어에 추가됩니다. 이 과정을 더 이상 추가할 노드가
+없을 때까지 반복합니다. 마지막으로, 모든 노드가 레이어에 추가되었는지 확인합니다. 만약 사이클이 있었다면
+사이클을 이루고 있는 노드들의 진입 차수는 0이 되지 않기 때문에 모든 노드가 레이어에 추가되지 않습니다.
+
+이제 각 레이어에 있는 노드들을 병렬로 실행할 수 있습니다.
+
+```ts
+for (const layer of layers) {
+  await Promise.all(
+    layer.map(async (nodeId) => {
+      if (hasError) return;
+      const node = nodeMap.get(nodeId);
+      if (!node?.impl?.process) return;
+
+      const inputs = getInputs(nodeMap, nodeId);
+      try {
+        const outputs = await node.impl.process(inputs);
+        setNodeData(nodeId, outputs);
+      } catch (e) {
+        hasError = true;
+        console.error(`Error processing node ${nodeId}:`, e);
+        setIsError(nodeId);
+        setErrorNode(nodeId);
+        return;
+      }
+
+      done += 1;
+      setProgress(done / totalNodes);
+
+      await new Promise((r) => setTimeout(r, 0));
+    })
+  );
+}
+```
+
+마지막에 `await new Promise((r) => setTimeout(r, 0));`를 넣은 이유는
+각 노드의 `process()` 함수가 무거운 작업을 수행할 수 있기 때문입니다. 이 작업이
+오랫동안 작업을 수행하게 되면 UI 스레드가 차단되어 사용자가 인터페이스와 상호작용할 수 없게 됩니다.
+따라서 각 노드의 처리가 끝난 후에 `setTimeout`을 사용하여 이벤트 루프에 제어를 반환함으로써
+브라우저가 UI 업데이트 및 사용자 입력 처리를 할 수 있도록 했습니다.
+
+# 마치며
+
+지금까지 진행했던 프로젝트 중 가장 복잡한 프로젝트였습니다. 기존에는 알고리즘을 잘 몰랐기 때문에
+이렇게 복잡한 프로젝트를 시도하지 못했는데, 알고리즘 공부도 하다 보니 이런 프로젝트도 도전할 수 있게
+되었습니다. 앞으로도 더 복잡한 프로젝트에 도전해보고 싶습니다. 알고리즘 공부도 계속해서 더 어려운
+문제도 빠르고 효율적으로 해결할 수 있도록 노력해야겠습니다.
