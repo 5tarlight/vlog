@@ -1,0 +1,152 @@
+---
+title: 0-1 BFS
+description: 0-1 너비 우선 탐색
+cover:
+tags: BFS, shortest path, graph, ps, boj
+date: 2025-12-19
+author: yeahx4
+series: 
+seriesIndex: -1
+coverTitle: 0-1 BFS
+coverSub: 
+coverTs: 90
+coverBg: 9DA1AA
+coverColor: ffffff
+---
+
+# 0-1 BFS
+
+0-1 BFS는 가중치가 0 또는 1인 간선으로만 이루어진 그래프에서 최단 경로를 빠르게 찾는 알고리즘입니다.
+일반적으로 가중치가 여러 가지인 그래프에서 최단 경로를 찾으라고 하면 다익스트라 알고리즘을 떠올리지만
+가중치가 0 또는 1로만 이루어진 특수한 케이스에서는 0-1 BFS를 활용할 수 있습니다.
+
+## Dial's Algorithm
+
+0-1 BFS는 Dial's Algorithm의 특수한 경우로 볼 수 있습니다. Dial 알고리즘은 작은 범위의 정수
+가중치를 가진 그래프에서 최단 경로를 찾는 데 사용됩니다.
+
+간선이 $E$개, 노드가 $V$개인 그래프에서
+우선순위 큐를 사용하는 다익스트라 알고리즘의 시간복잡도는 이진 힙을 사용하면 $O(E \log V)$이고
+피보나치 힙을 사용하면 $O(E + V \log V)$까지 줄일 수 있습니다. Dial 알고리즘에 대해서 지금
+자세히 다루지는 않겠지만, 가중치가 $C$ 이하인 정수로 제한될 때 시간복잡도를 $O(E + VC)$까지 줄일
+수 있습니다. 0-1 BFS는 Dial 알고리즘에서 $C=1$인 특수한 경우로, 시간복잡도를 $O(E + V)$까지 줄일 수 있습니다.
+
+## 작동 방식
+
+0-1 BFS는 BFS와 유사하게 작동하지만 큐를 사용하지 않고 덱(deque)을 사용합니다. 어떤 한 정점
+$s$에서 시작한다고 할 때, 다음과 같은 과정을 거칩니다.
+
+- dist 배열을 무한대로 초기화하고, dist[s] = 0으로 설정합니다
+- 시작 정점 s를 덱의 앞에 추가합니다
+- 덱이 빌 때까지 다음을 반복합니다:
+  - 덱의 앞에서 정점 u를 꺼냅니다
+  - 정점 u의 모든 인접 정점 v에 대해 다음을 수행합니다:
+    - 간선 (u, v)의 가중치가 0인 경우:
+      - 만약 현재까지의 최단 경로보다 더 짧은 경로를 찾았다면,
+        정점 v를 덱의 앞에 추가하고 최단 경로를 갱신합니다.
+    - 간선 (u, v)의 가중치가 1인 경우:
+      - 만약 현재까지의 최단 경로보다 더 짧은 경로를 찾았다면,
+        정점 v를 덱의 뒤에 추가하고 최단 경로를 갱신합니다.
+
+이렇게 덱을 사용해서 가중치가 0인 간선을 우선적으로 처리함으로써 우선순위 큐를 쓰지 않고도 같은
+효과를 낼 수 있게 됩니다. 결과적으로 $O(E + V)$의 시간복잡도로 최단 경로를 찾을 수 있습니다.
+
+## 예제 코드
+
+[13549번: 숨바꼭질 3](https://www.acmicpc.net/problem/13549) 문제를 0-1 BFS로 풀어
+보겠습니다. 이 문제에서는 수빈이가 위치 $N$에서 동생의 위치 $M$으로 이동하는데 걸리는 최소 시간을
+구해야 합니다. 수빈이는 0초만에 $2N$의 위치로 순간이동하거나 $N \pm 1$의 위치로 1초동안 걸어갈
+수 있습니다. 이동 간선의 가중치가 0 또는 1이므로 0-1 BFS를 적용할 수 있습니다.
+
+약간 고민할 수 있는 부분은 수빈이가 이동하면서 위치가 음수가 되거나 10만을 초과할 수 있다는 부분입니다.
+문제 조건상 모두 불가능하지는 않지만, 음수 위치로 가게 되면 동생은 항상 양수 위치에 존재하는데 걸어서만
+나올 수 있으므로 최단 경로에 포함될 수 없습니다. 따라서 음수 위치는 탐색하지 않아도 됩니다.
+마찬가지로 10만을 넘어가는 위치는 동생은 항상 10만 이하에 존재하므로 걸어서 내려올 수밖에 없는데
+애초에 그렇게 멀리 갈 이유가 없기 때문에 최단 경로에 포함되지 않습니다. 따라서 0 이상 10만 이하의
+위치만 고려하면 됩니다.
+
+%multilang:C++,Python
+```cpp
+#include <bits/stdc++.h>
+
+using namespace std;
+void fio() { cin.tie(nullptr); cout.tie(nullptr); ios::sync_with_stdio(false); }
+
+int dist[100001];
+
+int main() {
+    fio();
+
+    int n, k; cin >> n >> k;
+
+    deque<int> dq;
+    fill(dist, dist + 100001, 1e9);
+    dist[n] = 0;
+    dq.push_back(n);
+
+    while (!dq.empty()) {
+        int x = dq.front(); dq.pop_front();
+
+        if (x == k) {
+            cout << dist[x];
+            return 0;
+        }
+
+        for (int nx : { 2 * x, x - 1, x + 1 }) {
+            if (nx < 0 || nx > 100000) continue;
+
+            int nd = dist[x] + (nx == 2 * x ? 0 : 1);
+            if (nd < dist[nx]) {
+                dist[nx] = nd;
+                if (nx == 2 * x) {
+                    dq.push_front(nx);
+                } else {
+                    dq.push_back(nx);
+                }
+            }
+        }
+    }
+}
+```
+
+```python
+import sys
+from collections import deque
+input = sys.stdin.readline
+
+n, k = map(int, input().split())
+
+MAX = 100000
+INF = 10**9
+
+dist = [INF] * (MAX + 1)
+dq = deque([n])
+dist[n] = 0
+
+while dq:
+    x = dq.popleft()
+    if x == k:
+        print(dist[x])
+        break
+
+    nx = x * 2
+    if nx <= MAX and dist[nx] > dist[x]:
+        dist[nx] = dist[x]
+        dq.appendleft(nx)
+
+    nx = x - 1
+    if nx >= 0 and dist[nx] > dist[x] + 1:
+        dist[nx] = dist[x] + 1
+        dq.append(nx)
+
+    nx = x + 1
+    if nx <= MAX and dist[nx] > dist[x] + 1:
+        dist[nx] = dist[x] + 1
+        dq.append(nx)
+```
+%endmultilang
+
+# 연습문제
+
+- [https://www.acmicpc.net/problem/13549](https://www.acmicpc.net/problem/13549)
+- [https://www.acmicpc.net/problem/1261](https://www.acmicpc.net/problem/1261)

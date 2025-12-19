@@ -97,6 +97,7 @@ export const psGuide = [
   "floyd-warshall",
   "dijkstra",
   "bellman-ford",
+  "0-1-bfs",
   ...draft([]),
 ].map((post) => `ps/${post}`);
 
