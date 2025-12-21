@@ -98,6 +98,7 @@ export const psGuide = [
   "dijkstra",
   "bellman-ford",
   "0-1-bfs",
+  "coordinate-compression",
   ...draft([]),
 ].map((post) => `ps/${post}`);
 
