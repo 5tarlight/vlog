@@ -99,6 +99,7 @@ export const psGuide = [
   "bellman-ford",
   "0-1-bfs",
   "coordinate-compression",
+  "knapsack",
   ...draft([]),
 ].map((post) => `ps/${post}`);
 

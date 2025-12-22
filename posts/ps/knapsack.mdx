@@ -1,0 +1,132 @@
+---
+title: Knapsack Problem
+description: 배낭 문제
+cover:
+tags: knapsack, dp, ps, boj
+date: 2025-12-22
+author: yeahx4
+series: 
+seriesIndex: -1
+coverTitle: Knapsack Problem
+coverSub: 
+coverTs: 90
+coverBg: 9DA1AA
+coverColor: ffffff
+---
+
+# Knapsack Problem
+
+배낭 문제는 제한된 용량 안에 최대한 가치가 높은 물건을 담는 문제입니다.
+백준의 [12865번: 평범한 배낭](https://www.acmicpc.net/problem/12865) 문제가 배낭
+문제의 기본적인 형태입니다. 각각 무게 $w_i$와 가치 $v_i$를 가지는 $N$개의 물건이 있고,
+배낭의 최대 용량이 $K$일 때, 배낭에 담을 수 있는 물건의 최대 가치를 구하는 문제입니다.
+배낭 문제에는 여러 변형이 있습니다. 이 문제는 물건을 쪼갤 수 없는 0-1 배낭 문제입니다. 다른 유형으로는
+물건을 쪼갤 수 있는 Fraction Knapsack 문제, 같은 물건을 여러 번 담을 수 있는 Unbounded
+Knapsack 문제가 있습니다. 이 글에서는 0-1 배낭 문제를 해결하는 방법에 대해서 알아봅니다.
+
+## 문제 분석
+
+배낭 문제는 동적 계획법(Dynamic Programming, DP)을 사용하여 해결할 수 있습니다.
+동적 계획법은 큰 문제를 작은 부분 문제로 나누어 해결하는 기법입니다. 이 문제에서는 어떤 물건이 있을 떄
+그 물건을 담을지 말지를 결정할 수 있습니다. 첫번째 물건을 담았다면 다음은 두번째 물건부터 마지막 물건까지
+용량이 $K - w_1$인 배낭에 담는 문제가 됩니다. 첫번째 물건을 담지 않았다면 용량이 $K$인 배낭에
+두번째 물건부터 마지막 물건까지 담는 문제가 됩니다. 이와 같이 문제를 더 작게 나누어 생각하는 과정이
+동적 계획법의 핵심입니다.
+
+## 점화식
+
+DP를 사용하여 문제를 해결하려면 점화식을 세우면 편리합니다. $\text{dp}[i][j]$를 $i$번째 물건까지
+고려했을 때 용량이 $j$인 배낭에 담을 수 있는 최대 가치라고 정의하겠습니다. $i번째 물건을 담기로
+결정했다면 점화식은 다음과 같습니다
+
+```math
+\text{dp}[i][j] = \text{dp}[i-1][j - w_i] + v_i
+```
+
+만약 $i$번째 물건을 담지 않기로 결정했다면 가치는 변하지 않으므로 점화식은 다음과 같습니다.
+
+```math
+\text{dp}[i][j] = \text{dp}[i-1][j]
+```
+
+즉, $i$번째 물건을 담을지 말지는 이 두 값의 최댓값을 취하면 됩니다. 따라서 최종적인 점화식은 다음과 같습니다.
+
+```math
+\text{dp}[i][j] = \max(\text{dp}[i-1][j], \text{dp}[i-1][j - w_i] + v_i)
+```
+
+물론 $j < w_i$인 경우에는 $i$번째 물건을 담을 수 없으므로 담지 못하고 넘어가야 합니다.
+초기값은 $\text{dp}[0][j] = 0$ (모든 $j$에 대해)입니다. 물건이 하나도 없을 때는 담을 수 있는
+가치가 0이기 때문입니다.
+
+## 구현
+
+이제 점화식을 바탕으로 위 문제에 대한 정답 코드를 작성해 보겠습니다.
+
+%multilang:C++,Python
+```cpp
+#include <bits/stdc++.h>
+
+using namespace std;
+void fio() { cin.tie(nullptr); cout.tie(nullptr); ios::sync_with_stdio(false); }
+
+int main() {
+    fio();
+
+    int n, k; cin >> n >> k;
+    int w[n], v[n];
+    for (int i = 0; i < n; i++) cin >> w[i] >> v[i];
+
+    int dp[n + 1][k + 1];
+    memset(dp, 0, sizeof(dp));
+
+    for (int i = 1; i <= n; i++) {
+        for (int j = 0; j <= k; j++) {
+            if (j < w[i - 1])
+                dp[i][j] = dp[i - 1][j];
+            else
+                dp[i][j] = max(
+                    dp[i - 1][j],
+                    dp[i - 1][j - w[i - 1]] + v[i - 1]
+                );
+        }
+    }
+
+    cout << dp[n][k];
+}
+```
+
+```python
+import sys
+input = sys.stdin.readline
+
+n, k = map(int, input().split())
+w = [0] * n
+v = [0] * n
+
+for i in range(n):
+    w[i], v[i] = map(int, input().split())
+
+dp = [[0] * (k + 1) for _ in range(n + 1)]
+
+for i in range(1, n + 1):
+    for j in range(k + 1):
+        if j < w[i - 1]:
+            dp[i][j] = dp[i - 1][j]
+        else:
+            dp[i][j] = max(
+                dp[i - 1][j],
+                dp[i - 1][j - w[i - 1]] + v[i - 1]
+            )
+
+print(dp[n][k])
+```
+%endmultilang
+
+냅색 문제는 별도의 알고리즘은 아니지만 동적 계획법의 굉장히 유명한 예시이고 난이도가 꽤 높기 때문에
+소개해 보았습니다. 나중에 DP를 사용하는 다른 복잡한 문제들도 소개해 보겠습니다.
+
+# 연습문제
+
+- [https://www.acmicpc.net/problem/12865](https://www.acmicpc.net/problem/12865)
+- [https://www.acmicpc.net/problem/7579](https://www.acmicpc.net/problem/7579)
