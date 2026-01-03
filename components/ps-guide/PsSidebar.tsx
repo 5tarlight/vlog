@@ -8,7 +8,7 @@ export default async function PsSidebar() {
   return (
     <aside
       className={cn(
-        "hidden lg:block w-[240px] flex-none h-screen px-2",
+        "hidden lg:block w-[240px] flex-none min-h-screen px-2",
         "overflow-y-auto"
       )}
     >

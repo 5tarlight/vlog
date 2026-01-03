@@ -101,6 +101,7 @@ export const psGuide = [
   "coordinate-compression",
   "knapsack",
   "lis",
+  "union-find",
   ...draft([]),
 ].map((post) => `ps/${post}`);
 
