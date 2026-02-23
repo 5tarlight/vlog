@@ -58,7 +58,7 @@ export const posts = [
   "math/pca",
   "bjcord/rewrite-bjcord-2",
   ...Object.keys(series).flatMap((key) =>
-    series[key].posts.map((post) => `${key}/${post}`)
+    series[key].posts.map((post) => `${key}/${post}`),
   ),
   ...draft([]),
 ];
@@ -102,6 +102,7 @@ export const psGuide = [
   "knapsack",
   "lis",
   "union-find",
+  "mst",
   ...draft([]),
 ].map((post) => `ps/${post}`);
 
@@ -181,7 +182,7 @@ export const getPostsBySeries = (seriesName: string) => {
 
 export const getPostsByTag = async (tag: string) => {
   return (await readAllPosts()).filter((post) =>
-    parsePost(post).meta.tags.includes(tag)
+    parsePost(post).meta.tags.includes(tag),
   );
 };
 
@@ -242,7 +243,7 @@ export const searchPosts = async (query: string, limit = 6) => {
       const titleScore = countOccurrence(meta.title.toLowerCase(), query);
       const descriptionScore = countOccurrence(
         meta.description.toLowerCase(),
-        query
+        query,
       );
 
       const bodyScoreRaw = countOccurrence(body.join(" ").toLowerCase(), query);
@@ -251,7 +252,7 @@ export const searchPosts = async (query: string, limit = 6) => {
 
       const tagScore = meta.tags.reduce(
         (acc, tag) => acc + countOccurrence(tag.toLowerCase(), query),
-        0
+        0,
       );
 
       const score =
@@ -261,7 +262,7 @@ export const searchPosts = async (query: string, limit = 6) => {
         post: { meta, body, id: post },
         score,
       };
-    })
+    }),
   );
 
   const end = Date.now();
@@ -275,7 +276,7 @@ export const searchPosts = async (query: string, limit = 6) => {
 
 export async function getPostsByPage(page: number, limit: number) {
   const sortedPosts = (await getAllMetaWithId()).sort(
-    (a, b) => Date.parse(b.meta.date) - Date.parse(a.meta.date)
+    (a, b) => Date.parse(b.meta.date) - Date.parse(a.meta.date),
   );
 
   const start = (page - 1) * limit;
