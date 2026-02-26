@@ -104,6 +104,7 @@ export const psGuide = [
   "union-find",
   "mst",
   "two-pointer",
+  'topological-sort',
   ...draft([]),
 ].map((post) => `ps/${post}`);
 
