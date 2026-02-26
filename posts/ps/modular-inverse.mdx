@@ -217,7 +217,7 @@ pair<ll, pair<ll, ll>> eea(ll a, ll b) {
 
     auto [g, xy] = eea(b, a % b);
     auto [x, y] = xy;
-    return { g, { y, x - (a / b) * y  }};
+    return { g, { y, x - (a / b) * y }};
 }
 
 ll mod_inv(ll a, ll mod) {
