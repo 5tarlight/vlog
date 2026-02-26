@@ -104,7 +104,8 @@ export const psGuide = [
   "union-find",
   "mst",
   "two-pointer",
-  'topological-sort',
+  "topological-sort",
+  "modular-inverse",
   ...draft([]),
 ].map((post) => `ps/${post}`);
 
