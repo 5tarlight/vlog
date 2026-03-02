@@ -1,0 +1,253 @@
+---
+title: CCW
+description: Counter Clock Wise
+cover:
+tags: algorithm, ps, boj
+date: 2026-03-02
+author: yeahx4
+series: 
+seriesIndex: -1
+coverTitle: CCW
+coverSub: 
+coverTs: 90
+coverBg: 9DA1AA
+coverColor: ffffff
+---
+
+# CCW
+
+CCW는 평면 위의 세 점 $A, B, C$가 어떤 모양을 이루고 있는지를 판단하는 알고리즘입니다.
+기하 문제에서 자주 사용됩니다. 두 선분이 서로 교차하는지, 다각형 넓이 계산, 볼록 껍질(Convex Hull)
+알고리즘 등에서 활용됩니다. 이 글에서는 CCW의 원리와 선분 교차 판별에 어떻게 활용되는지 살펴보겠습니다.
+
+평면 위에서 세 점은 다음과 같은 모양을 만들 수 있습니다.
+
+![CCW][full](/img/ps/ccw/ccw.png)
+
+CCW 알고리즘은 세 점 $A, B, C$를 순서대로 이을 때 어떤 방향으로 이어지는지를 판단합니다.
+이를 설명하기 위해서 벡터가 필요합니다. 세 점이 다음과 같이 주어졌다고 할 때,
+
+```math
+A(x_1, y_1), \,\,\,\,\,\, B(x_2, y_2), \,\,\,\,\, C(x_3, y_3)
+```
+
+두 벡터 $\overrightarrow{AB}$와 $\overrightarrow{AC}$를 구할 수 있습니다.
+
+```math
+\overrightarrow{AB} = (x_2 - x_1, y_2 - y_1), \,\,\,\,\,\, \overrightarrow{AC} = (x_3 - x_1, y_3 - y_1)
+```
+
+CCW 알고리즘은 이 두 벡터의 외적을 계산하여 세 점의 방향을 판단합니다.
+우선 결과만 보면 CCW는 다음과 같이 계산됩니다.
+
+```math
+\overrightarrow{AB} \times \overrightarrow{AC} = (x_2 - x_1)(y_3 - y_1) - (y_2 - y_1)(x_3 - x_1)
+```
+
+벡터 $AB$와 $BC$를 쓰는 대신 $AB$와 $AC$를 쓰는 이유는 기준점이 같아야 각도를 정의하기 편하기
+때문입니다. 그리고 두 방식 모두 결과가 동일합니다. 아래는 이의 증명입니다.
+
+```math
+\overrightarrow{AC} = \overrightarrow{AB} + \overrightarrow{BC}
+```
+```math
+\overrightarrow{AB} \times \overrightarrow{AC} = \overrightarrow{AB} \times (\overrightarrow{AB} + \overrightarrow{BC})
+```
+
+이를 정리하면,
+
+```math
+\overrightarrow{AB} \times \overrightarrow{AB} + \overrightarrow{AB} \times \overrightarrow{BC} = \overrightarrow{AB} \times \overrightarrow{BC}
+```
+
+자기 자신과의 외적은 외적의 정의상 항상 0이므로 이렇게 정리됩니다. 따라서 $AB$와 $AC$를 쓰든
+$AB$와 $BC$를 쓰든 결과는 동일합니다. 정리하면, 세 점 $A, B, C$의 CCW는 다음과 같이 계산됩니다.
+
+```math
+\text{ccw}(A, B, C) = (x_2 - x_1)(y_3 - y_1) - (y_2 - y_1)(x_3 - x_1)
+```
+
+이 값이 양수이면 세 점은 반시계 방향으로 이어지고, 음수이면 시계 방향으로 이어집니다. 
+그리고 0이면 세 점이 일직선상에 놓여있다는 것을 의미합니다.
+
+## 원리
+
+CCW 알고리즘의 원리는 벡터의 외적과 관련이 있습니다. 외적은 기본적으로 3차원에서 정의되는 연산입니다.
+두 벡터 $u, v$의 외적은 $u \times v$로 표현되며, 결과는 $u$와 $v$ 모두에 수직인 벡터입니다.
+여기서 $u$와 $v$가 2차원 벡터인 경우, 외적의 결과는 $z$축 방향의 벡터가 됩니다.
+이를 수식으로 표현하면 다음과 같습니다.
+
+```math
+\overrightarrow{u} \times \overrightarrow{v} = |u||v|\sin\theta \,\, \hat{n}
+```
+
+여기서 $\hat n$은 $u$와 $v$ 모두에 수직인 단위 벡터입니다. 지금은 2차원에서 생각하고 있으므로
+$\hat n = \mathbf{k}$가 됩니다. 그리고 $\theta$는 $u$와 $v$ 사이의 각도입니다. CCW
+알고리즘에서 저희가 가장 관심있는 것은 이 각도입니다. 외적을 계산하면, $\sin\theta$를 제외하고는
+항상 양수이므로 $\sin\theta$의 부호에 따라 CCW의 부호도 바뀌게 됩니다. 여기서 반시계 방향 회전이라면
+$\theta$는 $0$에서 $\pi$ 사이의 값을 가지므로 $\sin\theta$는 양수입니다. 반대로 시계 방향
+회전이라면 $\theta$는 $-\pi$에서 $0$ 사이의 값을 가지므로 $\sin\theta$는 음수입니다.
+그리고 세 점이 일직선상에 놓여있다면 $\theta$는 $0$ 또는 $\pi$가 되므로 $\sin\theta$는
+0이 됩니다. 즉, CCW의 부호만 보면 세 점이 어떤 방향으로 이어지는지 알 수 있습니다.
+
+%multilang:C++,C++ (pair),Python,Python (tuple)
+```cpp
+using ll = long long;
+
+ll ccw(ll x1, ll y1, ll x2, ll y2, ll x3, ll y3) {
+    return (x2 - x1) * (y3 - y1)
+         - (y2 - y1) * (x3 - x1);
+}
+```
+
+```cpp
+using ll = long long;
+using pll = pair<ll,ll>;
+
+ll ccw(pll a, pll b, pll c) {
+    return (b.first - a.first) * (c.second - a.second)
+         - (b.second - a.second) * (c.first - a.first);
+}
+```
+
+```python
+def ccw(x1, y1, x2, y2, x3, y3):
+    return (x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1)
+```
+
+```python
+def ccw(a, b, c):
+    return (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0])
+```
+%endmultilang
+
+이 내용을 바탕으로 [BOJ 11758번: CCW](https://www.acmicpc.net/problem/11758) 문제를
+풀 수 있습니다. 단순히 CCW의 결과를 -1, 0, 1로 변환해 출력하면 됩니다.
+
+# 선분 교차 판별
+
+선분 교차 판별(Line Segment Intersection) 문제는 평면 위의 두 선분이 서로 교차하는지를 판단하는
+문제입니다. 두 선분 $AB$와 $CD$가 교차하면 다음과 같은 모양을 가지고 있습니다.
+
+![Line Segment Intersection][lg](/img/ps/ccw/intersect.png)
+
+선분 $AB$를 기준으로 $C$와 $D$가 서로 다른 방향에 있어야 합니다. 즉, $C$와 $D$의 CCW 결과가
+서로 다른 부호를 가져야 합니다. 그리고 이렇게만 검사하면 오른쪽 그림과 같은 반례가 생기기 때문에
+선분 $CD$를 기준으로 $A$와 $B$도 서로 다른 방향에 있는지 검사해야 합니다. 따라서 선분 교차 판별은
+다음과 같이 구현할 수 있습니다.
+
+%multilang:C++,Python
+```cpp
+bool isIntersect(pll a, pll b, pll c, pll d) {
+    ll ab = ccw(a, b, c) * ccw(a, b, d);
+    ll cd = ccw(c, d, a) * ccw(c, d, b);
+    return ab < 0 && cd < 0;
+}
+```
+
+```python
+def is_intersect(a, b, c, d):
+    ab = ccw(a, b, c) * ccw(a, b, d)
+    cd = ccw(c, d, a) * ccw(c, d, b)
+    return ab < 0 and cd < 0
+```
+%endmultilang
+
+여기서 주의해야 할 점은 세 개 이상의 점이 일직선상에 놓여있는 경우입니다. 이 경우에는 CCW의 결과가 0이
+되기 때문에 주의해야 합니다.
+[BOJ 17386번: 선분 교차 1](https://www.acmicpc.net/problem/17386) 문제에서는 세 점이
+일직선상에 놓이는 경우가 없으므로 위의 코드로도 정답을 받을 수 있습니다. 하지만,
+[BOJ 17387번: 선분 교차 2](https://www.acmicpc.net/problem/17387) 문제에서는 세 개 이상의
+점이 일직선상에 놓이는 경우가 있기 때문에 추가적인 처리가 필요합니다. 경우의 수를 나누어서 생각해
+보겠습니다. 한 선분의 끝 점이 다른 선분이나 끝 점 위에 올라가는 경우, 즉, 세 점이 일직선상에
+놓이는 경우에는 CCW 중 하나가 0이 됩니다. 이런 경우에는 겹치는 것으로 판단할 수 있습니다.
+만약 네 점이 모두 일직선상에 놓이는 경우에는 모든 CCW가 0이 됩니다. 이런 경우에는 두 선분이 겹치는지
+좌표를 통해 판단해야 합니다.
+
+![Line Segment Intersection][md](/img/ps/ccw/colinear.png)
+
+다만 주의해야 할 점으로 CCW를 곱할 때 long long 범위를 벗어날 수 있기 때문에 -1, 0, 1로 변환해서
+곱해주는 것이 좋습니다.
+
+%multilang:C++,Python
+```cpp
+#include <bits/stdc++.h>
+
+using namespace std;
+void fio() { cin.tie(nullptr); cout.tie(nullptr); ios::sync_with_stdio(false); }
+
+using ll = long long;
+using pll = pair<ll,ll>;
+
+ll ccw(pll a, pll b, pll c) {
+    ll tmp = (b.first - a.first) * (c.second - a.second)
+         - (b.second - a.second) * (c.first - a.first);
+
+    if (tmp > 0) return 1;
+    if (tmp < 0) return -1;
+    return 0;
+}
+
+bool isIntersect(pll a, pll b, pll c, pll d) {
+    ll ab = ccw(a, b, c) * ccw(a, b, d);
+    ll cd = ccw(c, d, a) * ccw(c, d, b);
+
+    if (ab == 0 && cd == 0) {
+        if (a > b) swap(a, b);
+        if (c > d) swap(c, d);
+        return c <= b && a <= d;
+    }
+
+    return ab <= 0 && cd <= 0;
+}
+
+int main() {
+    fio();
+
+    pll a, b, c, d;
+    cin >> a.first >> a.second >> b.first >> b.second;
+    cin >> c.first >> c.second >> d.first >> d.second;
+
+    cout << isIntersect(a, b, c, d) << '\n';
+}
+```
+
+```python
+import sys
+input = sys.stdin.readline
+
+def ccw(a, b, c):
+    tmp = (b[0] - a[0]) * (c[1] - a[1]) \
+        - (b[1] - a[1]) * (c[0] - a[0])
+
+    if tmp > 0:
+        return 1
+    if tmp < 0:
+        return -1
+    return 0
+
+def is_intersect(a, b, c, d):
+    ab = ccw(a, b, c) * ccw(a, b, d)
+    cd = ccw(c, d, a) * ccw(c, d, b)
+
+    if ab == 0 and cd == 0:
+        if a > b:
+            a, b = b, a
+        if c > d:
+            c, d = d, c
+        return c <= b and a <= d
+
+    return ab <= 0 and cd <= 0
+
+
+a1, a2, b1, b2 = map(int, input().split())
+c1, c2, d1, d2 = map(int, input().split())
+
+a = (a1, a2)
+b = (b1, b2)
+c = (c1, c2)
+d = (d1, d2)
+
+print(1 if is_intersect(a, b, c, d) else 0)
+```
+%endmultilang
