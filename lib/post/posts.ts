@@ -57,6 +57,7 @@ export const posts = [
   "web/build-http-with-c",
   "math/pca",
   "bjcord/rewrite-bjcord-2",
+  "math/svd-compression",
   ...Object.keys(series).flatMap((key) =>
     series[key].posts.map((post) => `${key}/${post}`),
   ),
