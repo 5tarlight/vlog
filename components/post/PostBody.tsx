@@ -7,6 +7,7 @@ import PostFooter from "./PostFooter";
 import Comment from "./Comment";
 import SeriesList from "./SeriesList";
 import PostSeparator from "../post-whole/PostSeparator";
+import MathProvider from "./MathProvider";
 
 export default function PostBody({
   meta,
@@ -24,7 +25,9 @@ export default function PostBody({
       {meta.series && (
         <SeriesList current={meta.seriesIndex} series={meta.series} />
       )}
-      <div className="prose">{body}</div>
+      <MathProvider>
+        <div className="prose">{body}</div>
+      </MathProvider>
       {meta.series && <PostFooter meta={meta} />}
       <Comment />
     </div>
