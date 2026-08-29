@@ -491,14 +491,33 @@ export const toHtml = (content: string[]) => {
 
       html.push(<PostImage key={i} src={href} alt={alt} />);
     } else if (content[i].startsWith(">")) {
-      let quote = content[i].replace(">", "").trim();
+      const quoteStartIndex = i;
+      const paragraphs: string[] = [];
+      let paragraph: string[] = [];
 
-      while (i + 1 < content.length && content[i + 1].startsWith(">")) {
-        quote += " " + content[i + 1].replace(">", "").trim();
+      while (i < content.length && content[i].startsWith(">")) {
+        const line = content[i].slice(1).trim();
+
+        if (line) {
+          paragraph.push(line);
+        } else if (paragraph.length) {
+          paragraphs.push(paragraph.join(" "));
+          paragraph = [];
+        }
+
+        if (i + 1 >= content.length || !content[i + 1].startsWith(">")) break;
         i++;
       }
 
-      html.push(<blockquote key={i}>{renderLine(quote)}</blockquote>);
+      if (paragraph.length) paragraphs.push(paragraph.join(" "));
+
+      html.push(
+        <blockquote key={quoteStartIndex}>
+          {paragraphs.map((paragraph, paragraphIndex) => (
+            <p key={paragraphIndex}>{renderLine(paragraph)}</p>
+          ))}
+        </blockquote>
+      );
     } else if (content[i] === "<br />") {
       html.push(<br key={i} />);
     } else if (content[i] === "") {

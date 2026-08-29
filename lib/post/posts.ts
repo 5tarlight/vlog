@@ -58,6 +58,7 @@ export const posts = [
   "math/pca",
   "bjcord/rewrite-bjcord-2",
   "math/svd-compression",
+  "ai/llm-from-scratch",
   ...Object.keys(series).flatMap((key) =>
     series[key].posts.map((post) => `${key}/${post}`),
   ),
@@ -65,7 +66,7 @@ export const posts = [
 ];
 
 export const featured = [
-  "special-lectures/ideal-univ-life",
+  "ai/llm-from-scratch",
   "special-lectures/future-of-developers",
   "make-blog/vercel-og",
 ];

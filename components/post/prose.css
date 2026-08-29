@@ -121,6 +121,17 @@
   line-height: 1.7;
 }
 
+.prose blockquote p {
+  margin: 0;
+  font-size: inherit;
+  line-height: inherit;
+  text-align: inherit;
+}
+
+.prose blockquote p + p {
+  margin-top: 1rem;
+}
+
 .dark .prose blockquote {
   background-color: #333;
   border-left: 4px solid #814a9d;

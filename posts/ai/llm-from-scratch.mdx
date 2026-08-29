@@ -1,0 +1,1002 @@
+---
+title: 완전 밑바닥부터 LLM 만들기
+description: LLM의 작동원리를 알아보고 완전 처음부터 직접 LLM을 만들어봅니다.
+cover:
+tags: llm, transformer, ai
+date: 2026-08-29
+author: yeahx4
+series: 
+seriesIndex: -1
+coverTitle: LLM 만들기
+coverSub: 
+coverTs: 100
+coverBg: ffb5ea
+coverColor: ffffff
+---
+
+LLM(Large Language Model)은 최근 사회에 가장 큰 변화를 가져오고 있는 기술 중 하나입니다.
+초기에는 단순한 챗봇 정도로 사용되었지만 최근에는 점점 더 복잡한 작업을 수행할 수 있고 사람보다
+더 뛰어난 결과를 몇 분만에 만들어내는 수준에 이르렀습니다. 이 글에서는 LLM의 구조와 작동 원리를
+알아보고, PyTorch를 사용해 완전히 처음부터 LLM을 만들어보겠습니다. 이 글은 Transformer에 대한
+기초적인 이해가 있는 분들을 대상으로 작성되었습니다.
+
+LLM을 훈련시키고 사용하려면 상당한 수준의 컴퓨팅 자원이 필요합니다. 이 글은 LLM을 이해하는 것이
+목적이므로 성능은 떨어지더라도 Google Colab이나 로컬 컴퓨터에서도 실행해 볼 수 있는 작은 모델을
+만들어보는 것을 목표로 하겠습니다. VRAM이 8GB 이상인 GPU가 있다면 로컬에서도 실행해볼만 하고
+그렇지 않다면 Google Colab에서 GPU 세션을 사용해서 실행해 볼 수 있습니다.
+
+# LLM의 구조
+
+LLM은 프롬프트라고 불리는 문장을 입력으로 받아서 그에 대한 답변을 생성하는 모델입니다.
+조금 더 정확히는 프롬프트 다음에 이어질 내용을 예측하는 모델입니다. LLM은 문장을 "토큰"이라는
+단위로 나누어 처리합니다. 토큰은 Tokenizer에 의해 생성되는데, 단어 단위로 나눌수도 있고
+글자 단위 등 다양한 방법으로 나눌 수 있습니다. 이 부분에 대해서는 Tokenizer 파트에서 좀 더
+자세히 알아보기로 하고, LLM은 토큰의 배열을 입력으로 받아서 다음으로 올 토큰을 예측하는 방식으로
+작동합니다. 즉, 한 번의 forward를 통해 하나의 토큰을 생성합니다. 이 과정을 반복하여 긴
+문장을 생성합니다.
+
+![LLM Iteration][2xl](/img/ai/llm-scratch/llm-iteration.png)
+
+먼저 Tokenizer가 입력 문장을 토큰의 배열로 변환합니다. 이 배열은 Embedding 레이어를 거쳐
+행렬로 만들어집니다. 이때 각 토큰은 어떤 벡터로 변환되는데, 이 벡터는 모델이 학습을 통해
+각 토큰의 의미를 담고 있는 벡터입니다. 이렇게 만들어진 행렬을 Transformer 레이어의 입력으로
+사용합니다. Transformer 레이어는 Attention을 통해 입력 토큰 간의 관계를 학습하게 됩니다.
+이후 Transformer 레이어의 출력을 통해 다음 토큰을 예측하게 됩니다.
+예측된 토큰은 다시 입력으로 돌아가 다음 토큰을 예측하는데 사용됩니다. 모델은 이 과정을 최대
+토큰 수에 도달할 때까지 반복하거나 `<eos>` 라는 토큰이 나올 때까지 반복합니다. `<eos>`는
+Eod of Sequence의 약자로 문장의 끝을 의미하는 토큰입니다.
+
+# Tokenizer
+
+Tokenizer는 문장을 특정 기준에 따라 토큰으로 나누고, 각 토큰을 고유한 정수로 매핑하는 역할을
+합니다. Tokenizer는 LLM 학습시 학습되는 것이 아니라 사전에 학습된 모델을 준비하여 사용합니다.
+보통 HuggingFace에서 제공하는 모델을 많이 사용하지만 이번 글에서는 직접 Tokenizer를
+만들어 보는 것까지 해보겠습니다.
+
+토큰은 LLM이 이해하고 생성하는 단위입니다. 영어 문장의 경우 단순히 띄어쓰기를 기준으로 토큰으로
+나누는 방식을 사용할 수 있습니다. 그러면 LLM은 단어 단위로 문장을 이해하고 생성하게 됩니다.
+최근 tokenizer는 이보다 조금 더 복잡한 방식을 사용합니다. 예를 들어, "happy", "unhappy",
+"unhappiness"라는 단어가 있을 때 이를 독립적인 토큰으로 보는 것이 아니라 "happy", "un",
+"ness" 라는 토큰의 조합으로 보는 방식입니다. "un"은 부정의 의미를 가진 토큰, "ness"는
+명사의 의미를 가진 토큰으로 보는 방식입니다. 이렇게 토큰을 나누면 다른 단어에서 "un"이나
+"ness"가 나올 때도 같은 토큰으로 인식할 수 있습니다. 또, 문장을 생성할 때 어떤 단어에
+"un"이나 "ness"를 조합하는 방식으로 새로운 단어를 만들어낼 수도 있습니다. 참고로 이렇게 토큰을
+나누는 방식을 Subword Tokenization이라고 부릅니다. 이 외에도 Byte Pair Encoding(BPE)
+등 다양한 방식이 있습니다.
+
+토큰을 큰 단위로 나눌수록 큰 데이터셋이 필요합니다. 기본적으로 모델은 자신이 모르는 토큰을
+생성할 수 없기 때문입니다. 예를 들어, 단어 단위로 토큰을 나눌 때 "unhappiness"라는 단어가
+학습 데이터셋에 없었다면 모델은 이 단어를 생성할 수 없습니다. 하지만 Subword Tokenization을
+사용하고, "un", "happy", "ness"라는 토큰이 학습 데이터셋에 있었다면 모델은 "unhappiness"라는
+단어를 생성할 수 있게 됩니다.
+
+저희가 만들 LLM은 작은 모델이고, 작은 데이터셋을 사용할 예정이기 때문에 글자 단위로 토큰을 나누는
+Character-level Tokenization을 사용하겠습니다. 이 방식의 장점은 영어 데이터셋 기준으로
+토큰 수가 알파벳 수와 특수문자 정도로 제한되기 때문에 vocabulary size가 작아진다는 것입니다.
+단점은 글자 단위로 토큰을 나누기 때문에 단어의 의미를 이해하는 능력이 떨어진다는 점과 글자 단위로
+문장을 생성하면 존재하지 않는 단어를 생성할 가능성이 있다는 것입니다.
+
+```py
+class CharTokenizer:
+    def __init__(self):
+        self.stoi = {}       # s -> i
+        self.itos = {}       # i -> s
+        self.vocab_size = 0  # 단어 개수
+```
+
+Tokenizer는 토큰을 정수(id)로 매핑하는 역할을 합니다. `stoi[s]`는 토큰 `s`를 정수로 매핑하고,
+`itos[i]`는 정수 `i`를 토큰으로 다시 돌려놓는 역할을 합니다.
+
+```py
+    def train(self, text):
+        chars = sorted(set(text))
+
+        special_tokens = ["<pad>", "<bos>", "<eos>", "<unk>"]
+        vocab = special_tokens + chars
+
+        self.stoi = { ch: i for i, ch in enumerate(vocab) }
+        self.itos = { i: ch for i, ch in enumerate(vocab) }
+        self.vocab_size = len(vocab)
+
+        self.pad_token_id = self.stoi["<pad>"]
+        self.bos_token_id = self.stoi["<bos>"]
+        self.eos_token_id = self.stoi["<eos>"]
+        self.unk_token_id = self.stoi["<unk>"]
+```
+
+Tokenizer를 학습시키는 과정은 매우 간단합니다. 학습 데이터셋에 있는 모든 문자를 가져다
+vocabulary 사전을 만들기만 하면 됩니다. 이때 `<pad>`, `<bos>`, `<eos>`, `<unk>`와 같은
+특수 토큰을 함께 추가해 주었습니다. `<pad>`는 아무 의미를 갖지 않지만, 배치 학습 시 문장의 길이를
+맞추기 위해 사용하는 토큰이고, `<bos>`는 Beginning of Sequence의 약자로 문장의 시작을
+의미하는 토큰입니다. `<eos>`는 End of Sequence의 약자로 문장의 끝을 의미하는 토큰이고,
+`<unk>`는 Unknown의 약자로 학습 데이터셋에 없는 토큰이 들어왔을 때 사용하는 토큰입니다.
+
+이제 주어진 문장을 토큰으로 나누고, 토큰을 다시 문장으로 바꾸는 기능을 구현합니다.
+
+```py
+    def encode(self, text, add_bos=False, add_eos=False):
+        ids = []
+
+        if add_bos:
+            ids.append(self.bos_token_id)
+        for ch in text:
+            ids.append(self.stoi.get(ch, self.unk_token_id))
+        if add_eos:
+            ids.append(self.eos_token_id)
+
+        return ids
+
+    def decode(self, ids, skip_special_tokens=False):
+        special_ids = {
+            self.pad_token_id,
+            self.bos_token_id,
+            self.eos_token_id,
+            self.unk_token_id,
+        }
+
+        chars = []
+
+        for token_id in ids:
+            if skip_special_tokens and token_id in special_ids:
+                continue
+
+            chars.append(self.itos[token_id])
+
+        return "".join(chars)
+```
+
+간단하게 tokenizer를 테스트해 보겠습니다.
+
+```python
+text = """
+안녕하세요.
+나는 작은 LLM을 직접 만들고 있습니다.
+Hello, world!
+"""
+
+tokenizer = CharTokenizer()
+tokenizer.train(text)
+
+print("vocab size:", tokenizer.vocab_size)
+
+# 37
+```
+
+```py
+ids = tokenizer.encode(
+    "안녕하세요. 뷁",
+    add_bos=True,
+    add_eos=True,
+)
+
+print(ids)
+print(tokenizer.decode(ids))
+
+# [1, 28, 20, 36, 26, 29, 8, 5, 3, 2]
+# <bos>안녕하세요. <unk><eos>
+```
+
+모르는 토큰에 대해서는 `<unk>` 토큰으로 매핑되는 것을 확인할 수 있습니다.
+
+# Data
+
+다음으로 넘어가기 전에 학습 데이터셋을 준비하겠습니다. 여기서는 Tiny Shakespeare 데이터셋을
+사용하겠습니다.
+
+```py
+from pathlib import Path
+import urllib.request
+
+DATA_DIR = Path("data")
+DATA_DIR.mkdir(exist_ok=True)
+
+DATA_PATH = DATA_DIR / "tiny_shakespeare.txt"
+
+url = "https://raw.githubusercontent.com/karpathy/char-rnn/master/data/tinyshakespeare/input.txt"
+
+if not DATA_PATH.exists():
+    urllib.request.urlretrieve(url, DATA_PATH)
+
+print(f"saved to: {DATA_PATH}")
+```
+```py
+text = DATA_PATH.read_text(encoding="utf-8")
+
+print(f"문자 수: {len(text):,}")
+print(f"파일 크기: {DATA_PATH.stat().st_size / 1024 / 1024:.2f} MB")
+
+print("\n--- sample ---")
+print(text[:100])
+
+# 문자 수: 1,115,394
+# 파일 크기: 1.06 MB
+```
+
+Tiny Shakespeare 데이터셋은 110만자로 이루어진 1MB 정도의 작은 데이터셋입니다.
+셰익스피어의 작품을 모아놓은 데이터셋이므로 이 데이터셋을 통해 만들어진 LLM은 셰익스피어 스타일의
+문장을 생성하게 됩니다. 더 다양하고 큰 데이터셋을 사용하면 더 다양한 문장을 생성할 수 있게 됩니다.
+
+이 데이터를 가지고 tokenizer를 학습시키겠습니다.
+
+```py
+tokenizer = CharTokenizer()
+tokenizer.train(text)
+
+print("vocab size:", tokenizer.vocab_size)
+
+# vocab size: 69
+```
+
+학습에 사용할 데이터셋을 만들기 위해 train 셋과 validation 셋을 분리하겠습니다. 학습에 사용할
+데이터는 전체 데이터의 90%를 사용하고, 나머지 10%는 모델이 학습되지 않은 데이터에 대해
+얼마나 잘 작동하는지 확인하기 위해 validation 셋으로 사용하겠습니다.
+
+```py
+split_idx = int(len(token_ids) * 0.9)
+
+train_ids = token_ids[:split_idx]
+val_ids = token_ids[split_idx:]
+
+print(f"train tokens: {len(train_ids):,}")
+print(f"val tokens:   {len(val_ids):,}")
+
+# train tokens: 1,003,854
+# val tokens:   111,540
+```
+
+## Dataset & DataLoader
+
+이 데이터를 학습에 사용하기 위해서 `(input, target)` 쌍으로 만들어야 합니다.
+학습에는 전체 문자열을 사용하지 않고, 일정 길이의 문자열을 잘라서 사용합니다. 예를 들어, 길이가 4인
+문자열로 학습을 한다면, "안녕하세요"라는 문자열은 다음과 같이 잘라서 학습에 사용됩니다.
+
+```
+input:  안녕하세
+target: 녕하세요
+```
+
+여기서 "안"을 보고 "녕"을 예측하고, "안녕"을 보고 "하"를 예측하고, "안녕하"를 보고 "세"를 예측하고,
+"안녕하세"를 보고 "요"를 예측하는 방식으로 학습이 진행됩니다.
+
+```py
+from torch.utils.data import Dataset
+
+class LMDataset(Dataset):
+    def __init__(self, token_ids, seq_len):
+        self.tokens = torch.tensor(token_ids, dtype=torch.long)
+        self.seq_len = seq_len
+
+    def __len__(self):
+        return (len(self.tokens) - 1) // self.seq_len
+
+    def __getitem__(self, idx):
+        start = idx * self.seq_len
+        end = start + self.seq_len
+
+        x = self.tokens[start:end]
+        y = self.tokens[start + 1:end + 1]
+
+        return x, y
+```
+```py
+SEQ_LEN = 256
+
+train_dataset = LMDataset(train_ids, seq_len=SEQ_LEN)
+val_dataset = LMDataset(val_ids, seq_len=SEQ_LEN)
+
+print(f"train samples: {len(train_dataset):,}")
+print(f"val samples:   {len(val_dataset):,}")
+
+# train samples: 3,921
+# val samples:   435
+```
+
+DataLoader를 만들어 배치 단위로 학습할 수 있도록 만듭니다.
+
+```py
+from torch.utils.data import DataLoader
+
+BATCH_SIZE = 32
+
+train_loader = DataLoader(
+    train_dataset,
+    batch_size=BATCH_SIZE,
+    shuffle=True,
+    drop_last=True,
+)
+
+val_loader = DataLoader(
+    val_dataset,
+    batch_size=BATCH_SIZE,
+    shuffle=False,
+    drop_last=True,
+)
+```
+```py
+x, y = next(iter(train_loader))
+
+print("x:", x.shape)
+print("y:", y.shape)
+print("dtype:", x.dtype)
+
+# x: torch.Size([32, 256])
+# y: torch.Size([32, 256])
+# dtype: torch.int64
+```
+
+한 번에 256개의 문자로 이루어진 샘플 32개를 배치로 만들어 학습에 사용하게 됩니다.
+
+# Embedding
+
+Embedding 레이어는 토큰을 의미가 담긴 벡터로 변환하는 역할을 합니다. 어떤 토큰 id가 입력되면
+$d_\text{model}$ 차원의 벡터로 변환됩니다. 단어의 개수가 $V$일 때, Embedding 레이어는
+$V \times d_\text{model}$ 크기의 행렬로 표현됩니다. 이 행렬의 각 행은 토큰 id에 해당하는
+벡터를 의미합니다. 어떤 토큰 $i$가 입력되면 $E[i]$를 출력하게 됩니다. 이때 $E$는 학습 가능한
+파라미터여서 학습을 통해 토큰의 의미가 담긴 벡터로 학습됩니다.
+
+PyTorch에서는 `nn.Embedding`을 사용하여 Embedding 레이어를 구현할 수 있습니다.
+
+```py
+import torch.nn as nn
+
+
+class TokenEmbedding(nn.Module):
+    def __init__(self, vocab_size, d_model):
+        super().__init__()
+
+        self.embedding = nn.Embedding(
+            num_embeddings=vocab_size,
+            embedding_dim=d_model
+        )
+
+    def forward(self, token_ids):
+        return self.embedding(token_ids)
+```
+```py
+D_MODEL = 256
+
+token_embedding = TokenEmbedding(
+    vocab_size=tokenizer.vocab_size,
+    d_model=D_MODEL
+)
+```
+```py
+x, y = next(iter(train_loader))
+
+print("before:", x.shape)
+
+embedded = token_embedding(x)
+
+print("after :", embedded.shape)
+
+# before: torch.Size([32, 256])
+# after : torch.Size([32, 256, 256])
+```
+
+원래 `[B, T]` 크기였던 입력이 Embedding 레이어를 거치면서 `[B, T, d_model]` 크기로
+변환된 것을 확인할 수 있습니다.
+
+## Positional Encoding
+
+여기서 한가지 문제점이 있습니다. 같은 단어(토큰)라면 Embedding 레이어를 거치면서 항상 같은 벡터로
+변환된다는 점입니다. 이것이 문제인 이유는 같은 단어일지라도 문장에서의 위치에 따라 의미가 매우
+다를 수 있기 때문입니다. 즉, 임베딩된 결과에 위치 정보가 담겨있지 않습니다. 그래서 필요한 것이
+Positional Encoding입니다. Positional Encoding은 임베딩된 결과에 위치 정보를 더하는
+방식으로 구현됩니다.
+
+```math
+PE_{(pos, 2i)} = \sin\left(\frac{pos}{10000^{2i/d_\text{model}}}\right)
+```
+
+```math
+PE_{(pos, 2i+1)} = \cos\left(\frac{pos}{10000^{2i/d_\text{model}}}\right)
+```
+
+여기서 pos는 토큰의 위치, $i$는 임베딩 벡터의 차원 인덱스입니다. Positional Encoding은
+몇 가지 만족해야 하는 조건이 있습니다. 첫 번째는 값 자체가 너무 커서 원래 데이터를 손상시키거나
+너무 작아서 묻히면 안됩니다. 두 번째는 위치에 따라서 서로 다른 값을 가져야 합니다. 이 조건을
+만족하는 식이 위의 수식입니다. 이 방법을 Sinusoidal Positional Encoding이라고 부릅니다.
+이 방법은 -1~1 사이의 값을 가지고, pos에 따라서 다른 주기를 가지는 sin, cos 함수를 사용해
+위치 정보를 포함합니다. 이 값을 임베딩된 벡터 $x$에 더해 $x + PE$를 만드는 방식입니다.
+
+하지만, 이 방법은 두 토큰 사이의 상대적인 위치를 알기 어렵다는 단점이 있습니다. 그래서 최근에는
+다른 방식을 많이 사용합니다.
+
+## RoPE
+RoPE(Rotary Positional Encoding)은 최근에 많이 사용되는 Positional Encoding 방식입니다.
+이 방식은 임베딩된 벡터에 더하는 방식이 아니라 트랜스포머 레이어에서 Q와 K를 회전시키는 방식으로
+위치 정보를 포함시킵니다.
+
+```math
+\begin{bmatrix}
+x'_{2i} \\
+x'_{2i+1}
+\end{bmatrix}
+=
+\begin{bmatrix}
+\cos(m\theta_i) & -\sin(m\theta_i) \\
+\sin(m\theta_i) & \cos(m\theta_i)
+\end{bmatrix}
+\begin{bmatrix}
+x_{2i} \\
+x_{2i+1}
+\end{bmatrix}
+```
+```math
+\theta_i = 10000^{-2i/d}
+```
+
+위 수식에서 $x$는 Q또는 K의 $m$번째 토큰의 벡터이고, $i$는 벡터의 차원 인덱스입니다.
+차원을 2개씩 묶어서 회전시키는 방식으로 위치 정보를 포함시킵니다. 이 방식을 사용하면 두 토큰
+사이의 상대적인 위치를 알 수 있습니다. 이 방식은 LLaMA 등과 같은 LLM 에서 사용하고 있는 방식입니다.
+
+> **참고 : RoPE가 상대적인 위치를 표현하는 방법**
+>
+> 위 수식에서 $x$에 곱해진 회전 행렬을 $R(m)$ 이라고 하면, $m$번째 토큰과 $n$번째 토큰의 Q와
+> K를 RoPE로 적용하면 다음과 같습니다.
+> 
+> $R(m)q, R(n)k$
+>
+> 이 값을 사용해 Attention을 계산하면 다음과 같이 됩니다.
+>
+> $(R(m)q)^T R(n)k = q^T R(m)^T R(n) k$
+>
+> 이때 회전행렬의 성질에 의해 transpose를 취하면 회전 방향이 반대가 되고,
+> 두 회전행렬이 곱해지면 회전 방향이 합쳐집니다. 즉,
+>
+> $q^T R(m)^T R(n) k = q^T R(n-m) k$
+>
+> 이렇게 되면 $n-m$이라는 상대적인 위치 정보가 포함된 것을 확인할 수 있습니다.
+
+```py
+class RotaryEmbedding(nn.Module):
+    def __init__(self, head_dim, max_seq_len=2048, base=10000.):
+        super().__init__()
+
+        assert head_dim % 2 == 0
+
+        inv_freq = 1.0 / (
+            base ** (torch.arange(0, head_dim, 2).float() / head_dim)
+        )
+
+        positions = torch.arange(max_seq_len).float()
+        angles = torch.outer(positions, inv_freq)
+
+        self.register_buffer("cos", angles.cos())
+        self.register_buffer("sin", angles.sin())
+
+    def forward(self, x):
+        # x: [B, H, T, Dh]
+
+        seq_len = x.size(2)
+        cos = self.cos[:seq_len]
+        sin = self.sin[:seq_len]
+
+        cos = cos.unsqueeze(0).unsqueeze(0)
+        sin = sin.unsqueeze(0).unsqueeze(0)
+
+        x_even = x[..., 0::2]
+        x_odd = x[..., 1::2]
+
+        rotated_even = x_even * cos - x_odd * sin
+        rotated_odd = x_even * sin + x_odd * cos
+
+        rotated = torch.stack([rotated_even, rotated_odd], dim=-1)
+        return rotated.flatten(-2)
+```
+
+이 코드에서 `positions`는 RoPE 수식에서 $m$에 해당하는 토큰의 위치이고, `inv_freq`는
+$\theta_i$에 해당하는 값입니다. 이 값을 outer를 통해 외적을 계산하면 $m\theta_i$에
+해당하는 2차원 행렬이 만들어집니다. 
+
+# Transformer Layer
+
+이제 가장 중요한 Transformer Layer를 구현해보겠습니다. 임베딩된 벡터를 입력으로 받아서
+Self-Attention을 수행하고 Feed Forward Network를 거쳐서 다음 토큰을 예측하는 역할을
+합니다.
+
+```py
+class CausalSelfAttention(nn.Module):
+    def __init__(self, d_model, n_heads, max_seq_len=2048):
+        super().__init__()
+
+        assert d_model % n_heads == 0
+
+        self.d_model = d_model
+        self.n_heads = n_heads
+        self.head_dim = d_model // n_heads
+
+        self.q_proj = nn.Linear(d_model, d_model, bias=False)
+        self.k_proj = nn.Linear(d_model, d_model, bias=False)
+        self.v_proj = nn.Linear(d_model, d_model, bias=False)
+        self.rope = RotaryEmbedding(head_dim=self.head_dim, max_seq_len=max_seq_len)
+
+        self.out_proj = nn.Linear(d_model, d_model, bias=False)
+```
+
+먼저 linear 레이어를 하나 거쳐 Q, K, V를 생성합니다. 그리고 head 개수에 맞춰 차원을 쪼갭니다.
+
+```py
+    def forward(self, x):
+        B, T, D = x.shape
+
+        q = self.q_proj(x)
+        k = self.k_proj(x)
+        v = self.v_proj(x)
+
+        # [B, T, H, Dh]
+        q = q.view(B, T, self.n_heads, self.head_dim).transpose(1, 2)
+        k = k.view(B, T, self.n_heads, self.head_dim).transpose(1, 2)
+        v = v.view(B, T, self.n_heads, self.head_dim).transpose(1, 2)
+```
+
+여기서 1, 2번째 차원을 transpose하는 이유는 view를 통해 만들어진 텐서가
+`[B, T, H, Dh]`의 형태인데 `[B, H, T, Dh]` 형태로 만들어야 어텐션을 계산하기 편하고
+자연스럽기 때문입니다.
+
+다음으로 Q, K에 RoPE를 적용합니다.
+
+```py
+        q = self.rope(q)
+        k = self.rope(k)
+```
+
+이제 Attention Score를 계산합니다. $K^T$를 만드려면 어떤 차원을 transpose해야 하는지
+주의합니다.
+
+```math
+\frac{QK^T}{\sqrt{d_k}}
+```
+
+```py
+        scores = torch.matmul(q, k.transpose(-2, -1))
+        scores = scores / math.sqrt(self.head_dim)
+```
+
+여기서 Causal Mask를 적용합니다. 지금 이대로 Attention을 계산하면 $T \times T$ 크기의 
+행렬이 만들어집니다. 이때 이전 토큰이 자신보다 이후에 나온 토큰에 대해서도 Attention값을
+가집니다. 이는 글을 읽고 있는 중에 아직 읽지도 않은 부분의 내용을 알고 참고하는 것과 같기 때문에
+이후 토큰에 대한 Attention 값을 0으로 만들어야 합니다. 이때 사용하는 것이 Causal Mask 입니다.
+예를 들어 Attention Score가 $3 \times 3$ 크기라고 하면 Causal Mask는 다음과 같이
+만들어집니다.
+
+```math
+M = \begin{bmatrix}
+0 & -\infty & -\infty \\
+0 & 0 & -\infty \\
+0 & 0 & 0
+\end{bmatrix}
+```
+
+이 mask를 Attention Score에 더해주면 이후 softmax를 통해 Attention값이 0이 됩니다.
+PyTorch에서는 `torch.triu`를 사용해 upper triangular matrix를 만들 수 있습니다.
+이제 Attention을 계산합니다.
+
+```py
+        mask = torch.triu(
+            torch.ones(T, T, device=x.device, dtype=torch.bool),
+            diagonal=1
+        )
+        scores = scores.masked_fill(mask, float("-inf"))
+
+        attn = torch.softmax(scores, dim=-1)
+        out = torch.matmul(attn, v)
+```
+
+이제 헤드별로 Attention 값이 구해졌으니 다시 합친 후 linear 레이어를 거쳐서 최종 출력을 만듭니다.
+
+```py
+        # merge [B, H, T, Dh] -> [B, T, D]
+        out = out.transpose(1, 2).contiguous().view(B, T, D)
+
+        return self.out_proj(out)
+```
+
+# Transformer Block
+
+위에서 LLM의 핵심인 Transformer Layer를 구현했습니다. 다만, 아직 부족한 부분이 있습니다.
+입력을 정규화하는 레이어와 Feed Forward Network가 빠져있습니다. 이를 포함해 완벽한 하나의
+Transformer Block을 구현해 보겠습니다.
+
+### RMSNorm
+
+일반적으로 알려진 정규화 방법은 BatchNorm, LayerNorm 등이 있습니다. 이 방법은
+$(x - \mu) / \sigma$ 처럼 평균과 표준편차를 이용해 정규화합니다. RMSNorm은 이것과
+매우 비슷하긴 하지만 평균을 사용하지 않고, Root Mean Square(RMS)만을 사용해 정규화하는
+방법입니다. 결과는 비슷하지만 계산량이 조금 더 적어 LLM에서 많이 사용되는 방법입니다.
+어떤 입력 토큰이 $x = [x_1, x_2, ..., x_D]$라고 하면, RMSNorm은 다음과 같이 계산됩니다.
+
+```math
+\text{RMS}(x) = \sqrt{\frac{1}{D} \sum_{i=1}^{D} x_i^2 + \varepsilon}
+```
+
+```math
+\text{RMSNorm}(x) = \frac{x}{\text{RMS}(x)} \odot g
+```
+
+여기서 $\varepsilon$은 분모가 0이 되는 것을 막기 위해 작은 값(`1e-6`)을 더해주는 것이고
+$g$는 $x$와 같은 모양의 학습 가능한 파라미터입니다. element-wise 곱을 통해 정규화된 값을
+스케일링하는 역할을 합니다.
+
+```py
+class RMSNorm(nn.Module):
+    def __init__(self, d_model, eps=1e-6):
+        super().__init__()
+
+        self.eps = eps
+        self.weight = nn.Parameter(torch.ones(d_model))
+
+    def forward(self, x):
+        rms = x.pow(2).mean(dim=-1, keepdim=True)
+        x = x * torch.rsqrt(rms + self.eps)
+
+        return self.weight * x
+```
+
+### Feed Forward Network
+
+FFN은 Transformer Layer의 출력값을 받아서 정보를 더 풍부하게 만들어주는 역할을 합니다.
+일반적으로 FFN은 두 개의 linear 레이어로 구성됩니다. 최근에는 FFN을 구현하는 방식도
+여러 가지가 있습니다. 여기서는 SwigLU 활성화 함수를 사용한 FFN을 구현해 보겠습니다.
+
+먼저 입력 $x$를 두 개의 linear 레이어를 통해 두 projection을 만듭니다. 이때 사용하는
+linear layer의 크기는 둘 다 $[d_\text{model}, 4d_\text{model}]$ 입니다.
+이 값을 각각 `gate`, `up` 이라고 부르겠습니다. 다음 값을 계산합니다.
+
+```math
+x' = \text{SiLU}(\text{gate}) \odot \text{up}
+```
+
+이때 SiLU는 Sigmoid Linear Unit의 약자로 다음과 같이 생겼습니다.
+
+```math
+\text{SiLU}(x) = x \cdot \sigma(x)
+```
+
+ReLU는 0보다 작은 값은 전부 0으로 만들어버리지만 SiLU는 0보다 작은 값도 음수로 내려갔다
+부드럽게 0에 가까워지는 형태를 가지고 있습니다. 큰 양수에 대해서
+$\text{SiLU}(x) \approx x$ 이고, 작은 음수에 대해서는
+$\text{SiLU}(x) \approx 0$이 됩니다. 
+
+![SiLU][md](/img/ai/llm-scratch/silu.png)
+
+이 값을 다시 linear layer를 통해 $[4d_\text{model}, d_\text{model}]$ 크기로
+projection해 원래 입력과 같은 크기로 만들어줍니다.
+
+```math
+\text{SwiGLU}(x) = W(\text{SiLU}(\text{gate}) \odot \text{up})
+```
+
+이제 이 수식이 어떤 의미가 있는지 알아봅시다. up은 Transformer Layer의 출력에서
+다음 레이어로 전달할 정보를 담고 있습니다. 여기서 gate가 어떤 데이터가 넘어갈지를 결정하는
+역할입니다. gate가 0에 가까운 값이면 up의 값이 다음 레이어로 전달되지 않고, gate가 큰 값이면
+up의 값이 다음 레이어로 전달됩니다. 이런 gated FFN이 일반적인 ReLU FFN보다 성능이 좋은
+경우가 많아서 최근에는 많이 사용되는 구조입니다.
+
+```py
+class SwiGLU(nn.Module):
+    def __init__(self, d_model, d_ff):
+        super().__init__()
+
+        self.gate_proj = nn.Linear(d_model, d_ff, bias=False)
+        self.up_proj = nn.Linear(d_model, d_ff, bias=False)
+        self.down_proj = nn.Linear(d_ff, d_model, bias=False)
+
+    def forward(self, x):
+        gate = self.gate_proj(x)
+        up = self.up_proj(x)
+
+        x = nn.functional.silu(gate) * up
+        return self.down_proj(x)
+```
+
+이제 이것들을 합쳐서 하나의 Transformer Block으로 만듭니다. 먼저 입력 x에 RMSNorm을 적용하고,
+Attention을 계산한 값에 다시 RMSNorm을 적용한 후 FFN을 통과시킵니다.
+
+```py
+class TransformerBlock(nn.Module):
+    def __init__(self, d_model, n_heads, d_ff, max_seq_len=2048):
+        super().__init__()
+
+        self.attn_norm = RMSNorm(d_model)
+        self.attn = CausalSelfAttention(
+            d_model=d_model,
+            n_heads=n_heads,
+            max_seq_len=max_seq_len
+        )
+        self.ffn_norm = RMSNorm(d_model)
+        self.ffn = SwiGLU(d_model, d_ff)
+
+    def forward(self, x):
+        x = x + self.attn(self.attn_norm(x))
+        x = x + self.ffn(self.ffn_norm(x))
+        return x
+```
+
+# LLM
+
+이제 모든 파츠가 다 모였습니다. 이제 이 파츠들을 합치면 LLM이 됩니다. 임베딩부터 시작해서
+순서대로 따라가면서 만들면 됩니다.
+
+```py
+class SmallLLM(nn.Module):
+    def __init__(
+            self, vocab_size, d_model=256, n_heads=4, d_ff=1024,
+            n_layers=6, max_seq_len=2048
+    ):
+        super().__init__()
+
+        self.token_embedding = TokenEmbedding(vocab_size, d_model)
+        self.blocks = nn.ModuleList([
+            TransformerBlock(
+                d_model=d_model, n_heads=n_heads, d_ff=d_ff, max_seq_len=max_seq_len
+            ) for _ in range(n_layers)
+        ])
+        self.final_norm = RMSNorm(d_model)
+        self.lm_head = nn.Linear(d_model, vocab_size, bias=False)
+
+    def forward(self, token_ids):
+        x = self.token_embedding(token_ids)
+
+        for block in self.blocks:
+            x = block(x)
+
+        x = self.final_norm(x)
+        logits = self.lm_head(x)
+
+        return logits
+```
+
+```py
+D_MODEL = 256
+N_HEADS = 4
+D_FF = 1024
+N_LAYERS = 6
+SEQ_LEN = 256
+VOCAB_SIZE = tokenizer.vocab_size
+
+model = SmallLLM(
+    vocab_size=VOCAB_SIZE,
+    d_model=D_MODEL,
+    n_heads=N_HEADS,
+    d_ff=D_FF,
+    n_layers=N_LAYERS,
+    max_seq_len=SEQ_LEN
+)
+print(model)
+```
+
+여기서 LM head라는 linear 레이어가 하나 추가된 것을 볼 수 있습니다. 이 레이어는
+Transformer Block의 출력값을 받아서 다음 토큰을 예측하는 역할을 합니다. 이 레이어는
+`vocab_size` 크기의 출력을 만들어서 각 토큰에 대한 logit을 만듭니다. 이후 이 logit을 통해
+다음 토큰을 예측할 수 있습니다. 예측을 만드는 방법은 이후에 조금 더 자세히 살펴보겠습니다.
+
+# Training
+
+LLM을 학습시키기 위해서는 이전에 이미 만든 DataLoader를 사용하면 됩니다. 손실 함수로는
+Cross Entropy Loss를 사용하고, optimizer로는 AdamW를 사용하겠습니다.
+
+우선 val loss를 계산하는 함수를 만듭니다.
+
+```py
+@torch.no_grad()
+def evaluate(model, dataloader, device):
+    model.eval()
+
+    total_loss = 0.0
+    num_batches = 0
+
+    for x, y in dataloader:
+        x = x.to(device)
+        y = y.to(device)
+
+        logits = model(x)
+
+        loss = F.cross_entropy(
+            logits.reshape(-1, logits.size(-1)),
+            y.reshape(-1)
+        )
+
+        total_loss += loss.item()
+        num_batches += 1
+
+    model.train()
+
+    return total_loss / num_batches
+```
+
+이후 학습 루프를 만들어 모델을 학습시킵니다.
+
+```py
+EPOCHS = 10
+
+for epoch in range(EPOCHS):
+    model.train()
+
+    total_train_loss = 0.0
+
+    for x, y in train_loader:
+        x = x.to(device)
+        y = y.to(device)
+
+        # forward
+        logits = model(x)
+
+        loss = F.cross_entropy(
+            logits.reshape(-1, logits.size(-1)),
+            y.reshape(-1)
+        )
+
+        # backward
+        optimizer.zero_grad()
+
+        loss.backward()
+
+        torch.nn.utils.clip_grad_norm_(
+            model.parameters(),
+            max_norm=1.0
+        )
+
+        optimizer.step()
+
+        total_train_loss += loss.item()
+
+    train_loss = total_train_loss / len(train_loader)
+    val_loss = evaluate(model, val_loader, device)
+
+    print(
+        f"Epoch {epoch + 1:2d} | "
+        f"train loss: {train_loss:.4f} | "
+        f"val loss: {val_loss:.4f}"
+    )
+```
+
+630만 파라미터 모델이기 때문에 Google Colab 기준으로 5~10분 정도면 학습이 완료됩니다.
+
+# 출력 생성
+
+여기까지 만든 모델은 입력 프롬프트를 받아서 다음 토큰에 대한 logit을 출력하는 모델입니다.
+이제 이 logit을 사용해 다음 토큰을 생성하고 이를 반복해 완성된 문장을 생성하는 함수를
+만들어 보겠습니다.
+
+먼저 logit을 토큰으로 변환하는 방법부터 살펴보겠습니다. 가장 간단하게는 argmax를 사용해
+가장 높은 logit을 가진 토큰을 선택하는 방법이 있습니다. 하지만 이 방법은 항상 같은 토큰을
+선택하게 되므로 생성되는 문장이 다양하지 않습니다. 그래서 logit을 softmax를 통해
+확률로 변환한 후 확률에 따라 토큰을 샘플링하는 방법을 사용합니다. 이때 temperature와
+top-k라는 하이퍼파라미터를 통해 샘플링을 조절할 수 있습니다.
+
+temperature는 logit에 $\frac{1}{\text{Temperature}}$를 곱해주는 방식으로
+샘플링을 조절합니다. 만약 temperature가 1보다 크면 작은 logit은 나눠도 크게 줄어들지 않지만
+큰 logit은 나누면 크게 줄어듭니다. 즉, logit간의 상대적인 차이가 줄어들어 더 다양한 값을
+출력할 수 있게 됩니다. 반대로 temperature가 1보다 작으면 작은 logit은 나눠도 크게 늘어나지
+않지만, 큰 logit은 나누면 크게 늘어나게 됩니다. 즉, logit간의 상대적인 차이가 커져서
+다양하지 않은 토큰을 선택하게 됩니다. 즉, temperature가 크면 다양하게 토큰을 선택하고,
+temperature가 작으면 더 보수적으로 토큰을 선택하게 됩니다.
+
+top-k는 logit을 내림차순으로 정렬했을 때 상위 k개의 토큰만 샘플링에 사용하고 나머지 토큰은
+사용하지 않는 방식입니다. 확률이 낮은 토큰은 출력에 적절하지 않은 토큰인데 낮은 확률로 선택될
+가능성이 있기 때문입니다. top-k를 사용하면 적절하지 않은 토큰은 배제하고 유력한 몇 개의 토큰만
+사용하게 하기 때문에 이상한 문장을 생성하지 않도록 해줍니다.
+
+이런 과정을 거쳐서 하나의 토큰을 샘플링 했습니다. 그런데 사용자가 LLM한테 기대하는 출력은
+프롬프트에 대한 완성된 글입니다. 두 번째, 세 번째 토큰을 생성하게 하려면 단순히 이전에 생성한 토큰을
+입력에 이어붙이고 다시 모델에 넣으면 됩니다. 이런 과정을 autoregressive generation이라고
+합니다.
+
+```py
+@torch.no_grad()
+def generate(
+    model, tokenizer, prompt, max_new_tokens=300,
+    temperature=0.8, top_k=20, device="cpu"
+):
+    model.eval()
+
+    tokens = torch.tensor(
+        tokenizer.encode(prompt),
+        dtype=torch.long,
+        device=device
+    ).unsqueeze(0)
+
+    for _ in range(max_new_tokens):
+        input_tokens = tokens[:, -SEQ_LEN:]
+
+        logits = model(input_tokens)
+        logits = logits[:, -1, :]
+
+        logits = logits / temperature
+
+        if top_k is not None:
+            values, _ = torch.topk(logits, min(top_k, logits.size(-1)))
+
+            logits = logits.masked_fill(
+              logits < values[:, [-1]], float("-inf")
+            )
+
+        probs = F.softmax(logits, dim=-1)
+
+        next_token = torch.multinomial(probs, num_samples=1)
+
+        tokens = torch.cat([tokens, next_token], dim=1)
+
+    model.train()
+
+    return tokenizer.decode(tokens[0].tolist())
+```
+
+```py
+generated = generate(
+    model,
+    tokenizer,
+    prompt="ROMEO:",
+    max_new_tokens=500,
+    temperature=0.8,
+    device=device
+)
+
+print(generated)
+```
+```
+ROMEO:
+Your lark not believe more.
+
+HASTINGS:
+What's the drum;
+And so I us yonder like the calling one,
+To meet be on her power and fortun's prince.
+
+DUKE VINCENTIO:
+The present up your good scattle?
+
+KING RICHARD II:
+And you hither thee to my head, why looking thee he
+To see thy father being in the second in hands,
+As I am hence, wasted forbeat walk, and well;
+As I could shriek and cell the mutinous too.
+
+DUKE OF AUMERLE:
+Have you the queen on the battle thou diest?
+
+QUEEN ELIZABETH:
+Boy and somethin
+```
+
+출력해서 나온 값을 보면 셰익스피어 스타일의 문장이 생성된 것을 확인할 수 있습니다.
+물론 모델의 파라미터 수가 적었고, 학습 데이터셋이 작은데다가 char-level tokenizer를 사용했기
+때문에 이해하기 어려운 문장이 생성되었지만, 원본 데이터셋의 스타일을 어느정도 따라가는 것을
+확인할 수 있습니다. 예를 들면, `이름: 대사` 형태로 생성되었고, 줄바꿈이 들어간 것을 확인할 수
+있습니다. 더 큰 모델과 더 많은 데이터셋을 사용하면 더 자연스러운 문장을 생성할 수 있습니다.
+
+사실 최근 LLM에 사용되는 모델들은 학습에 추가적인 단계를 거칩니다. 먼저, 지금 한 것처럼 대량의
+데이터를 넣어 모델이 언어를 이해하도록 학습시키는 과정을 Pretraining이라고 합니다. 이후에는
+사람이 직접 모델의 출력을 평가하고, 그 평가를 바탕으로 모델을 학습시키는 과정을 거칩니다.
+이 과정을 통해 모델이 사람이 선호하는 답변을 생성하도록 할 수 있습니다. 이 과정을
+Reinforcement Learning with Human Feedback(RLHF)라고 부릅니다.
+
+# 마치며
+
+지금까지 꽤 긴 과정을 거쳐서 작은 LLM을 직접 만들어 보았습니다.
+하지만, 이 모델은 실제로 사용하기에는 부족한 점이 많습니다.
+
+우선, 모델의 파라미터 수가 적고 학습 데이터셋이 작기 때문에 생성되는 문장이 자연스럽지 않습니다.
+또, 이런 환경에 맞추고자 char-level tokenizer를 사용했습니다. 이 방식으로는 한 문장을 표현하는데
+필요한 token 수가 굉장히 많기 때문에 context를 빨리 소모하고 긴 문장에 대한 이해가 어렵습니다.
+그리고 단어 수준의 패턴을 이해하기도 어렵습니다. 지금은 char-level tokenizer를 사용해서
+단어의 개수가 69개밖에 되지 않았지만 단어 수준의 tokenizer를 사용하면 그에 따라 더 많은 데이터와
+더 큰 모델이 필요합니다.
+
+다음으로, 문장을 생성하는 방식이 비효율적입니다. 지금은 하나의 토큰을 생성할 때마다 모델에 입력을
+넣고 다시 계산하는 방식으로 문장을 생성했습니다. 그런데 프롬프트와 이전에 생성된 토큰은 변하지 않음에도
+계속 모델에 다시 입력되어 똑같은 계산을 반복하고 있습니다. 그래서 KV Cache 라는 것을 도입하여
+이전 토큰에 대한 K, V를 head 별로 저장해두고 다음 토큰을 생성할 때는 이전에 계산했던 K, V와
+이전 스텝에서 새롭게 생성된 토큰 하나만을 계산해 문장을 생성하는 방식으로 개선할 수 있습니다.
+이렇게 하면 문장을 생성하는 속도를 훨씬 빠르게 만들 수 있습니다.
+
+또, KV Cache를 도입하면서 생기는 문제점이 있습니다. KV 캐시의 비효율적인 메모리 관리 때문에
+많은 VRAM이 낭비되는 문제, 프롬프트와 생성된 문장의 길이가 다르기 때문에 배치에서 발생하는 문제
+등이 있습니다. 이런 문제를 해결하기 위해서 Paged Attention, Flash Attention 등과 같은
+새로운 Attention 방식이 연구되고 있습니다.
+
+그리고, LLM은 하나의 프롬프트에 대해 하나의 답변만을 생성하는 것이 아니라, 여러 답변을
+동시에 생성하기도 합니다. beam search 등과 같은 방법을 사용하면 여러 답변을 생성하면서
+좋지 않은 답변은 탈락시키고 좋은 답변만을 선택할 수 있습니다. 이런 내용에 대해서도 추가로
+알아보면 좋을 것입니다.
