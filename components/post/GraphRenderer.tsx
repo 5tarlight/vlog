@@ -1,6 +1,6 @@
 "use client";
 
-import cytoscape, { ElementDefinition } from "cytoscape";
+import cytoscape, { ElementDefinition, LayoutOptions } from "cytoscape";
 import { useEffect, useRef, useState } from "react";
 
 export default function GraphRenderer({ code }: { code: string }) {
@@ -65,26 +65,29 @@ export default function GraphRenderer({ code }: { code: string }) {
         const label = weightText ?? undefined;
         const weight = weightText ? parseFloat(weightText) : 1;
 
-        if (!nodesMap.has(from))
-          nodesMap.set(from, { data: { id: from }, style: {} });
-        if (!nodesMap.has(to))
-          nodesMap.set(to, { data: { id: to }, style: {} });
+        if (!nodesMap.has(from)) nodesMap.set(from, { data: { id: from } });
+        if (!nodesMap.has(to)) nodesMap.set(to, { data: { id: to } });
 
         const makeEdge = (
           src: string,
           tgt: string,
           idSuffix = "",
           arrow = true
-        ) => ({
-          data: {
+        ) => {
+          const data: Record<string, string | number> = {
             id: `${src}-${tgt}${idSuffix}`,
             source: src,
             target: tgt,
-            label,
             weight,
-          },
-          classes: arrow ? "directed" : "undirected",
-        });
+          };
+
+          if (label !== undefined) data.label = label;
+
+          return {
+            data,
+            classes: arrow ? "directed" : "undirected",
+          };
+        };
 
         if (direction === "->") {
           edges.push(makeEdge(from, to));
@@ -108,16 +111,20 @@ export default function GraphRenderer({ code }: { code: string }) {
           if (attrs.color) style["background-color"] = attrs.color;
           if (attrs.shape) style["shape"] = attrs.shape;
         }
-        nodesMap.set(id, { data, style });
+        nodesMap.set(
+          id,
+          Object.keys(style).length > 0 ? { data, style } : { data }
+        );
       }
     }
 
     const nodes = Array.from(nodesMap.values());
+    const layout = { name: layoutName, animate: false } as LayoutOptions;
 
     const cy = cytoscape({
       container: containerRef.current,
       elements: [...nodes, ...edges],
-      layout: { name: layoutName },
+      layout,
       userZoomingEnabled: false,
       style: [
         {
@@ -145,13 +152,18 @@ export default function GraphRenderer({ code }: { code: string }) {
             "target-arrow-color": isDarkMode ? "#ffffff" : "#000000",
             "target-arrow-shape": "triangle",
             "curve-style": "bezier",
-            label: "data(label)",
             color: isDarkMode ? "#ffffff" : "#000000",
             "font-size": 4,
             "text-rotation": "autorotate",
             "text-margin-y": -6,
             "text-background-opacity": 1,
             "text-background-color": isDarkMode ? "#242424" : "#ffffff",
+          },
+        },
+        {
+          selector: "edge[label]",
+          style: {
+            label: "data(label)",
           },
         },
         {

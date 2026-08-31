@@ -23,9 +23,17 @@ const mathJaxConfig = {
   },
 };
 
+const mathJaxSrc =
+  "https://cdn.jsdelivr.net/npm/mathjax@4.1.3/tex-mml-chtml.js";
+
 export default function MathProvider({ children }: { children: ReactNode }) {
   return (
-    <MathJaxContext config={mathJaxConfig} hideUntilTypeset="first">
+    <MathJaxContext
+      config={mathJaxConfig}
+      version={4}
+      src={mathJaxSrc}
+      hideUntilTypeset="first"
+    >
       {children}
     </MathJaxContext>
   );

@@ -1,6 +1,6 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
 
 @font-face {
   font-family: "Noto Sans KR";
@@ -18,35 +18,37 @@
   src: url("/font/Pretendard.woff2") format("font-woff2");
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-a,
-li,
-span,
-div,
-button,
-input,
-textarea,
-label,
-select,
-option,
-strong,
-em,
-blockquote {
-  font-family: "Pretendard", "Noto Sans KR", sans-serif;
-}
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  a,
+  li,
+  span,
+  div,
+  button,
+  input,
+  textarea,
+  label,
+  select,
+  option,
+  strong,
+  em,
+  blockquote {
+    font-family: "Pretendard", "Noto Sans KR", sans-serif;
+  }
 
-html {
-  scroll-behavior: smooth;
+  html {
+    scroll-behavior: smooth;
+  }
 }

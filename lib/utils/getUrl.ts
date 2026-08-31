@@ -1,9 +1,8 @@
-import { headers, type UnsafeUnwrappedHeaders } from "next/headers";
-import { join } from "path";
+import { headers } from "next/headers";
 import { isDev } from "./isDev";
 
 export const getBaseUrl = async () => {
-  const headersList = (await headers()) as unknown as UnsafeUnwrappedHeaders;
+  const headersList = await headers();
   const host = headersList.get("host");
   const protocol = headersList.get("x-forwarded-proto") ?? "http";
 
@@ -11,7 +10,7 @@ export const getBaseUrl = async () => {
 };
 
 export const getUrl = async (path: string) => {
-  return join(await getBaseUrl(), path);
+  return new URL(path, await getBaseUrl()).toString();
 };
 
 export const getStaticUrl = (path: string) => {

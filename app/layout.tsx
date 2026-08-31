@@ -48,7 +48,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" suppressHydrationWarning>
+    <html lang="ko" data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
         <meta
           name="naver-site-verification"
